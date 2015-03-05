@@ -10,6 +10,15 @@
 
 @implementation ViewController
 
+- (IBAction)ScanSelected:(NSMenuItem *)sender {
+}
+- (IBAction)ScanCopyConvertSelected:(NSMenuItem *)sender {
+}
+- (IBAction)CopyConvertAlreadyScanned:(NSMenuItem *)sender {
+}
+- (IBAction)StartSelectedAction:(NSButton *)sender {
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
