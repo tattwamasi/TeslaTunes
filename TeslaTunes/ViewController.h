@@ -7,9 +7,20 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "CopyConvertDirs.h"
 
-@interface ViewController : NSViewController
+@interface ViewController : NSViewController <NSTableViewDataSource>
 
+@property (unsafe_unretained) IBOutlet NSTextView *resultsView;
+@property NSURL *sourceDirURL;
+@property NSURL *destinationDirURL;
+@property (weak) IBOutlet NSButton *doItButton;
+@property (weak) IBOutlet NSPopUpButton *opTypeButton;
+
+@property NSString *report;
+
+
+@property CopyConvertDirs *ccDirs;
 
 @end
 
