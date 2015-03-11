@@ -1,0 +1,16 @@
+todo:
+
+Add user defaults for the needed items, and make sure extra cruft isn't automatically saved
+Add error handling and notification pathway so the inner processing code can unwind and clean up properly, for example deleting half made files, and get the information back to the user rather than just sitting there in a failed assert, etc.
+
+App icon
+If no default source, then use iTunes properties to guess at sources location
+
+See if there is a way to make the path controls show a little more context - with just the last component shown, makes it easy to loose track of where the directories actually are since in many cases the last path component is likely to be named the same, something like "Music" for example.
+
+disable start action button when clicked when it's in stop mode so that the user can't double click while we're waiting for the operation queues to all get cancelled.
+
+issues seen:
+the create directory with intermediates failed saying the directory already existed - shouldn't be able to.  Only happened once that I saw, in an earlier build, when things were heavily threaded and a bunch of converts got started at around the same time.  Need to investigate how it could happen and an appropriate error path
+
+left running overnight, an open failed, assert fired for empty metadata - example of error path to be handled.  file locations can time out, for example network drive flakiness, USB drive getting pulled out, etc.  (for that matter, they can get full, have an error, etc.)

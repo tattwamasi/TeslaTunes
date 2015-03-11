@@ -160,11 +160,7 @@
                                         <items>
                                             <menuItem title="Scan" id="j1j-hz-exu"/>
                                             <menuItem title="Scan and copy/convert" tag="1" id="v3p-2x-M1f"/>
-                                            <menuItem title="Copy/convert the scan results" tag="2" enabled="NO" id="tbA-Hf-t5w">
-                                                <connections>
-                                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.ccDirs.scanReady" id="gAm-Tn-EVT"/>
-                                                </connections>
-                                            </menuItem>
+                                            <menuItem title="Copy/convert the scan results" tag="2" enabled="NO" id="tbA-Hf-t5w"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
@@ -180,7 +176,7 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="StartSelectedAction:" target="XfG-lQ-9wD" id="ydZ-38-OJc"/>
-                                    <binding destination="XfG-lQ-9wD" name="enabled2" keyPath="self.destinationDirURL" previousBinding="OSs-e5-aRX" id="b2n-Er-SHG">
+                                    <binding destination="XfG-lQ-9wD" name="enabled2" keyPath="self.destinationPath.URL" previousBinding="ZFE-o7-DZh" id="b9W-qH-BXH">
                                         <dictionary key="options">
                                             <integer key="NSMultipleValuesPlaceholder" value="-1"/>
                                             <integer key="NSNoSelectionPlaceholder" value="-1"/>
@@ -189,7 +185,7 @@
                                             <string key="NSValueTransformerName">NSIsNotNil</string>
                                         </dictionary>
                                     </binding>
-                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.sourceDirURL" id="OSs-e5-aRX">
+                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.sourcePath.URL" id="ZFE-o7-DZh">
                                         <dictionary key="options">
                                             <string key="NSValueTransformerName">NSIsNotNil</string>
                                         </dictionary>
@@ -198,9 +194,6 @@
                             </button>
                             <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="GrP-Yi-E8S">
                                 <rect key="frame" x="323" y="280" width="16" height="16"/>
-                                <connections>
-                                    <binding destination="XfG-lQ-9wD" name="animate" keyPath="self.ccDirs.isProcessing" id="B56-9g-27N"/>
-                                </connections>
                             </progressIndicator>
                             <box title="Source music location:" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Rko-6e-7x2">
                                 <rect key="frame" x="24" y="301" width="208" height="57"/>
@@ -208,7 +201,7 @@
                                     <rect key="frame" x="1" y="1" width="206" height="41"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N9v-xm-2rm">
+                                        <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N9v-xm-2rm" userLabel="Source Pop Up Path Widget">
                                             <rect key="frame" x="15" y="10" width="145" height="22"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="139" id="MYm-ie-Woy"/>
@@ -220,8 +213,11 @@
                                                 </allowedTypes>
                                             </pathCell>
                                             <connections>
-                                                <action selector="sourceSelected:" target="XfG-lQ-9wD" id="oin-1c-4va"/>
-                                                <binding destination="XfG-lQ-9wD" name="value" keyPath="sourceDirURL" id="OHm-ve-6yy"/>
+                                                <binding destination="Qh4-r0-SEn" name="value" keyPath="values.sourcePathURL" id="O67-GO-bPx">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </pathControl>
                                     </subviews>
@@ -241,7 +237,7 @@
                                     <rect key="frame" x="1" y="1" width="206" height="41"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N8v-pA-fRa">
+                                        <pathControl verticalHuggingPriority="750" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N8v-pA-fRa" userLabel="Destination Pop Up Path Control Widget">
                                             <rect key="frame" x="15" y="10" width="145" height="22"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="139" id="tNZ-72-gET"/>
@@ -253,8 +249,11 @@
                                                 </allowedTypes>
                                             </pathCell>
                                             <connections>
-                                                <action selector="destinationSeleted:" target="XfG-lQ-9wD" id="jra-Nm-zWy"/>
-                                                <binding destination="XfG-lQ-9wD" name="value" keyPath="destinationDirURL" id="8lE-zb-uJz"/>
+                                                <binding destination="Qh4-r0-SEn" name="value" keyPath="values.destinationPathURL" id="fKC-wu-fYW">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </pathControl>
                                     </subviews>
@@ -282,27 +281,13 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1eU-II-ftW">
-                                            <rect key="frame" x="102" y="223" width="11" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="0" id="KcW-5N-SZY">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1eU-II-ftW" userLabel="NumberOfFilesScanned">
+                                            <rect key="frame" x="102" y="223" width="4" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="KcW-5N-SZY">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
-                                            <connections>
-                                                <binding destination="XfG-lQ-9wD" name="value" keyPath="ccDirs.filesChecked" id="ypc-cx-Lrl"/>
-                                            </connections>
-                                        </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9Uc-OL-ju2">
-                                            <rect key="frame" x="353" y="223" width="11" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="0" id="ECo-3U-jYK">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                            <connections>
-                                                <binding destination="XfG-lQ-9wD" name="value" keyPath="ccDirs.filesToCopyConvert" id="12T-s7-Qhu"/>
-                                            </connections>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7Dp-8U-ga1">
                                             <rect key="frame" x="216" y="223" width="133" height="14"/>
@@ -312,20 +297,25 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xCN-9H-iZ9">
-                                            <rect key="frame" x="349" y="201" width="11" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="0" id="h9V-19-et4">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9Uc-OL-ju2" userLabel="NumberOfFilesToCopyOrConvert">
+                                            <rect key="frame" x="353" y="223" width="4" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="ECo-3U-jYK">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
-                                            <connections>
-                                                <binding destination="XfG-lQ-9wD" name="value" keyPath="ccDirs.filesCopyConverted" id="jHX-aw-dFP"/>
-                                            </connections>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p6W-b9-tqn">
                                             <rect key="frame" x="216" y="201" width="129" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Files copied/converted:" id="eNy-a7-YER">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xCN-9H-iZ9" userLabel="NumberOfFilesCopiedOrConverted">
+                                            <rect key="frame" x="349" y="201" width="4" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="h9V-19-et4">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -393,9 +383,16 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="CCScanResultsPopupItem" destination="tbA-Hf-t5w" id="ZvJ-2U-edD"/>
                         <outlet property="OpTypeButton" destination="GH1-1u-h2x" id="1zE-Gk-eDv"/>
+                        <outlet property="destinationPath" destination="N8v-pA-fRa" id="7zb-Us-CGg"/>
                         <outlet property="doItButton" destination="k3G-E8-VKF" id="lhS-cS-tee"/>
+                        <outlet property="numberOfFilesCopiedOrConvertedLabel" destination="xCN-9H-iZ9" id="oY8-eP-vgv"/>
+                        <outlet property="numberOfFilesScannedLabel" destination="1eU-II-ftW" id="IvD-iw-Kyw"/>
+                        <outlet property="numberOfFilesToCopyOrConvertLabel" destination="9Uc-OL-ju2" id="4NG-cX-Y7V"/>
                         <outlet property="opTypeButton" destination="GH1-1u-h2x" id="3Dv-iB-Su2"/>
+                        <outlet property="progressIndicator" destination="GrP-Yi-E8S" id="YlT-Qd-ZhB"/>
+                        <outlet property="sourcePath" destination="N9v-xm-2rm" id="TE9-Iw-cFi"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

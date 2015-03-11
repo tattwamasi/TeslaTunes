@@ -119,7 +119,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         convertOps = nil;
         copyOps = nil;
         queue=[[NSOperationQueue alloc] init];
+        queue.name = @"TeslaTunes processing queue";
         opSubQ=[[NSOperationQueue alloc] init];
+        // NSOperationQueueDefaultMaxConcurrentOperationCount was default but was creating what seemed to be a large number of threads
+        opSubQ.maxConcurrentOperationCount = 4;
+        opSubQ.name = @"TeslaTunes subprocessing queue";
+        NSLog(@"Op Queue depth: %li", (long)opSubQ.maxConcurrentOperationCount);
+
     }
     return self;
 }
@@ -192,10 +198,22 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
 }
 
-
+// We'll arbitrarily define reasonable as a small multiple of maxConcurrentOperationCount if
+// max isn't set to default. If it is set to default, then we'll arbitrarily take a guess at max concurrent
+-(void) chillTillQueueLengthIsReasonable:(NSOperationQueue*)q{
+    NSInteger max = q.maxConcurrentOperationCount;
+    if (max == NSOperationQueueDefaultMaxConcurrentOperationCount) max = 128;
+    max *= 2;
+    while (q.operationCount > max) {
+        if (isCancelled) break;
+        sleep(1);
+    }
+}
 
 -(void) convertWithSource:(NSURL*)s Destination:(NSURL*)d {
+    [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
+    if (isCancelled) return;
     [opSubQ addOperationWithBlock:^(void){
         NSError *theError;
         NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -215,11 +233,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         [self didChangeValueForKey:@"filesCopyConverted"];
 
     }];
+    NSLog(@"convert queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
 
 }
 
 
 -(void) copyWithSource:(NSURL*)s Destination:(NSURL*)d {
+    [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     [opSubQ addOperationWithBlock:^(void){
         NSError *theError;
@@ -243,18 +263,21 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             [self didChangeValueForKey:@"filesCopyConverted"];
         }
     }];
-    
+    NSLog(@"copy queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
 }
 
 
 - (void) processScannedItems {
     for (FileOp *f in copyOps) {
-        if (isCancelled) break;
-        [self copyWithSource:f->sourceURL Destination:f->destinationURL];
-    }
+        @autoreleasepool {
+            if (isCancelled) break;
+            [self copyWithSource:f->sourceURL Destination:f->destinationURL];
+        } }
     for (FileOp *f in convertOps) {
-        if (isCancelled) break;
-        [self convertWithSource:f->sourceURL Destination:f->destinationURL];
+        @autoreleasepool {
+            if (isCancelled) break;
+            [self convertWithSource:f->sourceURL Destination:f->destinationURL];
+        }
     }
 }
 
@@ -331,7 +354,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                     // do the conversion iff dest file doesn't exist
                     NSURL *transformedURL = ReplaceExtensionURL(destFileURL, @"flac");
                     if ([fileManager fileExistsAtPath:[transformedURL path] isDirectory:nil]) {
-                        printf("*");
+                        //printf("*");
                         continue;
                     }
                     [self willChangeValueForKey:@"filesToCopyConvert"];
@@ -347,7 +370,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                     // NSLog(@"checking to see if %@ exists at dest path %@", fileURL, destFileURL);
                     // skip out if the file already exists (no need to copy)
                     if ([fileManager fileExistsAtPath:[destFileURL path] isDirectory:nil]) {
-                        printf(".");
+                        //printf(".");
                         continue;
                     }
                     [self willChangeValueForKey:@"filesToCopyConvert"];
@@ -366,7 +389,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             }
         }
     }
-    
+#if 0
     NSString *ext;
     NSLog(@"\nFiles checked: %u, Files to copy/convert: %u", _filesChecked, _filesToCopyConvert);
     for (ext in _copiedExtensions) {
@@ -376,7 +399,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     for (ext in _skippedExtensions) {
         NSLog(@"%@ files skipped: %lu", ext,[_skippedExtensions countForObject:ext]);
     }
-
+#endif
     self.scanReady = (scanOnly && (convertOps.count || copyOps.count) );
 }
 

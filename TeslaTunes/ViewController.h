@@ -9,16 +9,22 @@
 #import <Cocoa/Cocoa.h>
 #import "CopyConvertDirs.h"
 
-@interface ViewController : NSViewController <NSTableViewDataSource>
-
+@interface ViewController : NSViewController 
 @property (unsafe_unretained) IBOutlet NSTextView *resultsView;
-@property NSURL *sourceDirURL;
-@property NSURL *destinationDirURL;
+
+@property (weak) IBOutlet NSPathControl *sourcePath;
+@property (weak) IBOutlet NSPathControl *destinationPath;
+
 @property (weak) IBOutlet NSButton *doItButton;
 @property (weak) IBOutlet NSPopUpButton *opTypeButton;
+@property (weak) IBOutlet NSMenuItem *CCScanResultsPopupItem;
 
 @property NSString *report;
 
+@property (weak) IBOutlet NSTextField *numberOfFilesScannedLabel;
+@property (weak) IBOutlet NSTextField *numberOfFilesToCopyOrConvertLabel;
+@property (weak) IBOutlet NSTextField *numberOfFilesCopiedOrConvertedLabel;
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 
 @property CopyConvertDirs *ccDirs;
 
