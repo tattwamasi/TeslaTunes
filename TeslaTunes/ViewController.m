@@ -25,7 +25,13 @@
         [self.ccDirs startOperationOnDir:self.opTypeButton.selectedTag
                            withSourceDir:self.sourcePath.URL
                               andDestDir:self.destinationPath.URL];
-    } else {// stop the operation
+    } else {
+        // stop the operation
+        // could take a while to cancel operations, so keep state at stop and disable the button.
+        // it'll be reenabled by the isProcesing handler when processing is complete.
+        sender.enabled = NO;
+        sender.title = @"Stopping";
+        //sender.state = NSOnState;
         [self.ccDirs cancelOngoingOperations];
     }
 }
@@ -75,6 +81,8 @@
         [self updateProgress];
         [self writeReport];
         self.doItButton.state = 0;
+        self.doItButton.enabled=1;
+        self.doItButton.title=@"Do it";
         // finally, if there is a scan ready, enable the process already scanned popup item
         // and set the popup to it as the default for the next action
         if (self.ccDirs.scanReady) {

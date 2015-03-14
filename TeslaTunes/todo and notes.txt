@@ -1,6 +1,7 @@
 todo:
 
 Add user defaults for the needed items, and make sure extra cruft isn't automatically saved
+    *user path selections now saved.  Still need to add default iTunes lookup and decruft.
 Add error handling and notification pathway so the inner processing code can unwind and clean up properly, for example deleting half made files, and get the information back to the user rather than just sitting there in a failed assert, etc.
 
 App icon

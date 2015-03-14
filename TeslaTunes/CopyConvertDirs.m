@@ -102,7 +102,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 @implementation CopyConvertDirs {
     NSMutableArray *convertOps;
     NSMutableArray *copyOps;
-    BOOL isCancelled;
+    volatile BOOL isCancelled;
     NSOperationQueue *queue;
     NSOperationQueue *opSubQ; // internal op queue used for individual operations inside the process directory
                               // implementation, vs. the queue used for the whole directory operation
@@ -137,9 +137,9 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     NSLog(@"Cancelling all ongoing operations");
     [opSubQ cancelAllOperations];
     [queue cancelAllOperations];
-    [opSubQ waitUntilAllOperationsAreFinished];
-    [queue waitUntilAllOperationsAreFinished];
-       NSLog(@"OpQueue says all operations are cancelled. And isProcessing is %hhd", self.isProcessing);
+    //[opSubQ waitUntilAllOperationsAreFinished];
+    //[queue waitUntilAllOperationsAreFinished];
+    //   NSLog(@"OpQueue says all operations are cancelled. And isProcessing is %hhd", self.isProcessing);
 }
 // Uses NSOperationQueue and NSOperation to concurrently run.  TODO: delegate or something to indicate when finished,etc.
 - (void) startOperationOnDir: (DirOperation) opType withSourceDir: (const NSURL *)src andDestDir: (const NSURL *)dst {
@@ -226,12 +226,12 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         }
         
         NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
-        ConvertAlacToFlac(s, d);
-        [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
-        [self willChangeValueForKey:@"filesCopyConverted"];
-        ++_filesCopyConverted;
-        [self didChangeValueForKey:@"filesCopyConverted"];
-
+        if (ConvertAlacToFlac(s, d, &(isCancelled))) {
+            [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
+            [self willChangeValueForKey:@"filesCopyConverted"];
+            ++_filesCopyConverted;
+            [self didChangeValueForKey:@"filesCopyConverted"];
+        }
     }];
     NSLog(@"convert queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
 
@@ -247,9 +247,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&theError]) {
             // createDirectory returns YES even if the dir already exists because
             // the "withIntermediateDirectories" flag is set, so if it fails, it's a real issue
+            // TODO: in one run early in development, the above statement was not true - got
+            // dir already exists errors presumably when multiple threads were trying this same operation
+            // with several songs on a new album.  So not sure what I should really do -- for now trying to
+            // continue rather than return - the copy should fail too if it's an issue.
             NSLog(@"Couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
                   [theError domain], [theError localizedDescription], [theError localizedFailureReason], (long)[theError code]);
-            return;
+            // return;
         }
         
         NSLog(@"\nCopying %s to %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
@@ -292,7 +296,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtURL:srcURL
+    // TODO: verify cast below is ok - getting a warning, think due to const on the enumerator param, but we're not changing srcURL...
+    NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtURL:(NSURL*)srcURL
                                           includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
                                                              options:NSDirectoryEnumerationSkipsHiddenFiles
                                                         errorHandler:^BOOL(NSURL *url, NSError *error)

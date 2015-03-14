@@ -200,10 +200,25 @@ auto FlacMetadataFromMP4fileURL(NSURL *mp4, std::vector<FLAC__StreamMetadata *> 
     return metadata.size();
 }
 
+void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, NSURL *f){
+    // clean/free up the metadata
+    for (auto entry : metadata) {
+        FLAC__metadata_object_delete(entry);
+    }
+    NSError *e;
+    if (![[NSFileManager defaultManager] removeItemAtURL:f error:&e]) {
+        // check and report potential cleanup failure - note that if f is nil, the operation returns YES
+        // TODO: see above
+    }
+}
 
-BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
-    FlacEncoderFromAlac encoder;
+BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
+    BOOL placeholderCancelFlag=NO;
+    if (cancelFlag==nullptr) {
+        cancelFlag=&placeholderCancelFlag;
+    }
     
+    FlacEncoderFromAlac encoder;
     ExtAudioFileRef inFile=nullptr;
     
     OSStatus result = ExtAudioFileOpenURL( (__bridge CFURLRef)a, &inFile);
@@ -211,6 +226,7 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
         NSLog(@"Failed to open input file %s for conversion to flac. (err %i, %@)", a.fileSystemRepresentation, result, UTCreateStringForOSType(result));
         return NO;
     }
+    if (*cancelFlag) return NO;
     assert(inFile != nullptr);
     // give management of the open file to the unique_ptr so it'll get closed when scope ends, regardless of where/why the scope ends
     // TODO: understand the unique_ptr template instantiation - tried decltype(*inFile) but didn't work.  Not sure I really understant why the * is needed after the deleter type either.
@@ -223,6 +239,7 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
         NSLog(@"Failed to read properties of input file %s (err %i, %@).", a.fileSystemRepresentation, result, UTCreateStringForOSType(result));
         return NO;
     }
+    if (*cancelFlag) return NO;
     
     SInt64 totalFrames;
     dataSize=sizeof(totalFrames);
@@ -231,7 +248,7 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
         NSLog(@"Failed to read properties of input file %s (err %i, %@).", a.fileSystemRepresentation, result, UTCreateStringForOSType(result));
         return NO;
     }
-    
+    if (*cancelFlag) return NO;
     assert(inFile_absd.mFormatID == kAudioFormatAppleLossless);
     unsigned bps;
     switch (inFile_absd.mFormatFlags) {
@@ -266,6 +283,8 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
     decoded_absd.mBytesPerPacket = decoded_absd.mBytesPerFrame * decoded_absd.mFramesPerPacket;
     
 
+    if (*cancelFlag) return NO;
+    
     result = ExtAudioFileSetProperty(inFile, kExtAudioFileProperty_ClientDataFormat, sizeof(decoded_absd), &decoded_absd);
     if (noErr != result) {
         NSLog(@"Failed to set decode properties of input file %s (err %i, %@).", a.fileSystemRepresentation, result, UTCreateStringForOSType(result));
@@ -350,26 +369,21 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
     FLAC__StreamEncoderInitStatus status = encoder.init(f.fileSystemRepresentation);
     if (status != FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
         NSLog(@"flac encoding failed, %s", encoder.get_state().resolved_as_cstring(encoder));
-        // clean/free up the metadata
-        for (auto entry : metadata) {
-            FLAC__metadata_object_delete(entry);
-        }
-        
+        cleanUpMetadataAndPartialFiles(metadata, f);
         return NO;
     }
 
-    
+    if (*cancelFlag) {cleanUpMetadataAndPartialFiles(metadata, f); return NO;}
     
 
     FLAC__int32 min=0;
     FLAC__int32 max=0;
     // encode the samples
     bool readCompleted = false;
-    do {
-
+    while (!*cancelFlag) {
         UInt32 numFrames = numFramesToReadPerLoop;
         result=ExtAudioFileRead(inFile, &numFrames, decBuffers.get());
-        
+        if (*cancelFlag) break;
         FLAC__int32 sample;
         for (size_t i=0 ; i< numFrames; ++i) {
             sample = (int16_t)inBuffsForFlacEncoder[0][i];
@@ -396,19 +410,15 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f){
             readCompleted=true;
             break;
         }
-    } while (1);
+    }
+    
     
     // finish the encode
     result = encoder.finish();
     if (!result) {
         NSLog(@"flac encoding failed while finishing up, %s", encoder.get_state().resolved_as_cstring(encoder));
     }
-        
-    // clean/free up the metadata
-    for (auto entry : metadata) {
-        FLAC__metadata_object_delete(entry);
-    }
-    
+    cleanUpMetadataAndPartialFiles(metadata, (result && readCompleted)?nil:f);
     return result && readCompleted;
 }
 
