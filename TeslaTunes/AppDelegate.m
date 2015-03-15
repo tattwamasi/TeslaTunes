@@ -57,7 +57,7 @@
             // kIOPMAssertionTypeNoIdleSleep prevents idle sleep
             //  NOTE: IOPMAssertionCreateWithName limits the string to 128 characters.
             CFStringRef reasonForActivity= CFSTR("Scanning, Copying, and converting songs");
-            IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
+            IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoIdleSleep,
                                                            kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
             idleDisabled = (kIOReturnSuccess == success);
             if (!idleDisabled) {
