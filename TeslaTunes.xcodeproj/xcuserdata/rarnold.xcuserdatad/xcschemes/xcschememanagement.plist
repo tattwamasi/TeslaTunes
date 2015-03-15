@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>GenGitVersioning.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
 		<key>TeslaTunes.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +23,11 @@
 			<true/>
 		</dict>
 		<key>E502D0D11A739D1600BE86E2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E5CC88B71AB5927E00C8951F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

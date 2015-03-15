@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		E5CC88B71AB5927E00C8951F /* GenGitVersioning */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = E5CC88BA1AB5927E00C8951F /* Build configuration list for PBXAggregateTarget "GenGitVersioning" */;
+			buildPhases = (
+				E5CC88BB1AB5928F00C8951F /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = GenGitVersioning;
+			productName = GenGitVersioning;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C21A739D1500BE86E2 /* AppDelegate.m */; };
 		E502D0C51A739D1500BE86E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C41A739D1500BE86E2 /* main.m */; };
@@ -26,6 +40,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = E502D0BB1A739D1500BE86E2;
 			remoteInfo = TeslaTunes;
+		};
+		E5CC88BC1AB593AA00C8951F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E5CC88B71AB5927E00C8951F;
+			remoteInfo = GenGitVersioning;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -148,6 +169,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E5CC88BD1AB593AA00C8951F /* PBXTargetDependency */,
 			);
 			name = TeslaTunes;
 			productName = TeslaTunes;
@@ -189,6 +211,9 @@
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = E502D0BB1A739D1500BE86E2;
 					};
+					E5CC88B71AB5927E00C8951F = {
+						CreatedOnToolsVersion = 6.3;
+					};
 				};
 			};
 			buildConfigurationList = E502D0B71A739D1500BE86E2 /* Build configuration list for PBXProject "TeslaTunes" */;
@@ -206,6 +231,7 @@
 			targets = (
 				E502D0BB1A739D1500BE86E2 /* TeslaTunes */,
 				E502D0D11A739D1600BE86E2 /* TeslaTunesTests */,
+				E5CC88B71AB5927E00C8951F /* GenGitVersioning */,
 			);
 		};
 /* End PBXProject section */
@@ -229,6 +255,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E5CC88BB1AB5928F00C8951F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "version=`git describe --dirty`\necho \"#define GIT_VERSION $version\" > InfoPlist.h\nhead=`git rev-parse --short HEAD`\necho \"#define GIT_HEAD $head\" >> InfoPlist.h\ntouch TeslaTunes/Info.plist";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E502D0B81A739D1500BE86E2 /* Sources */ = {
@@ -259,6 +301,11 @@
 			isa = PBXTargetDependency;
 			target = E502D0BB1A739D1500BE86E2 /* TeslaTunes */;
 			targetProxy = E502D0D31A739D1600BE86E2 /* PBXContainerItemProxy */;
+		};
+		E5CC88BD1AB593AA00C8951F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E5CC88B71AB5927E00C8951F /* GenGitVersioning */;
+			targetProxy = E5CC88BC1AB593AA00C8951F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -381,6 +428,9 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
+				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
+				INFOPLIST_PREFIX_HEADER = InfoPlist.h;
+				INFOPLIST_PREPROCESS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -395,6 +445,9 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
+				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
+				INFOPLIST_PREFIX_HEADER = InfoPlist.h;
+				INFOPLIST_PREPROCESS = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -437,6 +490,20 @@
 			};
 			name = Release;
 		};
+		E5CC88B81AB5927E00C8951F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E5CC88B91AB5927E00C8951F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -466,6 +533,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		E5CC88BA1AB5927E00C8951F /* Build configuration list for PBXAggregateTarget "GenGitVersioning" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5CC88B81AB5927E00C8951F /* Debug */,
+				E5CC88B91AB5927E00C8951F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
