@@ -8,19 +8,29 @@
 
 #import "ViewController.h"
 #import "Receptionist.h"
+
+#import "AppDelegate.h"
+
 @implementation ViewController {
     Receptionist *ccDirReceptionist;
     NSTimer *progressUpdateTimer;
     NSDate *startTime;
     NSDate *stopTime;
     NSDateFormatter *timeFormatter;
+      AppDelegate *theApp;
 }
 
-// when either source or destination changes, disable popup menu item copy already scanned
+
+- (IBAction)sourcePathSelected:(NSPathControl *)sender {
+    if (!self.ccDirs.isProcessing)
+        self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+}
+- (IBAction)destinationPathSelected:(NSPathControl *)sender {
+    if (!self.ccDirs.isProcessing)
+        self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+}
 
 - (IBAction)StartSelectedAction:(NSButton *)sender {
-    NSLog(@"sender.state = %ld", (long)sender.state);
-    NSLog(@"popup btn value: %@ and tag %ld.", self.opTypeButton, self.opTypeButton.selectedTag);
     if (sender.state) { // it was "do it" when pressed, rather than stop
         [self.ccDirs startOperationOnDir:self.opTypeButton.selectedTag
                            withSourceDir:self.sourcePath.URL
@@ -72,6 +82,9 @@
         progressUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                                target:self selector:@selector(updateProgressTimerFired:)
                                                              userInfo:nil repeats:YES];
+        // turn off the system's sleep when idle till we're done with the processing
+        [theApp setIdleSleepEnabled:NO];
+        
         
     } else {
         stopTime = [NSDate date];
@@ -81,7 +94,7 @@
         [self updateProgress];
         [self writeReport];
         self.doItButton.state = 0;
-        self.doItButton.enabled=1;
+        self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
         self.doItButton.title=@"Do it";
         // finally, if there is a scan ready, enable the process already scanned popup item
         // and set the popup to it as the default for the next action
@@ -97,6 +110,8 @@
             }
             self.CCScanResultsPopupItem.enabled=NO;
         }
+
+        [theApp setIdleSleepEnabled:YES];
     }
 }
 
@@ -109,7 +124,7 @@
     [timeFormatter setTimeStyle:NSDateFormatterMediumStyle];
     
     self.ccDirs = [[CopyConvertDirs alloc] init];
-    //[self.ccDirs addObserver:self forKeyPath:@"isProcessing" options:NSKeyValueObservingOptionNew context:nil];
+    
     self.CCScanResultsPopupItem.enabled=NO;
     ccDirReceptionist = [Receptionist receptionistForKeyPath:@"isProcessing" object:self.ccDirs queue:[NSOperationQueue mainQueue] task:^(NSString *keyPath, id object, NSDictionary *change) {
         if ([change objectForKey:NSKeyValueChangeNewKey] == nil || [change objectForKey:NSKeyValueChangeNewKey] == (id)[NSNull null]) {
@@ -117,12 +132,13 @@
         }
         else {
             BOOL pFlag =  [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
-            NSLog(@"Receptionist got new value description:%@, type %s, value %i",[[change objectForKey:NSKeyValueChangeNewKey] description],
-              [[change objectForKey:NSKeyValueChangeNewKey] objCType], pFlag);
             [self isProcessing:pFlag];
         }
     }];
 
+    self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+    
+    theApp = [[NSApplication sharedApplication] delegate];
     
 }
 

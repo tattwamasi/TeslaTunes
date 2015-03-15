@@ -170,26 +170,12 @@
                                 <constraints>
                                     <constraint firstAttribute="width" constant="70" id="73G-Ih-xLg"/>
                                 </constraints>
-                                <buttonCell key="cell" type="push" title="Do it" alternateTitle="Stop" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9dB-AY-3CZ">
+                                <buttonCell key="cell" type="push" title="Do it" alternateTitle="Stop" bezelStyle="rounded" alignment="center" controlSize="small" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9dB-AY-3CZ">
                                     <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="StartSelectedAction:" target="XfG-lQ-9wD" id="ydZ-38-OJc"/>
-                                    <binding destination="XfG-lQ-9wD" name="enabled2" keyPath="self.destinationPath.URL" previousBinding="ZFE-o7-DZh" id="b9W-qH-BXH">
-                                        <dictionary key="options">
-                                            <integer key="NSMultipleValuesPlaceholder" value="-1"/>
-                                            <integer key="NSNoSelectionPlaceholder" value="-1"/>
-                                            <integer key="NSNotApplicablePlaceholder" value="-1"/>
-                                            <integer key="NSNullPlaceholder" value="-1"/>
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
-                                        </dictionary>
-                                    </binding>
-                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.sourcePath.URL" id="ZFE-o7-DZh">
-                                        <dictionary key="options">
-                                            <string key="NSValueTransformerName">NSIsNotNil</string>
-                                        </dictionary>
-                                    </binding>
                                 </connections>
                             </button>
                             <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="GrP-Yi-E8S">
@@ -213,6 +199,7 @@
                                                 </allowedTypes>
                                             </pathCell>
                                             <connections>
+                                                <action selector="sourcePathSelected:" target="XfG-lQ-9wD" id="lxm-wM-you"/>
                                                 <binding destination="Qh4-r0-SEn" name="value" keyPath="values.sourcePathURL" id="O67-GO-bPx">
                                                     <dictionary key="options">
                                                         <string key="NSValueTransformerName">NSUnarchiveFromData</string>
@@ -249,6 +236,7 @@
                                                 </allowedTypes>
                                             </pathCell>
                                             <connections>
+                                                <action selector="destinationPathSelected:" target="XfG-lQ-9wD" id="fYY-xS-2ni"/>
                                                 <binding destination="Qh4-r0-SEn" name="value" keyPath="values.destinationPathURL" id="fKC-wu-fYW">
                                                     <dictionary key="options">
                                                         <string key="NSValueTransformerName">NSUnarchiveFromData</string>

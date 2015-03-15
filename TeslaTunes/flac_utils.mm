@@ -383,6 +383,11 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
     while (!*cancelFlag) {
         UInt32 numFrames = numFramesToReadPerLoop;
         result=ExtAudioFileRead(inFile, &numFrames, decBuffers.get());
+        if (result != noErr) {
+            NSLog(@"error reading from %s during conversion to flac: %@ (%i)", a.fileSystemRepresentation,
+                  UTCreateStringForOSType(result), result);
+            break;
+        }
         if (*cancelFlag) break;
         FLAC__int32 sample;
         for (size_t i=0 ; i< numFrames; ++i) {
@@ -406,7 +411,7 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
             }
         } else {
             // we're done
-            NSLog(@"%s: min sample: %i, max sample: %i", a.fileSystemRepresentation, min, max);
+            // NSLog(@"%s: min sample: %i, max sample: %i", a.fileSystemRepresentation, min, max);
             readCompleted=true;
             break;
         }

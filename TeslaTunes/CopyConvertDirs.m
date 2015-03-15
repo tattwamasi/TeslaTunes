@@ -124,7 +124,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         // NSOperationQueueDefaultMaxConcurrentOperationCount was default but was creating what seemed to be a large number of threads
         opSubQ.maxConcurrentOperationCount = 4;
         opSubQ.name = @"TeslaTunes subprocessing queue";
-        NSLog(@"Op Queue depth: %li", (long)opSubQ.maxConcurrentOperationCount);
+
 
     }
     return self;
@@ -225,7 +225,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             return;
         }
         
-        NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
+        //NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
         if (ConvertAlacToFlac(s, d, &(isCancelled))) {
             [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
             [self willChangeValueForKey:@"filesCopyConverted"];
@@ -233,7 +233,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             [self didChangeValueForKey:@"filesCopyConverted"];
         }
     }];
-    NSLog(@"convert queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
+    //NSLog(@"convert queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
 
 }
 
@@ -256,7 +256,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             // return;
         }
         
-        NSLog(@"\nCopying %s to %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
+        //NSLog(@"\nCopying %s to %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
         if (![fileManager copyItemAtURL:s toURL:d error:&theError]){
             NSLog(@"Couldn't copy file \"%@\" to \"%@\", %@ - %@, (%ld)", s, d,
                   [theError localizedDescription], [theError localizedFailureReason], (long)[theError code] );
@@ -267,7 +267,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             [self didChangeValueForKey:@"filesCopyConverted"];
         }
     }];
-    NSLog(@"copy queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
+    //NSLog(@"copy queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
 }
 
 

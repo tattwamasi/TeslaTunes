@@ -9,8 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "CopyConvertDirs.h"
 
-@interface ViewController : NSViewController 
-@property (unsafe_unretained) IBOutlet NSTextView *resultsView;
+@interface ViewController : NSViewController
 
 @property (weak) IBOutlet NSPathControl *sourcePath;
 @property (weak) IBOutlet NSPathControl *destinationPath;
