@@ -4,11 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>GenGitVersioning.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>3</integer>
-		</dict>
 		<key>TeslaTunes.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
