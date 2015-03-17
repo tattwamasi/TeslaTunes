@@ -16,7 +16,7 @@
     <div class="wrapper">
       <header>
         <h1>Tesla Tunes</h1>
-        <p>Copy your iTunes library, automatically converting Apple Lossless to flac, to a destination for use with your Tesla Model S</p>
+        <p>An OS X Utility to copy your iTunes or other music library, automatically converting Apple Lossless to Flac, to a destination for use with your Tesla Model S</p>
 
         <p class="view"><a href="https://github.com/tattwamasi/TeslaTunes">View the Project on GitHub <small>tattwamasi/TeslaTunes</small></a></p>
 
@@ -28,9 +28,33 @@
         </ul>
       </header>
       <section>
-        <p>A little utility I made for personal use, but thought a few others may also find it useful.</p>
+        <p>A little Mac OS X utility I made for personal use, but thought a few others may also find it useful.</p>
 
-<p>I wanted to work on it as a sample project for trying out different implementations, but will try to keep that at the development playground level and not expose that stuff in any actual releases.</p>
+<p>I wrote it to simplify a reoccurring need to get new music from my home music library into the external drive I use in my Model S. My library is mostly composed of Apple Lossless tracks, but also has a number of other formats as well, chiefly mp3, aac (m4a), and a few wave files.  While it's easy enough to copy the whole library manually, there are a few issues that make that enough of a pain that I wanted something easier - thus this utility was created:</p>
+
+<ol class="task-list">
+    <li> Unfortunately the Model S doesn't (yet) handle the Apple Lossless format - though it does handle FLAC, another lossless audio format which Apple Lossless can be converted to.</li>
+    <li> I don't want to convert all my Apple Lossless to FLAC in my home library, though I'd reconsider if Apple started directly supporting it.</li>
+    <li>While other programs exist that can copy or sync directories, none of them worked automatically while also handling automatic conversion of <em>just</em> files that need to be converted, while leaving others alone.</li>
+</ol>
+
+<p>So I built this.  The app will scan a source and destination directory of your choosing (and remember it, so you don't have to choose it each time), and will copy or convert as appropriate all files in the source directory that don't exist in the destination directory (including in converted FLAC form, if the source is Apple Lossless).  </p>
+
+<ul class="task-list">
+    <li>It won't copy files it doesn't think the Model S can play (though as noted will convert Apple Lossless to FLAC automatically).</li>
+    <li>It won't overwrite any files, and it won't create extra copies of any files, including leaving around Apple Lossless copies at the destination.</li>
+    <li>It won't leave partially copied or converted files laying around if you stop it partway through (though no promises in the event of crashes, system hangs, etc.).</li>
+    <li>
+    <p>It's vaguely fast... with qualifications. See project README.md for details</p>
+
+    </li>
+</ul>
+
+<p>While I want to work on this as a sample project for trying out different implementations, I'll try to keep that at the development playground level and not expose that stuff in any actual releases.</p>
+
+<p><a href="https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png" target="_blank"><img src="https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png" alt="EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy" title="EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy" style="max-width:100%;"></a></p>
+
+
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/tattwamasi">tattwamasi</a></p>
