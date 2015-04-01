@@ -7,8 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "PlaylistSelections.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
+@property PlaylistSelections *playlists;
 - (BOOL)setIdleSleepEnabled:(BOOL) enable;
 
 

@@ -26,7 +26,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
-    
+    self.playlists = [[PlaylistSelections alloc] init];
     
     //[[NSUserDefaultsController sharedUserDefaultsController] setInitialValues:defaults];
 }

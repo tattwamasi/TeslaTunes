@@ -11,13 +11,16 @@
 
 #import "AppDelegate.h"
 
+
+
 @implementation ViewController {
     Receptionist *ccDirReceptionist;
     NSTimer *progressUpdateTimer;
     NSDate *startTime;
     NSDate *stopTime;
     NSDateFormatter *timeFormatter;
-      AppDelegate *theApp;
+    AppDelegate *theApp;
+    
 }
 
 
@@ -137,7 +140,7 @@
     }];
 
     self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
-    
+        
     theApp = [[NSApplication sharedApplication] delegate];
     
 }

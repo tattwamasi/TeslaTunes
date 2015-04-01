@@ -26,7 +26,10 @@
 		E502D0C81A739D1500BE86E2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C71A739D1500BE86E2 /* ViewController.m */; };
 		E502D0CA1A739D1500BE86E2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E502D0C91A739D1500BE86E2 /* Images.xcassets */; };
 		E502D0CD1A739D1500BE86E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E502D0CB1A739D1500BE86E2 /* Main.storyboard */; };
-		E502D0D91A739D1600BE86E2 /* TeslaTunesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0D81A739D1600BE86E2 /* TeslaTunesTests.m */; };
+		E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */; };
+		E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */; };
+		E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */; };
+		E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E58A24B81AC9282300E8DDE4 /* AppKit.framework */; };
 		E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.m in Sources */ = {isa = PBXBuildFile; fileRef = E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */; };
 		E59078A71AAC1AD7007A26D6 /* flac_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = E59078A51AAC1AD7007A26D6 /* flac_utils.mm */; };
 		E59078AA1AAEC044007A26D6 /* Receptionist.m in Sources */ = {isa = PBXBuildFile; fileRef = E59078A91AAEC044007A26D6 /* Receptionist.m */; };
@@ -35,13 +38,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E502D0D31A739D1600BE86E2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E502D0BB1A739D1500BE86E2;
-			remoteInfo = TeslaTunes;
-		};
 		E5CC88BC1AB593AA00C8951F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
@@ -61,9 +57,12 @@
 		E502D0C71A739D1500BE86E2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		E502D0C91A739D1500BE86E2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E502D0CC1A739D1500BE86E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		E502D0D21A739D1600BE86E2 /* TeslaTunesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TeslaTunesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E502D0D71A739D1600BE86E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E502D0D81A739D1600BE86E2 /* TeslaTunesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TeslaTunesTests.m; sourceTree = "<group>"; };
+		E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = ../../../../../Library/Frameworks/iTunesLibrary.framework; sourceTree = "<group>"; };
+		E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistPickViewController.h; sourceTree = "<group>"; };
+		E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistPickViewController.m; sourceTree = "<group>"; };
+		E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSelections.h; sourceTree = "<group>"; };
+		E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistSelections.m; sourceTree = "<group>"; };
+		E58A24B81AC9282300E8DDE4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		E59078A21AAAFE0E007A26D6 /* CopyConvertDirs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CopyConvertDirs.h; sourceTree = "<group>"; };
 		E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CopyConvertDirs.m; sourceTree = "<group>"; };
 		E59078A51AAC1AD7007A26D6 /* flac_utils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = flac_utils.mm; sourceTree = "<group>"; };
@@ -79,13 +78,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E502D0CF1A739D1600BE86E2 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */,
+				E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,8 +89,9 @@
 		E502D0B31A739D1500BE86E2 = {
 			isa = PBXGroup;
 			children = (
+				E58A24B81AC9282300E8DDE4 /* AppKit.framework */,
+				E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */,
 				E502D0BE1A739D1500BE86E2 /* TeslaTunes */,
-				E502D0D51A739D1600BE86E2 /* TeslaTunesTests */,
 				E502D0BD1A739D1500BE86E2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -105,7 +100,6 @@
 			isa = PBXGroup;
 			children = (
 				E502D0BC1A739D1500BE86E2 /* TeslaTunes.app */,
-				E502D0D21A739D1600BE86E2 /* TeslaTunesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -113,20 +107,18 @@
 		E502D0BE1A739D1500BE86E2 /* TeslaTunes */ = {
 			isa = PBXGroup;
 			children = (
+				E502D0CB1A739D1500BE86E2 /* Main.storyboard */,
 				E502D0C11A739D1500BE86E2 /* AppDelegate.h */,
 				E502D0C21A739D1500BE86E2 /* AppDelegate.m */,
-				E59078A21AAAFE0E007A26D6 /* CopyConvertDirs.h */,
-				E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */,
-				E59078A61AAC1AD7007A26D6 /* flac_utils.h */,
-				E59078A51AAC1AD7007A26D6 /* flac_utils.mm */,
-				E502D0C91A739D1500BE86E2 /* Images.xcassets */,
-				E502D0CB1A739D1500BE86E2 /* Main.storyboard */,
-				E59078A81AAEC044007A26D6 /* Receptionist.h */,
-				E59078A91AAEC044007A26D6 /* Receptionist.m */,
-				E502D0BF1A739D1500BE86E2 /* Supporting Files */,
 				E502D0C61A739D1500BE86E2 /* ViewController.h */,
 				E502D0C71A739D1500BE86E2 /* ViewController.m */,
+				E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */,
+				E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */,
 				E59078AB1AAF9740007A26D6 /* todo and notes.txt */,
+				E58A24B41AC8E15400E8DDE4 /* utils */,
+				E502D0BF1A739D1500BE86E2 /* Supporting Files */,
+				E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */,
+				E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */,
 			);
 			path = TeslaTunes;
 			sourceTree = "<group>";
@@ -137,25 +129,22 @@
 				E502D0C01A739D1500BE86E2 /* Info.plist */,
 				E502D0C41A739D1500BE86E2 /* main.m */,
 				E5CC88BE1AB6514E00C8951F /* Credits.html */,
+				E502D0C91A739D1500BE86E2 /* Images.xcassets */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		E502D0D51A739D1600BE86E2 /* TeslaTunesTests */ = {
+		E58A24B41AC8E15400E8DDE4 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				E502D0D81A739D1600BE86E2 /* TeslaTunesTests.m */,
-				E502D0D61A739D1600BE86E2 /* Supporting Files */,
+				E59078A21AAAFE0E007A26D6 /* CopyConvertDirs.h */,
+				E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */,
+				E59078A61AAC1AD7007A26D6 /* flac_utils.h */,
+				E59078A51AAC1AD7007A26D6 /* flac_utils.mm */,
+				E59078A81AAEC044007A26D6 /* Receptionist.h */,
+				E59078A91AAEC044007A26D6 /* Receptionist.m */,
 			);
-			path = TeslaTunesTests;
-			sourceTree = "<group>";
-		};
-		E502D0D61A739D1600BE86E2 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				E502D0D71A739D1600BE86E2 /* Info.plist */,
-			);
-			name = "Supporting Files";
+			name = utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,24 +168,6 @@
 			productReference = E502D0BC1A739D1500BE86E2 /* TeslaTunes.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E502D0D11A739D1600BE86E2 /* TeslaTunesTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E502D0DF1A739D1600BE86E2 /* Build configuration list for PBXNativeTarget "TeslaTunesTests" */;
-			buildPhases = (
-				E502D0CE1A739D1600BE86E2 /* Sources */,
-				E502D0CF1A739D1600BE86E2 /* Frameworks */,
-				E502D0D01A739D1600BE86E2 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				E502D0D41A739D1600BE86E2 /* PBXTargetDependency */,
-			);
-			name = TeslaTunesTests;
-			productName = TeslaTunesTests;
-			productReference = E502D0D21A739D1600BE86E2 /* TeslaTunesTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -209,10 +180,6 @@
 					E502D0BB1A739D1500BE86E2 = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = 69PR7N5WC7;
-					};
-					E502D0D11A739D1600BE86E2 = {
-						CreatedOnToolsVersion = 6.2;
-						TestTargetID = E502D0BB1A739D1500BE86E2;
 					};
 					E5CC88B71AB5927E00C8951F = {
 						CreatedOnToolsVersion = 6.3;
@@ -233,7 +200,6 @@
 			projectRoot = "";
 			targets = (
 				E502D0BB1A739D1500BE86E2 /* TeslaTunes */,
-				E502D0D11A739D1600BE86E2 /* TeslaTunesTests */,
 				E5CC88B71AB5927E00C8951F /* GenGitVersioning */,
 			);
 		};
@@ -248,13 +214,6 @@
 				E5CC88BF1AB6514E00C8951F /* Credits.html in Resources */,
 				E502D0CD1A739D1500BE86E2 /* Main.storyboard in Resources */,
 				E59078AC1AAF9741007A26D6 /* todo and notes.txt in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E502D0D01A739D1600BE86E2 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +242,8 @@
 			files = (
 				E502D0C81A739D1500BE86E2 /* ViewController.m in Sources */,
 				E502D0C51A739D1500BE86E2 /* main.m in Sources */,
+				E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */,
+				E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */,
 				E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.m in Sources */,
 				E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */,
 				E59078AA1AAEC044007A26D6 /* Receptionist.m in Sources */,
@@ -290,22 +251,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E502D0CE1A739D1600BE86E2 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E502D0D91A739D1600BE86E2 /* TeslaTunesTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E502D0D41A739D1600BE86E2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E502D0BB1A739D1500BE86E2 /* TeslaTunes */;
-			targetProxy = E502D0D31A739D1600BE86E2 /* PBXContainerItemProxy */;
-		};
 		E5CC88BD1AB593AA00C8951F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E5CC88B71AB5927E00C8951F /* GenGitVersioning */;
@@ -431,6 +379,11 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					/Library/Frameworks/iTunesLibrary.framework,
+				);
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INFOPLIST_PREFIX_HEADER = InfoPlist.h;
@@ -454,6 +407,11 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					/Library/Frameworks/iTunesLibrary.framework,
+				);
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INFOPLIST_PREFIX_HEADER = InfoPlist.h;
@@ -467,42 +425,6 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-			};
-			name = Release;
-		};
-		E502D0E01A739D1600BE86E2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = TeslaTunesTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TeslaTunes.app/Contents/MacOS/TeslaTunes";
-			};
-			name = Debug;
-		};
-		E502D0E11A739D1600BE86E2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = TeslaTunesTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TeslaTunes.app/Contents/MacOS/TeslaTunes";
 			};
 			name = Release;
 		};
@@ -537,15 +459,6 @@
 			buildConfigurations = (
 				E502D0DD1A739D1600BE86E2 /* Debug */,
 				E502D0DE1A739D1600BE86E2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E502D0DF1A739D1600BE86E2 /* Build configuration list for PBXNativeTarget "TeslaTunesTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E502D0E01A739D1600BE86E2 /* Debug */,
-				E502D0E11A739D1600BE86E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

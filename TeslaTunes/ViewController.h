@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import "CopyConvertDirs.h"
-
 @interface ViewController : NSViewController
 
 @property (weak) IBOutlet NSPathControl *sourcePath;
