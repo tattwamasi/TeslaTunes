@@ -7,6 +7,7 @@
 //
 
 #import "PlaylistSelections.h"
+#import "TableCellViewCheckmark.h"
 
 #import <iTunesLibrary/ITLibrary.h>
 #import <iTunesLibrary/ITLibMediaItem.h>
@@ -18,6 +19,15 @@
 // First thought of using the iTunes data structures directly along with an auxilliary selected dictionary, but since we only
 // wanted to display playlists, and of those only playlists marked visible, it became too complex and seemed like a lot
 // of extra computation every outline refresh, re-iterating through all the data structure many times just to refresh the outline.
+
+
+
+// New discovery - seems that playlists can conceptually contain other playlists, but it's not stored as a tree structure when we retrieve them.
+// instead, from experimentation it seems like the items array is only filled with media items, never other playlists.  The only way to
+// build the tree is to look at the parentID of a playlist.  A playlist itself has no concept of it's children, only the child knows it's parent.
+// Furthermore, in iTunes you actually create either playlists or playlist folders.  A playlist folder can only contain other playlists, and
+// appears to be represented as a playlist with a nil items array.
+
 
 
 
@@ -63,7 +73,12 @@
         
         NSMutableArray *tmp = [[NSMutableArray alloc] init];
         for (ITLibPlaylist* i in childArray) {
-            //NSLog(@"inspecting %@ - %@, visible=%i, children = %@, count %lu", i, i.name, i.visible, i.items, (unsigned long)i.items.count);
+            
+            BOOL isPlaylist =[i isKindOfClass: [ITLibPlaylist class]];
+            NSLog(@"inspecting %@.  item is class type %@.", i, [i  className]);
+            if (isPlaylist) NSLog(@"\t item is playlist - name %@, visible=%i, master=%i children = %@, count %lu",
+                                  i.name, i.visible, i.master, i.items? @"<an array>":@"nil", (unsigned long)i.items.count);
+            
             if (([i isKindOfClass: [ITLibPlaylist class]]) && i.visible && !i.master ) {
                 NSLog(@"Adding node in %@ for %@", (itemPlaylist? itemPlaylist.name:@"root node"),  i.name);
                 [tmp addObject:[[PlaylistNode alloc] initWithPlaylist:i andStateFromDict: state]];
@@ -118,6 +133,8 @@
 
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+   
+#if 0
     // if column is the checkmark, return state for the persistant ID, if column is name, return name
     //NSLog(@"Treeview requested value for column %@ and item %@", tableColumn.identifier, item);
     PlaylistNode *node = item? item : playlistTree;
@@ -131,10 +148,14 @@
         NSLog(@"Treeview requested value for unknown column %@", tableColumn.identifier);
         return nil;
     }
-    
+#endif
+    return item;
 }
 
+
 - (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id) object ForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+    NSLog(@"Treeview asked to set column %@ value %@ for item %@. Ignoring.", tableColumn.identifier, object, item);
+#if 0
     PlaylistNode *node = item;
     if (!node) {
         NSLog(@"set value for column %@ for root obj - skipping", tableColumn.identifier);
@@ -153,20 +174,44 @@
     } else {
         NSLog(@"Treeview asked to set column %@ value %@ for item %@. Ignoring.", tableColumn.identifier, object, item);
     }
+#endif
+}
+
+
+
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+    NSLog(@"viewForTableColumn called, tableColumn %@, item = %@", tableColumn.identifier, item);
     
+    if (item) {
+        PlaylistNode *node = item;
+        if (node.children) { // it's a folder containing other playlists and/or folders - let's make the header view
+            NSLog(@"Making header view");
+            NSTableCellView *v = [outlineView makeViewWithIdentifier:@"header" owner:self];
+            if (!v) {
+                NSLog(@"makeView for header failed");
+            }
+            v.textField.value = node.playlist.name;
+            return v;
+        } else {
+            NSLog(@"Making playlist view for %@, checked=%@", node.playlist.name, node.selectedState);
+            TableCellViewCheckmark *v =[outlineView makeViewWithIdentifier:@"data" owner:self];
+            if (!v) {
+                NSLog(@"makeView for playlist failed");
+            }
+            v.button.title = node.playlist.name;
+            v.button.alternateTitle = node.playlist.name;
+            v.button.state = [node.selectedState integerValue];
+            return v;
+            
+        }
+    } else {
+        return nil;
+    }
 }
 
 
 /*
  
-
-- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
-
-    return nil;
-}
-
-
-
 NSInteger selectedState  NSOffState NSOnState NSMixedState
  
  NSNumber *persistentID

@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		E502814E1ACBA133006D996C /* TableCellViewCheckmark.m in Sources */ = {isa = PBXBuildFile; fileRef = E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */; };
 		E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C21A739D1500BE86E2 /* AppDelegate.m */; };
 		E502D0C51A739D1500BE86E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C41A739D1500BE86E2 /* main.m */; };
 		E502D0C81A739D1500BE86E2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C71A739D1500BE86E2 /* ViewController.m */; };
@@ -48,6 +49,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellViewCheckmark.h; sourceTree = "<group>"; };
+		E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCellViewCheckmark.m; sourceTree = "<group>"; };
 		E502D0BC1A739D1500BE86E2 /* TeslaTunes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeslaTunes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E502D0C01A739D1500BE86E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E502D0C11A739D1500BE86E2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -119,6 +122,8 @@
 				E502D0BF1A739D1500BE86E2 /* Supporting Files */,
 				E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */,
 				E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */,
+				E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */,
+				E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */,
 			);
 			path = TeslaTunes;
 			sourceTree = "<group>";
@@ -245,6 +250,7 @@
 				E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */,
 				E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */,
 				E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.m in Sources */,
+				E502814E1ACBA133006D996C /* TableCellViewCheckmark.m in Sources */,
 				E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */,
 				E59078AA1AAEC044007A26D6 /* Receptionist.m in Sources */,
 				E59078A71AAC1AD7007A26D6 /* flac_utils.mm in Sources */,

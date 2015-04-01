@@ -20,7 +20,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     theApp = [[NSApplication sharedApplication] delegate];
-    self.playlistTreeView.dataSource =theApp.playlists;
+    self.playlistTreeView.dataSource = theApp.playlists;
+    self.playlistTreeView.delegate   = theApp.playlists;
+    [self.playlistTreeView reloadData];
 }
 
 @end
