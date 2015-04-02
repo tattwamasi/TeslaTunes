@@ -24,5 +24,9 @@
     self.playlistTreeView.delegate   = theApp.playlists;
     [self.playlistTreeView reloadData];
 }
+- (IBAction)checkmarkButtonClicked:(NSButton *)sender {
+    NSInteger row = [self.playlistTreeView rowForView:sender];
+    [theApp.playlists setNode: [self.playlistTreeView itemAtRow:row] toSelectedState: sender.state];
+}
 
 @end

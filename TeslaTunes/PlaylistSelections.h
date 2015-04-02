@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-
+@class PlaylistNode;
 @interface PlaylistSelections : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+- (void) setNode:(PlaylistNode*) node toSelectedState: (NSInteger) state;
+
 @end

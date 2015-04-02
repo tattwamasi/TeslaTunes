@@ -22,7 +22,7 @@
 
 
 
-// New discovery - seems that playlists can conceptually contain other playlists, but it's not stored as a tree structure when we retrieve them.
+// Seems that playlists can conceptually contain other playlists, but it's not stored as a tree structure when we retrieve them.
 // instead, from experimentation it seems like the items array is only filled with media items, never other playlists.  The only way to
 // build the tree is to look at the parentID of a playlist.  A playlist itself has no concept of it's children, only the child knows it's parent.
 // Furthermore, in iTunes you actually create either playlists or playlist folders.  A playlist folder can only contain other playlists, and
@@ -33,82 +33,109 @@
 
 @interface PlaylistNode : NSObject
 @property ITLibPlaylist *playlist;
-@property NSArray *children;
+@property NSMutableArray *children;
 @property NSNumber *selectedState;
 @end
 
 @implementation PlaylistNode
-- (instancetype)initWithPlaylist:(ITLibPlaylist*) itemPlaylist andStateFromDict: (NSDictionary *) state
+
+
+- (instancetype) initWithPlaylist: (ITLibPlaylist*) playlist andState:(NSNumber*)state
 {
     self = [super init];
     if (self) {
-        NSArray *childArray;
-        self.playlist = itemPlaylist;
+        self.playlist = playlist;
         self.children = nil;
-        if (itemPlaylist) {
-            if (![itemPlaylist isKindOfClass: [ITLibPlaylist class]]) {
-                NSLog(@"PlaylistNode tried to init with a invalid playlist.");
-                return nil;
-            }
-            NSNumber *savedState = [state objectForKey:itemPlaylist.persistentID];
-            self.selectedState =  savedState? savedState: [NSNumber numberWithInteger:NSOffState];
-            childArray = itemPlaylist.items;
-            NSLog(@"Creating node with playlist %@", itemPlaylist.name);
-        } else { // it's the root node, so load from library
-            self.selectedState = [NSNumber numberWithInteger:NSOffState];
-            NSLog(@"Making root playlist tree node.  Getting iTunes library info...");
-            NSError *error = nil;
-            ITLibrary *library = [ITLibrary libraryWithAPIVersion:@"1.0" error:&error];
-            if (!library) {
-                NSLog(@"error: %@", error);
-                return nil;
-            } else {
-                NSLog(@"Got iTunes library info.");
-                childArray = library.allPlaylists;
-                
-            }
-        }
-        // if we're here, then state and playlist have been set, and childArray is an array of potential children for this node.
-        // go through them building child nodes and saving them in our children array if they are visible and playlists.
-        
-        NSMutableArray *tmp = [[NSMutableArray alloc] init];
-        for (ITLibPlaylist* i in childArray) {
-            
-            BOOL isPlaylist =[i isKindOfClass: [ITLibPlaylist class]];
-            NSLog(@"inspecting %@.  item is class type %@.", i, [i  className]);
-            if (isPlaylist) NSLog(@"\t item is playlist - name %@, visible=%i, master=%i children = %@, count %lu",
-                                  i.name, i.visible, i.master, i.items? @"<an array>":@"nil", (unsigned long)i.items.count);
-            
-            if (([i isKindOfClass: [ITLibPlaylist class]]) && i.visible && !i.master ) {
-                NSLog(@"Adding node in %@ for %@", (itemPlaylist? itemPlaylist.name:@"root node"),  i.name);
-                [tmp addObject:[[PlaylistNode alloc] initWithPlaylist:i andStateFromDict: state]];
-            }
-        }
-        NSLog(@"...tree built.");
-        if (tmp.count) {
-            self.children = tmp;
-        }
+        self.selectedState = state;
     }
     return self;
 }
-
 @end
 
 @implementation PlaylistSelections {
     NSMutableDictionary *selected;
+    NSMutableDictionary *playlistNodes;
     PlaylistNode *playlistTree;
-    
 }
+
+
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         NSLog(@"******** PlaylistSelections init called **********");
         selected = [[NSMutableDictionary alloc] init];
-        // todo: use user defaults to persist the selected dict
-        playlistTree = [[PlaylistNode alloc] initWithPlaylist:nil andStateFromDict:selected];
+        playlistNodes = [[NSMutableDictionary alloc] init];
+        
+        NSLog(@"Getting iTunes library info...");
+        NSError *error = nil;
+        ITLibrary *library = [ITLibrary libraryWithAPIVersion:@"1.0" error:&error];
+        if (!library) {
+            NSLog(@"error: %@", error);
+            return nil;
+        }
+        NSLog(@"Got iTunes library info.  Reading playlists...");
+        for (ITLibPlaylist *i in library.allPlaylists) {
+            BOOL isPlaylist =[i isKindOfClass: [ITLibPlaylist class]];
+            NSLog(@"inspecting %@.  item is class type %@.", i, [i  className]);
+            if (isPlaylist)
+                NSLog(@"\t item is playlist - name %@, visible=%i, master=%i children = %@, count %lu",
+                      i.name, i.visible, i.master, i.items? @"<an array>":@"nil",
+                      (unsigned long)i.items.count);
+            
+            if (([i isKindOfClass: [ITLibPlaylist class]]) && i.visible && !i.master ) {
+                NSLog(@"Adding node for %@", i.name);
+                NSNumber *savedState = [selected objectForKey:i.persistentID];
+                
+                PlaylistNode *node = [[PlaylistNode alloc] initWithPlaylist:i
+                                        andState: savedState];
+                [playlistNodes setObject:node forKey:i.persistentID];
+                
+            }
+        }
+        NSLog(@"Building playlist tree");
+        // We do the scan through the playlists twice because I'm not sure if we're guaranteed
+        // proper ordering such that a parent would always have been listed before it's children
+        // Also, in the event that somehow a parent is not found, or was perhaps marked not visible,
+        // marked as master, etc. we'll just root the node at the top level
+        playlistTree = [[PlaylistNode alloc] initWithPlaylist:nil andState:[NSNumber numberWithInteger:NSOffState]];
+        
+        [playlistNodes setObject:playlistTree forKey:[NSNull null]];
+        for (id key in playlistNodes) {
+            if (key == [NSNull null]) {
+                continue; // skip root node
+            }
+            PlaylistNode *node = playlistNodes[key];
+            NSNumber *parentID = node.playlist.parentID;
+            PlaylistNode* parent=[playlistNodes objectForKey:parentID?parentID:[NSNull null]];
+            if (!parent) {
+                NSLog(@"Can't find parent %@ for playlist %@ - listing in root",
+                      node.playlist.parentID, node.playlist.name);
+                parent = playlistTree;
+            }
+            if (!parent.children) {
+                parent.children = [[NSMutableArray alloc] init];
+            }
+            [parent.children addObject:node];
+            NSLog(@"Added child playlist %@ parentID %@ to parent %@ id %@",
+                  node.playlist.name, node.playlist.parentID,
+                  parent.playlist? parent.playlist.name:@"root",
+                  parent.playlist?parent.playlist.persistentID:@"Null");
+        }
     }
     return self;
+}
+
+- (void) setNode:(PlaylistNode*) node toSelectedState: (NSInteger) state {
+    NSNumber *newState = [NSNumber numberWithInteger:state];
+    node.selectedState = newState;
+    // also copy it to our dictionary we'll persist, but if the state is NSOffState then
+    // instead remove it from the dictionary so that we only store selected entries.
+    if (state == NSOffState) {
+        [selected removeObjectForKey:node.playlist.persistentID];
+    } else {
+        selected[node.playlist.persistentID] = newState;
+    }
 }
 
 
@@ -177,7 +204,11 @@
 #endif
 }
 
+- (BOOL) outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item {
+    PlaylistNode *node = item;
+    return (nil != node.children);
 
+}
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
     NSLog(@"viewForTableColumn called, tableColumn %@, item = %@", tableColumn.identifier, item);
@@ -190,7 +221,7 @@
             if (!v) {
                 NSLog(@"makeView for header failed");
             }
-            v.textField.value = node.playlist.name;
+            v.textField.stringValue = node.playlist.name;
             return v;
         } else {
             NSLog(@"Making playlist view for %@, checked=%@", node.playlist.name, node.selectedState);
