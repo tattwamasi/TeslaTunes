@@ -36,8 +36,9 @@
 - (IBAction)StartSelectedAction:(NSButton *)sender {
     if (sender.state) { // it was "do it" when pressed, rather than stop
         [self.ccDirs startOperationOnDir:self.opTypeButton.selectedTag
-                           withSourceDir:self.sourcePath.URL
-                              andDestDir:self.destinationPath.URL];
+                  withPlaylistSelections:(self.copyPlaylists? theApp.playlists :nil)
+                            andSourceDir:(self.copyFolder? self.sourcePath.URL : nil)
+                               toDestDir:self.destinationPath.URL];
     } else {
         // stop the operation
         // could take a while to cancel operations, so keep state at stop and disable the button.
@@ -120,6 +121,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    theApp = [[NSApplication sharedApplication] delegate];
+    
 
     // Do any additional setup after loading the view.
     timeFormatter = [[NSDateFormatter alloc] init];
@@ -140,9 +144,6 @@
     }];
 
     self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
-        
-    theApp = [[NSApplication sharedApplication] delegate];
-    
 }
 
 - (void)setRepresentedObject:(id)representedObject {

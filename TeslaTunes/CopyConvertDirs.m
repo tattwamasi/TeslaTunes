@@ -24,11 +24,22 @@ NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const
     // May well be a better way.  Till then...
     NSArray *basePathComponents = [basePathToStrip pathComponents];
     NSArray *srcPathComponents = [srcURL pathComponents];
+
     NSRange relPathRange;
-    relPathRange.location = basePathComponents.count; // start the relative path at the end of the base path
-    relPathRange.length = srcPathComponents.count - basePathComponents.count;
-    
-    
+
+    // sanity check
+    relPathRange.location = 0;
+    relPathRange.length = basePathComponents.count; // start the relative path at the end of the base path
+
+    if ((srcPathComponents.count <= basePathComponents.count) || ![basePathComponents isEqualToArray: [srcPathComponents subarrayWithRange:relPathRange]]) {
+        NSLog(@"When stripping base path from source filename to create destination filename, detected base path wasn't actually a common path.\nBase path was \"%@\".\nSource path was \"%@\".\n", basePathToStrip, srcURL);
+        // set NSRange object to take whole srcURL
+        relPathRange.location = 0;
+        relPathRange.length = srcPathComponents.count;
+    } else {
+        relPathRange.location = basePathComponents.count; // start the relative path at the end of the base path
+        relPathRange.length = srcPathComponents.count - basePathComponents.count;
+    }
     NSURL *dstURL = [NSURL fileURLWithPathComponents:[[dstBasePath pathComponents] arrayByAddingObjectsFromArray:[srcPathComponents subarrayWithRange:relPathRange]]];
     
     return dstURL;
@@ -37,10 +48,10 @@ NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const
 
 //AVURLAsset *asset = [[[AVURLAsset alloc] initWithURL:sourceURL options:nil] autorelease];
 
-BOOL isAppleLosslessFile(NSURL *fileURL){
+BOOL isAppleLosslessFile(const NSURL *fileURL){
     if ([[fileURL.pathExtension lowercaseString] isEqualToString:@"m4a"]) {
         NSError *e;
-        AVAudioFile *aFile = [[AVAudioFile alloc] initForReading:fileURL error:&e];
+        AVAudioFile *aFile = [[AVAudioFile alloc] initForReading:[fileURL URLByStandardizingPath] error:&e];
         AVAudioFormat *fileFormat = aFile.fileFormat;
         const AudioStreamBasicDescription *absd = [fileFormat streamDescription];
         if (absd) {
@@ -78,7 +89,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 
 @implementation FileOp
 
-- (instancetype)initWithSourceURL:(NSURL *)s DestinationURL:(NSURL*)d
+- (instancetype)initWithSourceURL:(const NSURL *)s DestinationURL:(const NSURL*)d
 {
     self = [super init];
     if (self) {
@@ -100,6 +111,9 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 @end
 
 @implementation CopyConvertDirs {
+    
+    NSSet *extensionsToCopy;
+
     NSMutableArray *convertOps;
     NSMutableArray *copyOps;
     volatile BOOL isCancelled;
@@ -108,8 +122,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                               // implementation, vs. the queue used for the whole directory operation
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         _skippedExtensions=nil;
@@ -125,6 +138,11 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         opSubQ.maxConcurrentOperationCount = 4;
         opSubQ.name = @"TeslaTunes subprocessing queue";
 
+        
+        // file types (types, not extensions) Tesla will play:  mp3, mp4/aac, flac, wma, wma lossless, aiff (16 bit), wav
+        // Per an email from Tesla,  .MP3 .OGG .OGA .FLAC .MPC .WV .SPX .TTA .M4A .M4B .M4P .MP4 .3G2 .WMA .ASF .AIF .AIFF .WAV .APE .AAC
+        
+        extensionsToCopy = [NSSet setWithObjects:@"mp3", @"aac", @"m4a", @"flac", @"wma", @"aiff", @"wav", nil];
 
     }
     return self;
@@ -142,7 +160,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     //   NSLog(@"OpQueue says all operations are cancelled. And isProcessing is %hhd", self.isProcessing);
 }
 // Uses NSOperationQueue and NSOperation to concurrently run.  TODO: delegate or something to indicate when finished,etc.
-- (void) startOperationOnDir: (DirOperation) opType withSourceDir: (const NSURL *)src andDestDir: (const NSURL *)dst {
+- (void) startOperationOnDir: (DirOperation) opType withPlaylistSelections:(const PlaylistSelections *)playlistSelections andSourceDir:(const NSURL *)src toDestDir:(const NSURL *)dst {
     // if there are any operations still going on the queue, then this was an error to call.  Log and return.
     if (!queue || [queue operationCount]) {
         NSLog(@"Error, tried to start directory operations when operation queue was %s", queue? "not created": "not empty");
@@ -161,7 +179,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         case CCProcessWhileScanning: {
             [queue addOperationWithBlock:^(void){
                 self.isProcessing = YES;
-                [self processDirsSource:src Destination:dst ScanOnly:(opType==CCScan)];
+                [self processOpsWithPlaylistSelections: playlistSelections andSourceDirectoryURL:src
+                          toDestinationDirectoryURL:dst performScanOnly:(opType==CCScan)];
                 [opSubQ waitUntilAllOperationsAreFinished];
                 self.isProcessing = NO;
             }];
@@ -186,13 +205,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 }
 
 
-- (void) storeScannedForCopyWithSource:(NSURL*)s Destination:(NSURL*)d {
+- (void) storeScannedForCopyWithSource:(const NSURL*)s Destination:(const NSURL*)d {
     FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d];
     [copyOps addObject:newOp];
     [self.copiedExtensions addObject:s.pathExtension];
     
 }
-- (void) storeScannedForConvertWithSource:(NSURL*)s Destination:(NSURL*)d {
+- (void) storeScannedForConvertWithSource:(const NSURL*)s Destination:(const NSURL*)d {
     FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d];
     [convertOps addObject:newOp];
     [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
@@ -210,7 +229,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     }
 }
 
--(void) convertWithSource:(NSURL*)s Destination:(NSURL*)d {
+-(void) convertWithSource:(const NSURL*)s Destination:(const NSURL*)d {
     [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     if (isCancelled) return;
@@ -238,7 +257,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 }
 
 
--(void) copyWithSource:(NSURL*)s Destination:(NSURL*)d {
+-(void) copyWithSource:(const NSURL*)s Destination:(const NSURL*)d {
     [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     [opSubQ addOperationWithBlock:^(void){
@@ -257,7 +276,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         }
         
         //NSLog(@"\nCopying %s to %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
-        if (![fileManager copyItemAtURL:s toURL:d error:&theError]){
+        if (![fileManager copyItemAtURL:[s URLByStandardizingPath] toURL:[d URLByStandardizingPath] error:&theError]){
             NSLog(@"Couldn't copy file \"%@\" to \"%@\", %@ - %@, (%ld)", s, d,
                   [theError localizedDescription], [theError localizedFailureReason], (long)[theError code] );
         } else {
@@ -285,30 +304,73 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     }
 }
 
-- (void) processDirsSource:(const NSURL*)srcURL Destination: (const NSURL*)dstURL ScanOnly:(BOOL)scanOnly {
-    
-    // file types (types, not extensions) Tesla will play:  mp3, mp4/aac, flac, wma, wma lossless, aiff (16 bit), wav
-    // Per an email from Tesla,  .MP3 .OGG .OGA .FLAC .MPC .WV .SPX .TTA .M4A .M4B .M4P .MP4 .3G2 .WMA .ASF .AIF .AIFF .WAV .APE .AAC
-    
-    NSSet *extensionsToCopy = [NSSet setWithObjects:@"mp3", @"aac", @"m4a", @"flac", @"wma", @"aiff", @"wav", nil];
+
+- (BOOL) processFileURL:(const NSURL *) file toDestination: destinationFile
+        performScanOnly: (BOOL) scanOnly setGenre: (NSString*) genre {
+    @autoreleasepool {
+        if (isCancelled) return NO;
+        NSString *filename;
+        [file getResourceValue:&filename forKey:NSURLNameKey error:nil];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        
+        [self willChangeValueForKey:@"filesChecked"];
+        ++_filesChecked;
+        [self didChangeValueForKey:@"filesChecked"];
+        
+        // figure out if we want to copy this item:  is it a type we want to copy?
+        // Does it exist at dest?
+        // use  – fileExistsAtPath:isDirectory: for the later
+        if (isAppleLosslessFile(file)) {
+            // do the conversion iff dest file doesn't exist
+            NSURL *transformedURL = ReplaceExtensionURL(destinationFile, @"flac");
+            if ([fileManager fileExistsAtPath:[transformedURL path] isDirectory:nil]) {
+                //printf("*");
+                return YES;
+            }
+            [self willChangeValueForKey:@"filesToCopyConvert"];
+            ++_filesToCopyConvert;
+            [self didChangeValueForKey:@"filesToCopyConvert"];
+            
+            if (scanOnly){
+                [self storeScannedForConvertWithSource:file Destination:transformedURL];
+            } else {
+                [self convertWithSource:file Destination:transformedURL];
+            }
+        } else if ([extensionsToCopy containsObject:[file.pathExtension lowercaseString]]) {
+            // NSLog(@"checking to see if %@ exists at dest path %@", fileURL, destFileURL);
+            // skip out if the file already exists (no need to copy)
+            if ([fileManager fileExistsAtPath:[destinationFile path] isDirectory:nil]) {
+                //printf(".");
+                return YES;
+            }
+            [self willChangeValueForKey:@"filesToCopyConvert"];
+            ++_filesToCopyConvert;
+            [self didChangeValueForKey:@"filesToCopyConvert"];
+            if (scanOnly) {
+                [self storeScannedForCopyWithSource:file Destination:destinationFile];
+            } else {
+                [self copyWithSource:file Destination:destinationFile];
+            }
+        } else {
+            // NSLog(@"don't know what extension %@ is.  Skipping", fileURL.pathExtension);
+            // save extension to skipped set for stat purposes
+            [self.skippedExtensions addObject:file.pathExtension];
+        }
+        
+    }
+    return YES;
+}
+
+
+- (void) processOpsWithPlaylistSelections: (const PlaylistSelections *)playlistSelections
+              andSourceDirectoryURL: (const NSURL *) sourceDir
+          toDestinationDirectoryURL: (const NSURL *) destinationDir
+                    performScanOnly: (BOOL) scanOnly {
     self.filesChecked = 0;
     self.filesToCopyConvert=0;
+
     
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    // TODO: verify cast below is ok - getting a warning, think due to const on the enumerator param, but we're not changing srcURL...
-    NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtURL:(NSURL*)srcURL
-                                          includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
-                                                             options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                        errorHandler:^BOOL(NSURL *url, NSError *error)
-                                         {
-                                             if (error) {
-                                                 NSLog(@"[Error] %@ (%@)", error, url);
-                                                 return NO;
-                                             }
-                                             
-                                             return YES;
-                                         }];
     // if we're doing a scan only, make new mutable arrays for the convert and copy ops, otherwise make sure they are nil
     if (scanOnly) {
         convertOps = [[NSMutableArray alloc] init];
@@ -319,23 +381,31 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         copyOps = nil;
     }
     
-    for (NSURL *fileURL in enumerator) {
-        @autoreleasepool {
-            if (isCancelled) break;
+    
+    if (sourceDir) {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        // TODO: verify cast below is ok - getting a warning, think due to const on the enumerator param, but we're not changing srcURL...
+        NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtURL:(NSURL*)sourceDir
+                                              includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
+                                                                 options:NSDirectoryEnumerationSkipsHiddenFiles
+                                                            errorHandler:^BOOL(NSURL *url, NSError *error)
+                                             {
+                                                 if (error) {
+                                                     NSLog(@"[Error] %@ (%@)", error, url);
+                                                     return NO;
+                                                 }
+                                                 
+                                                 return YES;
+                                             }];
+        for (NSURL *fileURL in enumerator) {
             NSString *filename;
             [fileURL getResourceValue:&filename forKey:NSURLNameKey error:nil];
             
             NSNumber *isDirectory;
             [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
             
-            
-            // Skip directories with '_' prefix, for example
-            if ([filename hasPrefix:@"_"] && [isDirectory boolValue]) {
-                [enumerator skipDescendants];
-                continue;
-            }
-            
-            NSURL* destFileURL = makeDestURL(dstURL, srcURL, fileURL);
+            NSURL* destFileURL = makeDestURL(destinationDir, sourceDir, fileURL);
             
             // PLACEHOLDER - todo  make a map of extensions/filetypes to handler operations
             
@@ -347,64 +417,50 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                 if ([fileManager fileExistsAtPath:[destFileURL path] isDirectory:&isDir] && !isDir) {
                     NSLog(@"Target directory \"%@\" exists but is a file - skipping subtree", [destFileURL path]);
                     [enumerator skipDescendants];
+                } else if ([filename hasPrefix:@"_"] || [filename hasPrefix:@"."] ) {
+                    [enumerator skipDescendants];
                 }
-            } else {
-                [self willChangeValueForKey:@"filesChecked"];
-                ++_filesChecked;
-                [self didChangeValueForKey:@"filesChecked"];
-                
-                // figure out if we want to copy this item:  is it a type we want to copy?  Does it exist at dest?
-                // use     – fileExistsAtPath:isDirectory: for the later
-                if (isAppleLosslessFile(fileURL)) {
-                    // do the conversion iff dest file doesn't exist
-                    NSURL *transformedURL = ReplaceExtensionURL(destFileURL, @"flac");
-                    if ([fileManager fileExistsAtPath:[transformedURL path] isDirectory:nil]) {
-                        //printf("*");
-                        continue;
-                    }
-                    [self willChangeValueForKey:@"filesToCopyConvert"];
-                    ++_filesToCopyConvert;
-                    [self didChangeValueForKey:@"filesToCopyConvert"];
-
-                    if (scanOnly){
-                        [self storeScannedForConvertWithSource:fileURL Destination:transformedURL];
-                    } else {
-                        [self convertWithSource:fileURL Destination:transformedURL];
-                    }
-                } else if ([extensionsToCopy containsObject:[fileURL.pathExtension lowercaseString]]) {
-                    // NSLog(@"checking to see if %@ exists at dest path %@", fileURL, destFileURL);
-                    // skip out if the file already exists (no need to copy)
-                    if ([fileManager fileExistsAtPath:[destFileURL path] isDirectory:nil]) {
-                        //printf(".");
-                        continue;
-                    }
-                    [self willChangeValueForKey:@"filesToCopyConvert"];
-                    ++_filesToCopyConvert;
-                    [self didChangeValueForKey:@"filesToCopyConvert"];
-                    if (scanOnly) {
-                        [self storeScannedForCopyWithSource:fileURL Destination:destFileURL];
-                    } else {
-                        [self copyWithSource:fileURL Destination:destFileURL];
-                    }
-                } else {
-                    // NSLog(@"don't know what extension %@ is.  Skipping", fileURL.pathExtension);
-                    // save extension to skipped set for stat purposes
-                    [self.skippedExtensions addObject:fileURL.pathExtension];
-                }
+                continue;
             }
+            [self processFileURL:fileURL toDestination: destFileURL performScanOnly:scanOnly setGenre:nil];
         }
+        
     }
-#if 0
-    NSString *ext;
-    NSLog(@"\nFiles checked: %u, Files to copy/convert: %u", _filesChecked, _filesToCopyConvert);
-    for (ext in _copiedExtensions) {
-        NSLog(@"%@ files copied: %lu", ext,[_copiedExtensions countForObject:ext]);
+    if (playlistSelections ) {
+        PlaylistNode *playlistTree = [playlistSelections getTree];
+        ITLibrary *library = [playlistSelections getLibrary];
+        NSLog(@"Playlist tree processing:  Music folder is at %@", library.musicFolderLocation);
+        [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop) {
+            if (node.playlist)
+                NSLog(@"Looking at node %@, with playlist %@, selected %@, %lu tracks", node,
+                      node.playlist.name, node.selectedState,
+                      (unsigned long)(node.playlist.items? node.playlist.items.count : 0));
+            if (node.playlist && ([node.selectedState integerValue] == NSOnState) && node.playlist.items) {
+                NSURL *destinationFolderForPlaylist = [destinationDir URLByAppendingPathComponent:node.playlist.name];
+                NSLog(@"playlist %@ was selected and will be copied to %s", node.playlist.name,
+                      destinationFolderForPlaylist.fileSystemRepresentation);
+                for (id item in node.playlist.items) {
+                    ITLibMediaItem *track = item;
+                    NSLog(@"Track %@ at location %@", track.title, track.location);
+                    NSLog(@"in nodes block:  Music folder is at %@", library.musicFolderLocation);
+                }
+                [node.playlist.items enumerateObjectsUsingBlock:^(id item, NSUInteger idx, BOOL *stop) {
+                    ITLibMediaItem *track = item;
+                    NSLog(@"looking at track %@ location %@", track, track.location);
+                    NSLog(@"in items block:  Music folder is at %@", library.musicFolderLocation);
+                    NSURL* destFileURL = makeDestURL(destinationFolderForPlaylist, [library musicFolderLocation], track.location);
+                    NSLog(@"Copying track %@ from location type %lu, locations %s to %s", track.title,
+                          (unsigned long)track.locationType,
+                          track.location.fileSystemRepresentation, destFileURL.fileSystemRepresentation);
+                    if (track.location) {
+                        BOOL result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly setGenre:self.hackGenre? node.playlist.name:nil];
+                        if (!result) *stop = YES;
+                    }
+                }];
+            }
+        }];
     }
-    NSLog(@"\nExtensions skipped:");
-    for (ext in _skippedExtensions) {
-        NSLog(@"%@ files skipped: %lu", ext,[_skippedExtensions countForObject:ext]);
-    }
-#endif
+        
     self.scanReady = (scanOnly && (convertOps.count || copyOps.count) );
 }
 

@@ -14,7 +14,7 @@
 extern "C" {
 #endif
     
-    BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag);
+    BOOL ConvertAlacToFlac(const NSURL* a, const NSURL *f, volatile const BOOL *cancelFlag);
    
 
 #ifdef __cplusplus

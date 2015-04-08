@@ -61,6 +61,7 @@
 		E502D0C91A739D1500BE86E2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E502D0CC1A739D1500BE86E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = ../../../../../Library/Frameworks/iTunesLibrary.framework; sourceTree = "<group>"; };
+		E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TeslaTunes.entitlements; sourceTree = "<group>"; };
 		E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistPickViewController.h; sourceTree = "<group>"; };
 		E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistPickViewController.m; sourceTree = "<group>"; };
 		E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSelections.h; sourceTree = "<group>"; };
@@ -110,6 +111,7 @@
 		E502D0BE1A739D1500BE86E2 /* TeslaTunes */ = {
 			isa = PBXGroup;
 			children = (
+				E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */,
 				E502D0CB1A739D1500BE86E2 /* Main.storyboard */,
 				E502D0C11A739D1500BE86E2 /* AppDelegate.h */,
 				E502D0C21A739D1500BE86E2 /* AppDelegate.m */,
@@ -118,12 +120,12 @@
 				E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */,
 				E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */,
 				E59078AB1AAF9740007A26D6 /* todo and notes.txt */,
-				E58A24B41AC8E15400E8DDE4 /* utils */,
-				E502D0BF1A739D1500BE86E2 /* Supporting Files */,
 				E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */,
 				E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */,
 				E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */,
 				E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */,
+				E58A24B41AC8E15400E8DDE4 /* utils */,
+				E502D0BF1A739D1500BE86E2 /* Supporting Files */,
 			);
 			path = TeslaTunes;
 			sourceTree = "<group>";
@@ -185,6 +187,11 @@
 					E502D0BB1A739D1500BE86E2 = {
 						CreatedOnToolsVersion = 6.2;
 						DevelopmentTeam = 69PR7N5WC7;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 					E5CC88B71AB5927E00C8951F = {
 						CreatedOnToolsVersion = 6.3;

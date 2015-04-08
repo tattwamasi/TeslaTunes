@@ -103,7 +103,7 @@ FLAC__StreamMetadata *MakeFlacImgTag(NSImage *img) {
 }
 
 
-auto FlacMetadataFromMP4fileURL(NSURL *mp4, std::vector<FLAC__StreamMetadata *> &metadata ){
+auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetadata *> &metadata ){
     // read the metadata from alac file a
     auto mp4FileHandle	= MP4Read(mp4.fileSystemRepresentation);
     
@@ -200,19 +200,19 @@ auto FlacMetadataFromMP4fileURL(NSURL *mp4, std::vector<FLAC__StreamMetadata *> 
     return metadata.size();
 }
 
-void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, NSURL *f){
+void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, const NSURL *f){
     // clean/free up the metadata
     for (auto entry : metadata) {
         FLAC__metadata_object_delete(entry);
     }
     NSError *e;
-    if (![[NSFileManager defaultManager] removeItemAtURL:f error:&e]) {
+    if (![[NSFileManager defaultManager] removeItemAtURL:[f standardizedURL] error:&e]) {
         // check and report potential cleanup failure - note that if f is nil, the operation returns YES
         // TODO: see above
     }
 }
 
-BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
+BOOL ConvertAlacToFlac(const NSURL* a, const NSURL *f, volatile const BOOL *cancelFlag){
     BOOL placeholderCancelFlag=NO;
     if (cancelFlag==nullptr) {
         cancelFlag=&placeholderCancelFlag;

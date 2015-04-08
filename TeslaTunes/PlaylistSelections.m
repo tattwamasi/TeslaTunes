@@ -9,12 +9,6 @@
 #import "PlaylistSelections.h"
 #import "TableCellViewCheckmark.h"
 
-#import <iTunesLibrary/ITLibrary.h>
-#import <iTunesLibrary/ITLibMediaItem.h>
-#import <iTunesLibrary/ITLibPlaylist.h>
-#import <iTunesLibrary/ITLibArtist.h>
-#import <iTunesLibrary/ITLibAlbum.h>
-
 
 // First thought of using the iTunes data structures directly along with an auxilliary selected dictionary, but since we only
 // wanted to display playlists, and of those only playlists marked visible, it became too complex and seemed like a lot
@@ -29,13 +23,20 @@
 // appears to be represented as a playlist with a nil items array.
 
 
-
-
-@interface PlaylistNode : NSObject
-@property ITLibPlaylist *playlist;
-@property NSMutableArray *children;
-@property NSNumber *selectedState;
-@end
+//  TODO:  At first thought this should be broken apart into the reusable data model portion(s) for both a generic treeview
+//  which would then be used by the iTunes playlists specific data model, and then also a seperate view controller.  However,
+//  since I didn't use bindings (after having trouble with them originally - I think they'd actually work fine now), and since
+//  each of the individual parts is simple, but involves the others, kind of seems like I should just put all this in the view controller.
+//
+//  Also, make it so the selected dictionary is read from user defaults and used when the tree is built to pre-select previous selections,
+//  if still existing, then don't use the dict anymore. Make a new dict when the selection window goes away and save that to user defaults.
+//
+//  Make methods to get data required out of the tree - probably just an enumerator returning the media entries and playlist names - or
+//  maybe just the playlist name and path to file
+//
+//  Other todo - fix UI constraints.  Make playlist tree look better - how?  consider side/detail windows(s) as alternate design, with
+//  playlist selections, etc. on left, and operations details/status/progress right.
+//  Integrate playlist operations into what happens when you click do it.
 
 @implementation PlaylistNode
 
@@ -50,26 +51,79 @@
     }
     return self;
 }
+
+// return YES if enumeration went through entire tree structure, NO if terminated early due to block
+// setting stop flag
+- (BOOL) enumerateTreeUsingBlock: (void(^)(PlaylistNode* node, BOOL *stop)) block {
+    BOOL stopFlag = NO;
+    block(self, &stopFlag);
+    if (stopFlag)
+        return NO;
+    
+    PlaylistNode *node;
+    for (node in self.children) {
+        if (![node enumerateTreeUsingBlock: block])
+            return NO;
+    }
+    return YES;
+}
+
+
+#if 0
+// For fast enumeration - todo if needed
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len {
+    return 0;
+}
+#endif
+
 @end
 
 @implementation PlaylistSelections {
-    NSMutableDictionary *selected;
-    NSMutableDictionary *playlistNodes;
-    PlaylistNode *playlistTree;
+     PlaylistNode *playlistTree;
+    ITLibrary *library;
+    
 }
 
+- (PlaylistNode*) getTree {
+    return playlistTree;
+}
+- (ITLibrary*) getLibrary {
+    return library;
+}
+- (void) saveSelected {
+    NSLog(@"saving selected playlist preferences");
+    NSMutableDictionary *selectedDefaults = [[NSMutableDictionary alloc] init];
+    // go through the tree, creating the SelectedPlaylists dictionary, then put it into defaults
+    [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop){
+        if (node.playlist && ([node.selectedState integerValue] != NSOffState)) {
+            [selectedDefaults setObject:node.selectedState
+                forKey:[node.playlist.persistentID stringValue]];
+            NSLog(@"saving selected playlist %@ to defaults.  Contains tracks:", node.playlist.name);
+            for (ITLibMediaItem *track in node.playlist.items) {
+                NSLog(@"track title \"%@\", location \"%@\"", track.title, track.location );
+            }
+        }
+    }];
+    [[NSUserDefaults standardUserDefaults] setObject:selectedDefaults forKey:@"SelectedPlaylists"];
+}
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         NSLog(@"******** PlaylistSelections init called **********");
-        selected = [[NSMutableDictionary alloc] init];
-        playlistNodes = [[NSMutableDictionary alloc] init];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        
+        NSMutableDictionary *selected = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:@"SelectedPlaylists"]];
+        if (nil == selected ) {
+            selected = [[NSMutableDictionary alloc] init];
+        }
+        NSMutableDictionary *playlistNodes = [[NSMutableDictionary alloc] init];
         
         NSLog(@"Getting iTunes library info...");
         NSError *error = nil;
-        ITLibrary *library = [ITLibrary libraryWithAPIVersion:@"1.0" error:&error];
+        library = [ITLibrary libraryWithAPIVersion:@"1.0" error:&error];
         if (!library) {
             NSLog(@"error: %@", error);
             return nil;
@@ -85,7 +139,7 @@
             
             if (([i isKindOfClass: [ITLibPlaylist class]]) && i.visible && !i.master ) {
                 NSLog(@"Adding node for %@", i.name);
-                NSNumber *savedState = [selected objectForKey:i.persistentID];
+                NSNumber *savedState = [selected objectForKey:[i.persistentID stringValue]];
                 
                 PlaylistNode *node = [[PlaylistNode alloc] initWithPlaylist:i
                                         andState: savedState];
@@ -121,7 +175,23 @@
                   node.playlist.name, node.playlist.parentID,
                   parent.playlist? parent.playlist.name:@"root",
                   parent.playlist?parent.playlist.persistentID:@"Null");
+            if ([node.playlist.name isEqualTo:@"Across The Great Divide"])
+                for (ITLibMediaItem *track in node.playlist.items) {
+                    NSLog(@"Track %@ at location %@", track.title, track.location);
+                }
+
         }
+        
+        [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop) {
+            if (node.playlist && ([node.selectedState integerValue] != NSOffState)) {
+                NSLog(@"selected playlist %@ from defaults.  Contains tracks:", node.playlist.name);
+                for (ITLibMediaItem *track in node.playlist.items) {
+                    NSLog(@"track title \"%@\", location \"%@\"", track.title, track.location );
+                }
+            }
+            
+        }];
+
     }
     return self;
 }
@@ -129,13 +199,11 @@
 - (void) setNode:(PlaylistNode*) node toSelectedState: (NSInteger) state {
     NSNumber *newState = [NSNumber numberWithInteger:state];
     node.selectedState = newState;
-    // also copy it to our dictionary we'll persist, but if the state is NSOffState then
-    // instead remove it from the dictionary so that we only store selected entries.
-    if (state == NSOffState) {
-        [selected removeObjectForKey:node.playlist.persistentID];
-    } else {
-        selected[node.playlist.persistentID] = newState;
+    NSLog(@"selected playlist %@.  Contains tracks:", node.playlist.name);
+    for (ITLibMediaItem *track in node.playlist.items) {
+        NSLog(@"track title \"%@\", location \"%@\"", track.title, track.location );
     }
+
 }
 
 
@@ -160,48 +228,12 @@
 
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
-   
-#if 0
-    // if column is the checkmark, return state for the persistant ID, if column is name, return name
-    //NSLog(@"Treeview requested value for column %@ and item %@", tableColumn.identifier, item);
-    PlaylistNode *node = item? item : playlistTree;
-    if ([tableColumn.identifier isEqualToString:@"selected"]) {
-        NSLog(@"node selectedState get - %@", node.selectedState);
-        return node.selectedState;
-    } else if  ([tableColumn.identifier isEqualToString:@"playlist"]) {
-        NSLog(@"node playlist name get - %@",  node.playlist? node.playlist.name : @"Playlist Name");
-        return node.playlist? node.playlist.name : @"Playlist Name";
-    } else {
-        NSLog(@"Treeview requested value for unknown column %@", tableColumn.identifier);
-        return nil;
-    }
-#endif
     return item;
 }
 
 
 - (void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id) object ForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
     NSLog(@"Treeview asked to set column %@ value %@ for item %@. Ignoring.", tableColumn.identifier, object, item);
-#if 0
-    PlaylistNode *node = item;
-    if (!node) {
-        NSLog(@"set value for column %@ for root obj - skipping", tableColumn.identifier);
-        return;
-    }
-    if ([tableColumn.identifier isEqualToString:@"selected"]) {
-        NSLog(@"setting selected state %@ for item id %@", object, node.playlist.persistentID);
-        
-        // All changes below discussed as repurcussions of the initial change need to be reflected in the selected dict too.
-        // if state is mixed - well frankly don't think that should be able to happen via this call, only as a side effect? --log it
-        // if state is off then erase entry from selected, but also rescan parent to set it's state... recurse/iterate up
-        // if state is on, then add entry to selected,  rescan parent to set it's state... recurse/iterate up
-        
-        [selected setObject:object forKey:node.playlist.persistentID];
-        node.selectedState = object;
-    } else {
-        NSLog(@"Treeview asked to set column %@ value %@ for item %@. Ignoring.", tableColumn.identifier, object, item);
-    }
-#endif
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item {
@@ -229,8 +261,7 @@
             if (!v) {
                 NSLog(@"makeView for playlist failed");
             }
-            v.button.title = node.playlist.name;
-            v.button.alternateTitle = node.playlist.name;
+            v.textField.stringValue = [NSString stringWithFormat:@"%@ (%lu tracks)", node.playlist.name, (unsigned long)node.playlist.items.count];
             v.button.state = [node.selectedState integerValue];
             return v;
             

@@ -9,6 +9,8 @@
 #import "PlaylistPickViewController.h"
 #import "AppDelegate.h"
 
+
+
 @interface PlaylistPickViewController ()
 
 @end
@@ -23,7 +25,14 @@
     self.playlistTreeView.dataSource = theApp.playlists;
     self.playlistTreeView.delegate   = theApp.playlists;
     [self.playlistTreeView reloadData];
+    [self.playlistTreeView expandItem:nil expandChildren:YES];
 }
+
+
+- (void) viewDidDisappear {
+    [theApp.playlists saveSelected];
+}
+
 - (IBAction)checkmarkButtonClicked:(NSButton *)sender {
     NSInteger row = [self.playlistTreeView rowForView:sender];
     [theApp.playlists setNode: [self.playlistTreeView itemAtRow:row] toSelectedState: sender.state];
