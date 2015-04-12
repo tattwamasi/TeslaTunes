@@ -176,11 +176,6 @@
 - (void) setNode:(PlaylistNode*) node toSelectedState: (NSInteger) state {
     NSNumber *newState = [NSNumber numberWithInteger:state];
     node.selectedState = newState;
-    NSLog(@"selected playlist %@.  Contains tracks:", node.playlist.name);
-    for (ITLibMediaItem *track in node.playlist.items) {
-        NSLog(@"track title \"%@\", location \"%@\"", track.title, track.location );
-    }
-
 }
 
 
@@ -220,12 +215,12 @@
 }
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
-    NSLog(@"viewForTableColumn called, tableColumn %@, item = %@", tableColumn.identifier, item);
+    //NSLog(@"viewForTableColumn called, tableColumn %@, item = %@", tableColumn.identifier, item);
     
     if (item) {
         PlaylistNode *node = item;
         if (node.children) { // it's a folder containing other playlists and/or folders - let's make the header view
-            NSLog(@"Making header view");
+
             NSTableCellView *v = [outlineView makeViewWithIdentifier:@"header" owner:self];
             if (!v) {
                 NSLog(@"makeView for header failed");
@@ -233,7 +228,6 @@
             v.textField.stringValue = node.playlist.name;
             return v;
         } else {
-            NSLog(@"Making playlist view for %@, checked=%@", node.playlist.name, node.selectedState);
             TableCellViewCheckmark *v =[outlineView makeViewWithIdentifier:@"data" owner:self];
             if (!v) {
                 NSLog(@"makeView for playlist failed");

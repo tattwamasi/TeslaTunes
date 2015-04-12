@@ -1,19 +1,31 @@
 todo:
 
+Determine if genre hack, like majorlance's applescript does, is worthwhile or not.  If so, look at taglib to support setting them on the destination files in the playlist sync code.
+
+write license files to allow appropriate usage rather than showing code but reserving all rights by defaults.
+
+Since we're now creating filenames from track data in the playlist feature, add filename sanitization to avoid illegal filenames.  This goes for directory name too, since it comes from the playlist name.
+
+Scan through code todo tags and, you know, do them :)
+
+
+Add error handling and notification pathway so the inner processing code can unwind and clean up properly, for example deleting half made files, and get the information back to the user rather than just sitting there in a failed assert, etc.
+* added code to delete partially converted flac files, still need to plumb actual progress and error information flow back to user
+* added alert popups if playlist locations aren't set, which I've seen happen when a
+library on a networked drive is not available.
+
+Change progress icon and add a details arrow similar to iTunes or safari down arrow and blue line indeterminate progress indicator.
+Add new window for details, probably a table view of all queued operations with their progress and status.
+
+
+See if there is a way to make the path controls show a little more context - with just the last component shown, makes it easy to loose track of where the directories actually are since in many cases the last path component is likely to be named the same, something like "Music" for example.
+
+
 (done) If no default source, then use iTunes properties to guess at sources location
 (done) Add user defaults for the needed items, and make sure extra cruft isn't automatically saved
     *user path selections now saved.  Still need to add default iTunes lookup and decruft.
     *need to figure out where things are being saved besides the prefs file and the autosave - can't see how to
      get back to a never run state even after deleting prefs and autosave.
-
-
-Add error handling and notification pathway so the inner processing code can unwind and clean up properly, for example deleting half made files, and get the information back to the user rather than just sitting there in a failed assert, etc.
-    * added code to delete partially converted flac files, still need to plumb actual progress and error information flow back to user
-    * added alert popups if playlist locations aren't set, which I've seen happen when a
-        library on a networked drive is not available.
-
-Change progress icon and add a details arrow similar to iTunes or safari down arrow and blue line indeterminate progress indicator.
-Add new window for details, probably a table view of all queued operations with their progress and status.
 
 (done) Code signing and packaging
 
@@ -27,9 +39,6 @@ Add new window for details, probably a table view of all queued operations with 
 (done) release build testing
 
 (done) semantic versioning setup
-
-
-See if there is a way to make the path controls show a little more context - with just the last component shown, makes it easy to loose track of where the directories actually are since in many cases the last path component is likely to be named the same, something like "Music" for example.
 
 
 issues seen:

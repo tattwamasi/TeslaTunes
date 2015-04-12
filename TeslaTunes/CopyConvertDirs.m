@@ -467,31 +467,34 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             }
         }
         
-        
-        // Had planned to match majorlance's applescript and keep same name format,
-        // but not sure why it really makes sense to keep playlist name in it if we are putting this in
-        // it's own folder.  Also it seems like we need to put the playlist order in the filename,
-        // in order to preserve the ability to have duplicates in the playlist and play in order.
-        
-        // so given that, example filename is index-trackname-trackartist-trackalbum.extension
-        // Note: TODO: scan the result and replace any illegal characters.
-
-        NSString *filename = [NSString stringWithFormat:@"%0*d-%@-%@-%@.%@", digits,
-                              idx, track.title, track.artist.name, track.album.title,
-                              [track.location pathExtension] ];
-        NSURL *destFileURL = [destinationFolderForPlaylist URLByAppendingPathComponent: filename];
-        
-#if 0
-        NSLog(@"Copying track %@ from location type %lu, locations %s to %s", track.title,
-              (unsigned long)track.locationType,
-              track.location.fileSystemRepresentation, destFileURL.fileSystemRepresentation);
-#endif
-        
-        if (track.location) {
-            NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly setGenre:self.hackGenre? node.playlist.name:nil];
-            if (!result) return NO;
-            [playlistFilenames addObject:[result lastPathComponent]];
+        @autoreleasepool {
             
+            
+            // Had planned to match majorlance's applescript and keep same name format,
+            // but not sure why it really makes sense to keep playlist name in it if we are putting this in
+            // it's own folder.  Also it seems like we need to put the playlist order in the filename,
+            // in order to preserve the ability to have duplicates in the playlist and play in order.
+            
+            // so given that, example filename is index-trackname-trackartist-trackalbum.extension
+            // Note: TODO: scan the result and replace any illegal characters.
+            
+            NSString *filename = [NSString stringWithFormat:@"%0*d-%@-%@-%@.%@", digits,
+                                  idx, track.title, track.artist.name, track.album.title,
+                                  [track.location pathExtension] ];
+            NSURL *destFileURL = [destinationFolderForPlaylist URLByAppendingPathComponent: filename];
+            
+#if 0
+            NSLog(@"Copying track %@ from location type %lu, locations %s to %s", track.title,
+                  (unsigned long)track.locationType,
+                  track.location.fileSystemRepresentation, destFileURL.fileSystemRepresentation);
+#endif
+            
+            if (track.location) {
+                NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly setGenre:self.hackGenre? node.playlist.name:nil];
+                if (!result) return NO;
+                [playlistFilenames addObject:[result lastPathComponent]];
+                
+            }
         }
     }
     
@@ -542,30 +545,32 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                                              }];
         for (NSURL *fileURL in enumerator) {
             if (isCancelled) break;
-            NSString *filename;
-            [fileURL getResourceValue:&filename forKey:NSURLNameKey error:nil];
-            
-            NSNumber *isDirectory;
-            [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
-            
-            NSURL* destFileURL = makeDestURL(destinationDir, sourceDir, fileURL);
-            
-            // PLACEHOLDER - todo  make a map of extensions/filetypes to handler operations
-            
-            if ([isDirectory boolValue]) {
-                // check dest - it's ok if the dir doesn't exist at destination because we'll make it later
-                // if needed due to having to copy a file in it.  But check to see if it exists and is a file
-                // rather than directory to give early warning and avoid a cascade of errors.
-                BOOL isDir;
-                if ([fileManager fileExistsAtPath:[destFileURL path] isDirectory:&isDir] && !isDir) {
-                    NSLog(@"Target directory \"%@\" exists but is a file - skipping subtree", [destFileURL path]);
-                    [enumerator skipDescendants];
-                } else if ([filename hasPrefix:@"_"] || [filename hasPrefix:@"."] ) {
-                    [enumerator skipDescendants];
+            @autoreleasepool {
+                NSString *filename;
+                [fileURL getResourceValue:&filename forKey:NSURLNameKey error:nil];
+                
+                NSNumber *isDirectory;
+                [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
+                
+                NSURL* destFileURL = makeDestURL(destinationDir, sourceDir, fileURL);
+                
+                // PLACEHOLDER - todo  make a map of extensions/filetypes to handler operations
+                
+                if ([isDirectory boolValue]) {
+                    // check dest - it's ok if the dir doesn't exist at destination because we'll make it later
+                    // if needed due to having to copy a file in it.  But check to see if it exists and is a file
+                    // rather than directory to give early warning and avoid a cascade of errors.
+                    BOOL isDir;
+                    if ([fileManager fileExistsAtPath:[destFileURL path] isDirectory:&isDir] && !isDir) {
+                        NSLog(@"Target directory \"%@\" exists but is a file - skipping subtree", [destFileURL path]);
+                        [enumerator skipDescendants];
+                    } else if ([filename hasPrefix:@"_"] || [filename hasPrefix:@"."] ) {
+                        [enumerator skipDescendants];
+                    }
+                    continue;
                 }
-                continue;
+                [self processFileURL:fileURL toDestination: destFileURL performScanOnly:scanOnly setGenre:nil];
             }
-            [self processFileURL:fileURL toDestination: destFileURL performScanOnly:scanOnly setGenre:nil];
         }
         
     }
