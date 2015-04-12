@@ -91,17 +91,12 @@
     return library;
 }
 - (void) saveSelected {
-    NSLog(@"saving selected playlist preferences");
     NSMutableDictionary *selectedDefaults = [[NSMutableDictionary alloc] init];
     // go through the tree, creating the SelectedPlaylists dictionary, then put it into defaults
     [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop){
         if (node.playlist && ([node.selectedState integerValue] != NSOffState)) {
             [selectedDefaults setObject:node.selectedState
                 forKey:[node.playlist.persistentID stringValue]];
-            NSLog(@"saving selected playlist %@ to defaults.  Contains tracks:", node.playlist.name);
-            for (ITLibMediaItem *track in node.playlist.items) {
-                NSLog(@"track title \"%@\", location \"%@\"", track.title, track.location );
-            }
         }
     }];
     [[NSUserDefaults standardUserDefaults] setObject:selectedDefaults forKey:@"SelectedPlaylists"];
@@ -111,8 +106,6 @@
 {
     self = [super init];
     if (self) {
-        NSLog(@"******** PlaylistSelections init called **********");
-        
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         
         NSMutableDictionary *selected = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:@"SelectedPlaylists"]];
@@ -121,24 +114,21 @@
         }
         NSMutableDictionary *playlistNodes = [[NSMutableDictionary alloc] init];
         
-        NSLog(@"Getting iTunes library info...");
         NSError *error = nil;
         library = [ITLibrary libraryWithAPIVersion:@"1.0" error:&error];
         if (!library) {
-            NSLog(@"error: %@", error);
+            NSLog(@"error getting iTunes library: %@", error);
+            NSAlert *alert = [[NSAlert alloc] init];
+            alert.messageText = [NSString stringWithFormat:@"Unable to get iTunes library information"];
+            alert.informativeText = @"You can still use the utility to copy folders, but playlist functionality will be disabled.";
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                [alert runModal];
+            });
             return nil;
         }
-        NSLog(@"Got iTunes library info.  Reading playlists...");
+
         for (ITLibPlaylist *i in library.allPlaylists) {
-            BOOL isPlaylist =[i isKindOfClass: [ITLibPlaylist class]];
-            NSLog(@"inspecting %@.  item is class type %@.", i, [i  className]);
-            if (isPlaylist)
-                NSLog(@"\t item is playlist - name %@, visible=%i, master=%i children = %@, count %lu",
-                      i.name, i.visible, i.master, i.items? @"<an array>":@"nil",
-                      (unsigned long)i.items.count);
-            
             if (([i isKindOfClass: [ITLibPlaylist class]]) && i.visible && !i.master ) {
-                NSLog(@"Adding node for %@", i.name);
                 NSNumber *savedState = [selected objectForKey:[i.persistentID stringValue]];
                 
                 PlaylistNode *node = [[PlaylistNode alloc] initWithPlaylist:i
@@ -147,7 +137,7 @@
                 
             }
         }
-        NSLog(@"Building playlist tree");
+
         // We do the scan through the playlists twice because I'm not sure if we're guaranteed
         // proper ordering such that a parent would always have been listed before it's children
         // Also, in the event that somehow a parent is not found, or was perhaps marked not visible,
@@ -171,26 +161,13 @@
                 parent.children = [[NSMutableArray alloc] init];
             }
             [parent.children addObject:node];
+#if 0
             NSLog(@"Added child playlist %@ parentID %@ to parent %@ id %@",
                   node.playlist.name, node.playlist.parentID,
                   parent.playlist? parent.playlist.name:@"root",
                   parent.playlist?parent.playlist.persistentID:@"Null");
-            if ([node.playlist.name isEqualTo:@"Across The Great Divide"])
-                for (ITLibMediaItem *track in node.playlist.items) {
-                    NSLog(@"Track %@ at location %@", track.title, track.location);
-                }
-
+#endif
         }
-        
-        [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop) {
-            if (node.playlist && ([node.selectedState integerValue] != NSOffState)) {
-                NSLog(@"selected playlist %@ from defaults.  Contains tracks:", node.playlist.name);
-                for (ITLibMediaItem *track in node.playlist.items) {
-                    NSLog(@"track title \"%@\", location \"%@\"", track.title, track.location );
-                }
-            }
-            
-        }];
 
     }
     return self;

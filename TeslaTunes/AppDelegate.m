@@ -30,10 +30,7 @@
     
     
     //[[NSUserDefaultsController sharedUserDefaultsController] setInitialValues:defaults];
-    self.playlists = [[PlaylistSelections alloc] init];
     
-    NSLog(@"Library location: %@", [self.playlists getLibrary].musicFolderLocation);
-
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

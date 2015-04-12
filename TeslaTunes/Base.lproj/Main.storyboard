@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7525" systemVersion="14D130a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7525" systemVersion="14D131" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7525"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
@@ -175,7 +175,7 @@
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="StartSelectedAction:" target="XfG-lQ-9wD" id="DjF-ej-Aea"/>
+                                    <action selector="selectPlaylistsClicked:" target="XfG-lQ-9wD" id="6x3-1v-SPN"/>
                                     <segue destination="m6e-2U-DRX" kind="popover" popoverAnchorView="m9N-AO-c54" popoverBehavior="t" preferredEdge="maxY" id="Qv9-tH-Qib"/>
                                 </connections>
                             </button>
@@ -319,6 +319,7 @@
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <connections>
+                                    <action selector="checkmarkClicked:" target="XfG-lQ-9wD" id="pmy-ky-byA"/>
                                     <binding destination="XfG-lQ-9wD" name="value" keyPath="self.copyFolder" id="2Wn-b1-fl5"/>
                                 </connections>
                             </button>
@@ -329,6 +330,7 @@
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <connections>
+                                    <action selector="checkmarkClicked:" target="XfG-lQ-9wD" id="5pA-8h-aTF"/>
                                     <binding destination="XfG-lQ-9wD" name="value" keyPath="self.copyPlaylists" id="wGg-kh-TBF"/>
                                 </connections>
                             </button>
@@ -399,6 +401,7 @@
                     </view>
                     <connections>
                         <outlet property="CCScanResultsPopupItem" destination="tbA-Hf-t5w" id="ZvJ-2U-edD"/>
+                        <outlet property="cpPlaylistsButton" destination="CTb-Sv-D8V" id="jQp-z9-F71"/>
                         <outlet property="destinationPath" destination="N8v-pA-fRa" id="7zb-Us-CGg"/>
                         <outlet property="doItButton" destination="k3G-E8-VKF" id="lhS-cS-tee"/>
                         <outlet property="numberOfFilesCopiedOrConvertedLabel" destination="xCN-9H-iZ9" id="oY8-eP-vgv"/>
@@ -406,6 +409,7 @@
                         <outlet property="numberOfFilesToCopyOrConvertLabel" destination="9Uc-OL-ju2" id="4NG-cX-Y7V"/>
                         <outlet property="opTypeButton" destination="GH1-1u-h2x" id="3Dv-iB-Su2"/>
                         <outlet property="progressIndicator" destination="GrP-Yi-E8S" id="YlT-Qd-ZhB"/>
+                        <outlet property="selectPlaylistsButton" destination="m9N-AO-c54" id="IpR-Qm-wJy"/>
                         <outlet property="sourcePath" destination="N9v-xm-2rm" id="TE9-Iw-cFi"/>
                     </connections>
                 </viewController>
@@ -432,7 +436,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <outlineView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" autosaveExpandedItems="YES" outlineTableColumn="zck-zo-VNb" id="g7q-BC-EF4">
-                                            <rect key="frame" x="0.0" y="0.0" width="447" height="0.0"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="322" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="2" height="3"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>

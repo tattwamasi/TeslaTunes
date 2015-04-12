@@ -20,23 +20,41 @@
     NSDate *stopTime;
     NSDateFormatter *timeFormatter;
     AppDelegate *theApp;
+    PlaylistSelections *playlists;
+    
+}
+- (IBAction)checkmarkClicked:(id)sender {
+    [self validateControls];
+}
+
+- (void) validateControls {
+    NSError *theError=nil;
+    
+    self.doItButton.enabled = self.destinationPath.URL && ((self.copyPlaylists && playlists)
+                                                           || (self.copyFolder && [self.sourcePath.URL checkResourceIsReachableAndReturnError:&theError]));
+    
+    
+    // if for some reason we couldn't read the iTunes stuff, then don't enable the copy playlist functionality
+    if (! playlists) {
+        self.cpPlaylistsButton.enabled = NO;
+        self.selectPlaylistsButton.enabled = NO;
+    }
     
 }
 
-
 - (IBAction)sourcePathSelected:(NSPathControl *)sender {
     if (!self.ccDirs.isProcessing)
-        self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+        [self validateControls];
 }
 - (IBAction)destinationPathSelected:(NSPathControl *)sender {
     if (!self.ccDirs.isProcessing)
-        self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+        [self validateControls];
 }
 
 - (IBAction)StartSelectedAction:(NSButton *)sender {
     if (sender.state) { // it was "do it" when pressed, rather than stop
         [self.ccDirs startOperationOnDir:self.opTypeButton.selectedTag
-                  withPlaylistSelections:(self.copyPlaylists? theApp.playlists :nil)
+                  withPlaylistSelections:(self.copyPlaylists? playlists :nil)
                             andSourceDir:(self.copyFolder? self.sourcePath.URL : nil)
                                toDestDir:self.destinationPath.URL];
     } else {
@@ -98,7 +116,7 @@
         [self updateProgress];
         [self writeReport];
         self.doItButton.state = 0;
-        self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+        [self validateControls];
         self.doItButton.title=@"Do it";
         // finally, if there is a scan ready, enable the process already scanned popup item
         // and set the popup to it as the default for the next action
@@ -117,6 +135,25 @@
 
         [theApp setIdleSleepEnabled:YES];
     }
+}
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+                        change:(NSDictionary *)change context:(void *)context {
+    NSLog(@"library changed: %@", change);
+}
+
+
+
+- (void) viewDidDisappear {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setBool:self.copyFolder forKey:@"copyFolder"];
+    [defaults setBool:self.copyPlaylists forKey:@"copyPlaylists"];
+    NSInteger defaultTag = self.opTypeButton.selectedTag;
+    if (defaultTag == 2) {
+        defaultTag = 0; // if we were processing scanned items when quit, set to scan next
+    }
+    [defaults setInteger:defaultTag forKey:@"opTypeButtonSelection"];
 }
 
 - (void)viewDidLoad {
@@ -143,7 +180,20 @@
         }
     }];
 
-    self.doItButton.enabled = (self.sourcePath.URL && self.destinationPath.URL);
+    playlists = [[PlaylistSelections alloc] init];
+    theApp.playlists = playlists;
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    self.copyFolder     = [defaults boolForKey:@"copyFolder"];
+    self.copyPlaylists  = [defaults boolForKey:@"copyPlaylists"];
+    [self.opTypeButton selectItemWithTag:[defaults integerForKey:@"opTypeButtonSelection"]];
+    if (nil == self.sourcePath.URL) {
+        self.sourcePath.URL = [playlists getLibrary].musicFolderLocation;
+    }
+    [self validateControls];
+    // TODO:  the below was an attempt at gracefully discovering changes made in iTunes while the
+    // app was running.  Alas, seems to not actually do KVO.
+    //[[playlists getLibrary] addObserver:self forKeyPath:@"allPlaylists" options:0 context:nil];
 }
 
 - (void)setRepresentedObject:(id)representedObject {
