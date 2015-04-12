@@ -111,7 +111,7 @@
 		E502D0BE1A739D1500BE86E2 /* TeslaTunes */ = {
 			isa = PBXGroup;
 			children = (
-				E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */,
+				E59078AB1AAF9740007A26D6 /* todo and notes.txt */,
 				E502D0CB1A739D1500BE86E2 /* Main.storyboard */,
 				E502D0C11A739D1500BE86E2 /* AppDelegate.h */,
 				E502D0C21A739D1500BE86E2 /* AppDelegate.m */,
@@ -119,7 +119,6 @@
 				E502D0C71A739D1500BE86E2 /* ViewController.m */,
 				E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */,
 				E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */,
-				E59078AB1AAF9740007A26D6 /* todo and notes.txt */,
 				E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */,
 				E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */,
 				E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */,
@@ -133,6 +132,7 @@
 		E502D0BF1A739D1500BE86E2 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */,
 				E502D0C01A739D1500BE86E2 /* Info.plist */,
 				E502D0C41A739D1500BE86E2 /* main.m */,
 				E5CC88BE1AB6514E00C8951F /* Credits.html */,
