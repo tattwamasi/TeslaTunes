@@ -28,12 +28,6 @@
 //  since I didn't use bindings (after having trouble with them originally - I think they'd actually work fine now), and since
 //  each of the individual parts is simple, but involves the others, kind of seems like I should just put all this in the view controller.
 //
-//  Also, make it so the selected dictionary is read from user defaults and used when the tree is built to pre-select previous selections,
-//  if still existing, then don't use the dict anymore. Make a new dict when the selection window goes away and save that to user defaults.
-//
-//  Make methods to get data required out of the tree - probably just an enumerator returning the media entries and playlist names - or
-//  maybe just the playlist name and path to file
-//
 //  Other todo - fix UI constraints.  Make playlist tree look better - how?  consider side/detail windows(s) as alternate design, with
 //  playlist selections, etc. on left, and operations details/status/progress right.
 //  Integrate playlist operations into what happens when you click do it.

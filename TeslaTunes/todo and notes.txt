@@ -4,7 +4,8 @@ Determine if genre hack, like majorlance's applescript does, is worthwhile or no
 
 write license files to allow appropriate usage rather than showing code but reserving all rights by defaults.
 
-Since we're now creating filenames from track data in the playlist feature, add filename sanitization to avoid illegal filenames.  This goes for directory name too, since it comes from the playlist name.
+(done) Since we're now creating filenames from track data in the playlist feature, add filename sanitization to avoid illegal filenames.  This goes for directory name too, since it comes from the playlist name.
+    * added code, but not sure what chars are illegal.  The applescript seems to block a lot more than needed.
 
 Scan through code todo tags and, you know, do them :)
 

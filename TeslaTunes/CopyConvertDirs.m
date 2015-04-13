@@ -14,6 +14,17 @@
 
 #include "flac_utils.h"
 
+// NSString *disallowedCharsRegEx=@"[;:,/|!@#$%&*\()^]";
+NSString *disallowedCharsRegEx=@"[/|]";
+
+NSString *sanitizeFilename(NSString* f) {
+    
+    NSString *sanitizedString = [f stringByReplacingOccurrencesOfString:disallowedCharsRegEx withString:@"_"
+                                                                options:NSRegularExpressionSearch
+                                                                  range: NSMakeRange(0, [f length]) ];
+    return sanitizedString;
+}
+
 // make the destination filename out of the base path of destination and the relative path of the new item
 NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const NSURL* srcURL) {
     // Need to create the destination file/dir URL to check it's existance.  Use dst and the relative path
@@ -24,15 +35,18 @@ NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const
     // May well be a better way.  Till then...
     NSArray *basePathComponents = [basePathToStrip pathComponents];
     NSArray *srcPathComponents = [srcURL pathComponents];
-
+    
     NSRange relPathRange;
-
+    
     // sanity check
     relPathRange.location = 0;
     relPathRange.length = basePathComponents.count; // start the relative path at the end of the base path
-
-    if ((srcPathComponents.count <= basePathComponents.count) || ![basePathComponents isEqualToArray: [srcPathComponents subarrayWithRange:relPathRange]]) {
-        NSLog(@"When stripping base path from source filename to create destination filename, detected base path wasn't actually a common path.\nBase path was \"%@\".\nSource path was \"%@\".\n", basePathToStrip, srcURL);
+    
+    if ((srcPathComponents.count <= basePathComponents.count) ||
+        ![basePathComponents isEqualToArray: [srcPathComponents subarrayWithRange:relPathRange]]) {
+        NSLog(@"When stripping base path from source filename to create destination filename, "
+              "detected base path wasn't actually a common path.\nBase path was \"%@\".\nSource path was \"%@\".\n",
+              basePathToStrip, srcURL);
         // set NSRange object to take whole srcURL
         relPathRange.location = 0;
         relPathRange.length = srcPathComponents.count;
@@ -40,7 +54,9 @@ NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const
         relPathRange.location = basePathComponents.count; // start the relative path at the end of the base path
         relPathRange.length = srcPathComponents.count - basePathComponents.count;
     }
-    NSURL *dstURL = [NSURL fileURLWithPathComponents:[[dstBasePath pathComponents] arrayByAddingObjectsFromArray:[srcPathComponents subarrayWithRange:relPathRange]]];
+    NSURL *dstURL = [NSURL fileURLWithPathComponents:[[dstBasePath pathComponents]
+                                                      arrayByAddingObjectsFromArray:[srcPathComponents
+                                                                                     subarrayWithRange:relPathRange]]];
     
     return dstURL;
 }
@@ -113,7 +129,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 @implementation CopyConvertDirs {
     
     NSSet *extensionsToCopy;
-
+    
     NSMutableArray *convertOps;
     NSMutableArray *copyOps;
     NSMutableArray *delOps;
@@ -129,7 +145,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         _skippedExtensions=nil;
         _copiedExtensions=nil;
         _filesChecked=0;
-
+        
         convertOps = nil;
         copyOps = nil;
         delOps = nil;
@@ -139,13 +155,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         // NSOperationQueueDefaultMaxConcurrentOperationCount was default but was creating what seemed to be a large number of threads
         opSubQ.maxConcurrentOperationCount = 4;
         opSubQ.name = @"TeslaTunes subprocessing queue";
-
+        
         
         // file types (types, not extensions) Tesla will play:  mp3, mp4/aac, flac, wma, wma lossless, aiff (16 bit), wav
         // Per an email from Tesla,  .MP3 .OGG .OGA .FLAC .MPC .WV .SPX .TTA .M4A .M4B .M4P .MP4 .3G2 .WMA .ASF .AIF .AIFF .WAV .APE .AAC
         
         extensionsToCopy = [NSSet setWithObjects:@"mp3", @"aac", @"m4a", @"flac", @"wma", @"aiff", @"wav", nil];
-
+        
     }
     return self;
 }
@@ -153,7 +169,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 - (void) cancelOngoingOperations {
     isCancelled = YES;
     self.scanReady = NO;
-
+    
     NSLog(@"Cancelling all ongoing operations");
     [opSubQ cancelAllOperations];
     [queue cancelAllOperations];
@@ -162,7 +178,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     //   NSLog(@"OpQueue says all operations are cancelled. And isProcessing is %hhd", self.isProcessing);
 }
 // Uses NSOperationQueue and NSOperation to concurrently run.  TODO: delegate or something to indicate when finished,etc.
-- (void) startOperationOnDir: (DirOperation) opType withPlaylistSelections:(const PlaylistSelections *)playlistSelections andSourceDir:(const NSURL *)src toDestDir:(const NSURL *)dst {
+- (void) startOperationOnDir: (DirOperation) opType withPlaylistSelections:(const PlaylistSelections *)playlistSelections
+                andSourceDir:(const NSURL *)src toDestDir:(const NSURL *)dst {
     // if there are any operations still going on the queue, then this was an error to call.  Log and return.
     if (!queue || [queue operationCount]) {
         NSLog(@"Error, tried to start directory operations when operation queue was %s", queue? "not created": "not empty");
@@ -174,7 +191,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     _skippedExtensions = [[NSCountedSet alloc] init ];
     _copiedExtensions = [[NSCountedSet alloc] init];
     
-
+    
     // if operation is to scan, then clear out any current list of pending operations to do
     switch (opType) {
         case CCScan:
@@ -182,7 +199,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             [queue addOperationWithBlock:^(void){
                 self.isProcessing = YES;
                 [self processOpsWithPlaylistSelections: playlistSelections andSourceDirectoryURL:src
-                          toDestinationDirectoryURL:dst performScanOnly:(opType==CCScan)];
+                             toDestinationDirectoryURL:dst performScanOnly:(opType==CCScan)];
                 [opSubQ waitUntilAllOperationsAreFinished];
                 self.isProcessing = NO;
             }];
@@ -202,7 +219,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             break;
     }
     
-
+    
     
 }
 
@@ -238,7 +255,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     [opSubQ addOperationWithBlock:^(void){
         NSError *theError;
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&theError]) {
+        if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent]
+                       withIntermediateDirectories:YES attributes:nil error:&theError]) {
             // createDirectory returns YES even if the dir already exists because
             // the "withIntermediateDirectories" flag is set, so if it fails, it's a real issue
             NSLog(@"Couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
@@ -255,7 +273,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         }
     }];
     //NSLog(@"convert queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
-
+    
 }
 
 
@@ -265,7 +283,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     [opSubQ addOperationWithBlock:^(void){
         NSError *theError;
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&theError]) {
+        if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent]
+                       withIntermediateDirectories:YES attributes:nil error:&theError]) {
             // createDirectory returns YES even if the dir already exists because
             // the "withIntermediateDirectories" flag is set, so if it fails, it's a real issue
             // TODO: in one run early in development, the above statement was not true - got
@@ -320,7 +339,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 // Returns the URL of the processed file at the destination, or nil in the event of error/cancellation
 // TODO: check returns of copys/converts and return appropriately
 - (NSURL *) processFileURL:(const NSURL *) file toDestination: destinationFile
-        performScanOnly: (BOOL) scanOnly setGenre: (NSString*) genre {
+           performScanOnly: (BOOL) scanOnly setGenre: (NSString*) genre {
     @autoreleasepool {
         if (isCancelled) return nil;
         NSString *filename;
@@ -385,18 +404,18 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                                           includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
                                                              options:NSDirectoryEnumerationSkipsHiddenFiles
                                                         errorHandler:^BOOL(NSURL *url, NSError *error)
-                                         {
-                                             // this could happen without it being an error in the event the
-                                             // destination playlist doesn't exist yet, for example when doing
-                                             // a scan only for the first time on a playlist.  If that's the case,
-                                             // it isn't an error, and there obviously won't be anything to remove.
-                                             if (error  && !scanOnly) {
-                                                 NSLog(@"Error when looking for destination playlist folder to prune [Error] %@ (%@)", error, url);
-                                                 return NO;
-                                             }
-                                             
-                                             return YES;
-                                         }];
+         {
+             // this could happen without it being an error in the event the
+             // destination playlist doesn't exist yet, for example when doing
+             // a scan only for the first time on a playlist.  If that's the case,
+             // it isn't an error, and there obviously won't be anything to remove.
+             if (error  && !scanOnly) {
+                 NSLog(@"Error when looking for destination playlist folder to prune [Error] %@ (%@)", error, url);
+                 return NO;
+             }
+             
+             return YES;
+         }];
     
     for (NSURL *fileURL in enumerator) {
         if (isCancelled) {
@@ -415,7 +434,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                     // TODO: see above
                     NSLog(@"Couldn't remove from playlist folder item URL \"%@\".", [fileURL standardizedURL]);
                 }
- 
+                
             }
         }
     }
@@ -430,14 +449,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 // playlist order and eliminates collisions.  Also, delete any other files in the folder
 // that weren't in the playlist.
 // Return NO if processing was interrupted, either by error, or by cancel flag being set, YES otherwise
-//
-// TODO: scan and replace illegal characters in playlist name and constructed filenames
 - (BOOL) processPlaylistNode:(PlaylistNode *) node toDestinationDirectoryURL: destinationDir
              performScanOnly: (BOOL) scanOnly {
-    NSURL *destinationFolderForPlaylist = [destinationDir URLByAppendingPathComponent:node.playlist.name];
+    NSURL *destinationFolderForPlaylist = [destinationDir
+                                           URLByAppendingPathComponent: sanitizeFilename(node.playlist.name)];
     //NSLog(@"playlist %@ was selected and will be copied to %s", node.playlist.name, destinationFolderForPlaylist.fileSystemRepresentation);
     NSMutableSet *playlistFilenames = [[NSMutableSet alloc] init];
- 
+    
     int idx = 0;
     NSUInteger number = node.playlist.items.count;
     int digits = 0; do { number /= 10; digits++; } while (number != 0);
@@ -451,12 +469,16 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         // if it is not.
         if (!track.location) {
             NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = [NSString stringWithFormat:@"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, or stop processing altogether so you can try to fix the issue and start over?", track.title, node.playlist.name];
-            alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
+            alert.messageText = [NSString stringWithFormat:
+                                 @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
+                                 "or stop processing altogether so you can try to fix the issue and start over?",
+                                 track.title, node.playlist.name];
+            alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
+                "drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
             [alert addButtonWithTitle:@"Stop processing"];
             [alert addButtonWithTitle:@"Skip track"];
-
-             __block NSModalResponse response;
+            
+            __block NSModalResponse response;
             dispatch_sync(dispatch_get_main_queue(), ^(){
                 response = [alert runModal];
             });
@@ -476,11 +498,10 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             // in order to preserve the ability to have duplicates in the playlist and play in order.
             
             // so given that, example filename is index-trackname-trackartist-trackalbum.extension
-            // Note: TODO: scan the result and replace any illegal characters.
-            
-            NSString *filename = [NSString stringWithFormat:@"%0*d-%@-%@-%@.%@", digits,
-                                  idx, track.title, track.artist.name, track.album.title,
-                                  [track.location pathExtension] ];
+            NSString *filename = sanitizeFilename([NSString stringWithFormat:@"%0*d-%@-%@-%@.%@", digits,
+                                                   idx, track.title, track.artist.name, track.album.title,
+                                                   [track.location pathExtension] ]);
+
             NSURL *destFileURL = [destinationFolderForPlaylist URLByAppendingPathComponent: filename];
             
 #if 0
@@ -490,7 +511,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 #endif
             
             if (track.location) {
-                NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly setGenre:self.hackGenre? node.playlist.name:nil];
+                NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly
+                                            setGenre:self.hackGenre? node.playlist.name:nil];
                 if (!result) return NO;
                 [playlistFilenames addObject:[result lastPathComponent]];
                 
@@ -507,12 +529,12 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 
 
 - (void) processOpsWithPlaylistSelections: (const PlaylistSelections *)playlistSelections
-              andSourceDirectoryURL: (const NSURL *) sourceDir
-          toDestinationDirectoryURL: (const NSURL *) destinationDir
-                    performScanOnly: (BOOL) scanOnly {
+                    andSourceDirectoryURL: (const NSURL *) sourceDir
+                toDestinationDirectoryURL: (const NSURL *) destinationDir
+                          performScanOnly: (BOOL) scanOnly {
     self.filesChecked = 0;
     self.filesToCopyConvert=0;
-
+    
     
     // if we're doing a scan only, make new mutable arrays for the convert and copy ops, otherwise make sure they are nil
     if (scanOnly) {
@@ -525,6 +547,9 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         copyOps = nil;
         delOps = nil;
     }
+    
+    NSURL *musicFolderURL = [destinationDir URLByAppendingPathComponent:@"Music"];
+    NSURL *playlistFolderURL = [destinationDir URLByAppendingPathComponent:@"Playlists"];
     
     
     if (sourceDir) {
@@ -543,6 +568,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                                                  
                                                  return YES;
                                              }];
+        
         for (NSURL *fileURL in enumerator) {
             if (isCancelled) break;
             @autoreleasepool {
@@ -552,7 +578,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                 NSNumber *isDirectory;
                 [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
                 
-                NSURL* destFileURL = makeDestURL(destinationDir, sourceDir, fileURL);
+                NSURL* destFileURL = makeDestURL(musicFolderURL, sourceDir, fileURL);
                 
                 // PLACEHOLDER - todo  make a map of extensions/filetypes to handler operations
                 
@@ -578,10 +604,10 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         PlaylistNode *playlistTree = [playlistSelections getTree];
         [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop) {
             if (node.playlist && ([node.selectedState integerValue] == NSOnState) && node.playlist.items) {
-                if (![self processPlaylistNode:node toDestinationDirectoryURL:destinationDir performScanOnly:scanOnly]) {
+                if (![self processPlaylistNode:node toDestinationDirectoryURL: playlistFolderURL performScanOnly:scanOnly]) {
                     *stop = YES;
                 }
-                    
+                
             }
         }];
     }
