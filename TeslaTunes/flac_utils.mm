@@ -20,6 +20,51 @@
 
 #include "flac_utils.h"
 
+// used as, for example,
+// int r = signextend<signed int,5>(x);  // sign extend 5 bit number x to r
+
+template <typename T, unsigned B>
+inline T signextend(const T x)
+{
+    struct {T x:B;} s;
+    return s.x = x;
+}
+
+
+// todo: templatize?  Don't like the replicated code.  Test performance vs.
+// bitshifted implementation that doesn't require constant bit width too.
+void signExtendBuffers(FLAC__int32** buf, size_t numFrames, size_t numChannels, unsigned bps) {
+
+    
+    switch (bps) {
+        case 16:
+            for (size_t i=0 ; i< numFrames; ++i) {
+                for (size_t channel=0; channel<numChannels; ++channel) {
+                    buf[channel][i] = signextend<FLAC__int32, 16>(buf[channel][i]);
+                }
+            }
+            break;
+        case 20:
+            for (size_t i=0 ; i< numFrames; ++i) {
+                for (size_t channel=0; channel<numChannels; ++channel) {
+                    buf[channel][i] = signextend<FLAC__int32, 20>(buf[channel][i]);
+                }
+            }
+            break;
+        case 24:
+            for (size_t i=0 ; i< numFrames; ++i) {
+                for (size_t channel=0; channel<numChannels; ++channel) {
+                    buf[channel][i] = signextend<FLAC__int32, 24>(buf[channel][i]);
+                }
+            }
+            break;
+        case 32:
+            // nothing to do for 32
+        default:
+            break;
+    }
+}
+
 
 class FlacEncoderFromAlac: public FLAC::Encoder::File {
 public:
@@ -103,7 +148,7 @@ FLAC__StreamMetadata *MakeFlacImgTag(NSImage *img) {
 }
 
 
-auto FlacMetadataFromMP4fileURL(NSURL *mp4, std::vector<FLAC__StreamMetadata *> &metadata ){
+auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetadata *> &metadata ){
     // read the metadata from alac file a
     auto mp4FileHandle	= MP4Read(mp4.fileSystemRepresentation);
     
@@ -200,19 +245,19 @@ auto FlacMetadataFromMP4fileURL(NSURL *mp4, std::vector<FLAC__StreamMetadata *> 
     return metadata.size();
 }
 
-void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, NSURL *f){
+void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, const NSURL *f){
     // clean/free up the metadata
     for (auto entry : metadata) {
         FLAC__metadata_object_delete(entry);
     }
     NSError *e;
-    if (![[NSFileManager defaultManager] removeItemAtURL:f error:&e]) {
+    if (![[NSFileManager defaultManager] removeItemAtURL:[f standardizedURL] error:&e]) {
         // check and report potential cleanup failure - note that if f is nil, the operation returns YES
         // TODO: see above
     }
 }
 
-BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
+BOOL ConvertAlacToFlac(const NSURL* a, const NSURL *f, volatile const BOOL *cancelFlag){
     BOOL placeholderCancelFlag=NO;
     if (cancelFlag==nullptr) {
         cancelFlag=&placeholderCancelFlag;
@@ -255,13 +300,17 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
         case kAppleLosslessFormatFlag_16BitSourceData:
             bps=16;
              break;
-        // for now, we aren't going to support non 16 bit sources. due to the sign extending issue with the buffers - will investigate fix later
+        case kAppleLosslessFormatFlag_20BitSourceData:
+            bps=20;
+            break;
         case kAppleLosslessFormatFlag_24BitSourceData:
             bps=24;
-            //break;
+            break;
         case kAppleLosslessFormatFlag_32BitSourceData:
             bps=32;
-            //break;
+            NSLog(@"The FLAC reference encoder does not support 32 bits per sample source data.  If you are seeing this and really need support for it, contact me, and ideally, contact the FLAC folks too to get them to add it to their encoder.");
+            return NO;
+            break;
         default:
             NSLog(@"Unexpected bits per sample (format flag = %u) from source file %s", inFile_absd.mFormatFlags, a.fileSystemRepresentation );
             return NO;
@@ -278,7 +327,7 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
     // not sure about needed the below...
     decoded_absd.mBitsPerChannel = bps;
     
-    decoded_absd.mBytesPerFrame = 4; // for int32... hopefully in conjunction with the format flags indicating non packed and low aligned, will give me a int32 containing the low aligned 16 bit sample in the cast of 16 bit alac
+    decoded_absd.mBytesPerFrame = 4; // for int32... hopefully in conjunction with the format flags indicating non packed and low aligned, will give me a int32 containing the low aligned 16 bit sample in the case of 16 bit alac
     decoded_absd.mFramesPerPacket=1;
     decoded_absd.mBytesPerPacket = decoded_absd.mBytesPerFrame * decoded_absd.mFramesPerPacket;
     
@@ -376,8 +425,6 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
     if (*cancelFlag) {cleanUpMetadataAndPartialFiles(metadata, f); return NO;}
     
 
-    FLAC__int32 min=0;
-    FLAC__int32 max=0;
     // encode the samples
     bool readCompleted = false;
     while (!*cancelFlag) {
@@ -389,21 +436,12 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
             break;
         }
         if (*cancelFlag) break;
-        FLAC__int32 sample;
-        for (size_t i=0 ; i< numFrames; ++i) {
-            sample = (int16_t)inBuffsForFlacEncoder[0][i];
-            if (sample < min) min=sample;
-            if (sample > max) max=sample;
-            inBuffsForFlacEncoder[0][i] = sample;
-            
-            sample = (int16_t)inBuffsForFlacEncoder[1][i];
-            if (sample < min) min=sample;
-            if (sample > max) max=sample;
-            inBuffsForFlacEncoder[1][i] = sample;
-            
-        }
+        
         
         if (numFrames) {
+            // sign extend nonsense to satisfy the disconnect between the apple returns and the flac expectations
+            signExtendBuffers(inBuffsForFlacEncoder, numFrames, inFile_absd.mChannelsPerFrame, bps);
+            
             //NSLog(@"sample samples, channel 0,1 = %i, %i", inBuffsForFlacEncoder[0][0], inBuffsForFlacEncoder[1][0]);
             if (! encoder.process(inBuffsForFlacEncoder, numFrames)) {
                 NSLog(@"flac encoding failed, %s", encoder.get_state().resolved_as_cstring(encoder));
@@ -411,7 +449,6 @@ BOOL ConvertAlacToFlac(NSURL* a, NSURL *f, volatile const BOOL *cancelFlag){
             }
         } else {
             // we're done
-            // NSLog(@"%s: min sample: %i, max sample: %i", a.fileSystemRepresentation, min, max);
             readCompleted=true;
             break;
         }

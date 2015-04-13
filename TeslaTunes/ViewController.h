@@ -8,8 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 #import "CopyConvertDirs.h"
-
 @interface ViewController : NSViewController
+
+@property BOOL copyFolder;
+@property BOOL copyPlaylists;
+@property (weak) IBOutlet NSButton *cpPlaylistsButton;
+@property (weak) IBOutlet NSButton *selectPlaylistsButton;
 
 @property (weak) IBOutlet NSPathControl *sourcePath;
 @property (weak) IBOutlet NSPathControl *destinationPath;

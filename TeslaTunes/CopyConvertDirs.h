@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include "PlaylistSelections.h"
+
+
 
 
 typedef NS_ENUM(NSUInteger, DirOperation) {
@@ -19,8 +22,8 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
 
 @interface FileOp : NSObject{
     @public
-    NSURL *sourceURL;
-    NSURL *destinationURL;
+    const NSURL *sourceURL;
+    const NSURL *destinationURL;
 }
 @end
 
@@ -33,10 +36,15 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
 @property (readonly) unsigned filesCopyConverted;
 @property (readonly) BOOL isProcessing;
 @property (readonly) BOOL scanReady;
+
+@property BOOL hackGenre;
+
 - (CopyConvertDirs*) init;
 
 // Uses NSOperationQueue and NSOperation to concurrently run.  TODO: delegate or something to indicate when finished,etc.
-- (void) startOperationOnDir: (DirOperation) opType withSourceDir: (const NSURL *)src andDestDir: (const NSURL *)dst;
+- (void) startOperationOnDir: (DirOperation) opType
+      withPlaylistSelections: (const PlaylistSelections*) playlistSelections
+                andSourceDir: (const NSURL *)src toDestDir: (const NSURL *)dst;
 - (void) cancelOngoingOperations;
 
 @end
