@@ -590,7 +590,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                     if ([fileManager fileExistsAtPath:[destFileURL path] isDirectory:&isDir] && !isDir) {
                         NSLog(@"Target directory \"%@\" exists but is a file - skipping subtree", [destFileURL path]);
                         [enumerator skipDescendants];
-                    } else if ([filename hasPrefix:@"_"] || [filename hasPrefix:@"."] ) {
+                    } else if ([filename hasPrefix:@"."] ) {
                         [enumerator skipDescendants];
                     }
                     continue;
