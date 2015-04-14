@@ -27,11 +27,14 @@
 		E502D0C81A739D1500BE86E2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C71A739D1500BE86E2 /* ViewController.m */; };
 		E502D0CA1A739D1500BE86E2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E502D0C91A739D1500BE86E2 /* Images.xcassets */; };
 		E502D0CD1A739D1500BE86E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E502D0CB1A739D1500BE86E2 /* Main.storyboard */; };
+		E52E87971ADD9AA900B08A74 /* tag.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E87961ADD9AA900B08A74 /* tag.framework */; };
+		E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */; };
+		E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */; };
 		E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */; };
 		E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */; };
 		E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */; };
 		E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E58A24B81AC9282300E8DDE4 /* AppKit.framework */; };
-		E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.m in Sources */ = {isa = PBXBuildFile; fileRef = E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */; };
+		E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.mm in Sources */ = {isa = PBXBuildFile; fileRef = E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.mm */; };
 		E59078A71AAC1AD7007A26D6 /* flac_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = E59078A51AAC1AD7007A26D6 /* flac_utils.mm */; };
 		E59078AA1AAEC044007A26D6 /* Receptionist.m in Sources */ = {isa = PBXBuildFile; fileRef = E59078A91AAEC044007A26D6 /* Receptionist.m */; };
 		E59078AC1AAF9741007A26D6 /* todo and notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = E59078AB1AAF9740007A26D6 /* todo and notes.txt */; };
@@ -60,6 +63,9 @@
 		E502D0C71A739D1500BE86E2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		E502D0C91A739D1500BE86E2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E502D0CC1A739D1500BE86E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		E52E87961ADD9AA900B08A74 /* tag.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tag.framework; path = ../../taglib/taglib/tag.framework; sourceTree = "<group>"; };
+		E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = ../../../../../Library/Frameworks/iTunesLibrary.framework; sourceTree = "<group>"; };
 		E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TeslaTunes.entitlements; sourceTree = "<group>"; };
 		E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistPickViewController.h; sourceTree = "<group>"; };
@@ -68,7 +74,7 @@
 		E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistSelections.m; sourceTree = "<group>"; };
 		E58A24B81AC9282300E8DDE4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		E59078A21AAAFE0E007A26D6 /* CopyConvertDirs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CopyConvertDirs.h; sourceTree = "<group>"; };
-		E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CopyConvertDirs.m; sourceTree = "<group>"; };
+		E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CopyConvertDirs.mm; sourceTree = "<group>"; };
 		E59078A51AAC1AD7007A26D6 /* flac_utils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = flac_utils.mm; sourceTree = "<group>"; };
 		E59078A61AAC1AD7007A26D6 /* flac_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = flac_utils.h; sourceTree = "<group>"; };
 		E59078A81AAEC044007A26D6 /* Receptionist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Receptionist.h; sourceTree = "<group>"; };
@@ -82,6 +88,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */,
+				E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */,
+				E52E87971ADD9AA900B08A74 /* tag.framework in Frameworks */,
 				E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */,
 				E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */,
 			);
@@ -93,6 +102,9 @@
 		E502D0B31A739D1500BE86E2 = {
 			isa = PBXGroup;
 			children = (
+				E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */,
+				E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */,
+				E52E87961ADD9AA900B08A74 /* tag.framework */,
 				E58A24B81AC9282300E8DDE4 /* AppKit.framework */,
 				E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */,
 				E502D0BE1A739D1500BE86E2 /* TeslaTunes */,
@@ -145,7 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				E59078A21AAAFE0E007A26D6 /* CopyConvertDirs.h */,
-				E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.m */,
+				E59078A31AAAFE0E007A26D6 /* CopyConvertDirs.mm */,
 				E59078A61AAC1AD7007A26D6 /* flac_utils.h */,
 				E59078A51AAC1AD7007A26D6 /* flac_utils.mm */,
 				E59078A81AAEC044007A26D6 /* Receptionist.h */,
@@ -256,7 +268,7 @@
 				E502D0C51A739D1500BE86E2 /* main.m in Sources */,
 				E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */,
 				E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */,
-				E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.m in Sources */,
+				E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.mm in Sources */,
 				E502814E1ACBA133006D996C /* TableCellViewCheckmark.m in Sources */,
 				E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */,
 				E59078AA1AAEC044007A26D6 /* Receptionist.m in Sources */,
@@ -396,6 +408,7 @@
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					/Library/Frameworks/iTunesLibrary.framework,
+					/Users/rarnold/devel/taglib/taglib,
 				);
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -424,6 +437,7 @@
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					/Library/Frameworks/iTunesLibrary.framework,
+					/Users/rarnold/devel/taglib/taglib,
 				);
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";

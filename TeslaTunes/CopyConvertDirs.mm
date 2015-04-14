@@ -259,9 +259,9 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                        withIntermediateDirectories:YES attributes:nil error:&theError]) {
             // createDirectory returns YES even if the dir already exists because
             // the "withIntermediateDirectories" flag is set, so if it fails, it's a real issue
-            NSLog(@"Couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
+            NSLog(@"warning: couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
                   [theError domain], [theError localizedDescription], [theError localizedFailureReason], (long)[theError code]);
-            return;
+            //return;
         }
         
         //NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
@@ -291,7 +291,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             // dir already exists errors presumably when multiple threads were trying this same operation
             // with several songs on a new album.  So not sure what I should really do -- for now trying to
             // continue rather than return - the copy should fail too if it's an issue.
-            NSLog(@"Couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
+            NSLog(@"warning:  couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
                   [theError domain], [theError localizedDescription], [theError localizedFailureReason], (long)[theError code]);
             // return;
         }
@@ -335,8 +335,24 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     }
 }
 
+#include <tag/tag.h>
+#include <tag/fileref.h>
+#include <tag/tfile.h>
+
+void genreHack(const NSURL *url, const NSString *genre) {
+    TagLib::FileRef f([url fileSystemRepresentation], false);
+    TagLib::Tag *t = f.tag();
+    t->setGenre([genre UTF8String]);
+    NSLog(@"Set genre of %@ to %s", url, t->genre().toCString(true) );
+    if (!f.save()){
+        NSLog(@"warning:  could set genre of %@ to %s", url, t->genre().toCString(true));
+    }
+}
 
 // Returns the URL of the processed file at the destination, or nil in the event of error/cancellation
+// or simply that the file is not a handled type.  Note it will also return the filename in
+// the event it is a handled filetype and does not need to be copied because it is already there.
+// setGenre will, if not nil, set the genre of the destination file, iff copied/converted.
 // TODO: check returns of copys/converts and return appropriately
 - (NSURL *) processFileURL:(const NSURL *) file toDestination: destinationFile
            performScanOnly: (BOOL) scanOnly setGenre: (NSString*) genre {
@@ -345,7 +361,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         NSString *filename;
         [file getResourceValue:&filename forKey:NSURLNameKey error:nil];
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        
+        NSURL *outURL;
         
         [self willChangeValueForKey:@"filesChecked"];
         ++_filesChecked;
@@ -356,21 +372,20 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         // use  – fileExistsAtPath:isDirectory: for the later
         if (isAppleLosslessFile(file)) {
             // do the conversion iff dest file doesn't exist
-            NSURL *transformedURL = ReplaceExtensionURL(destinationFile, @"flac");
-            if ([fileManager fileExistsAtPath:[transformedURL path] isDirectory:nil]) {
+            outURL = ReplaceExtensionURL(destinationFile, @"flac");
+            if ([fileManager fileExistsAtPath:[outURL path] isDirectory:nil]) {
                 //printf("*");
-                return transformedURL;
+                return outURL;
             }
             [self willChangeValueForKey:@"filesToCopyConvert"];
             ++_filesToCopyConvert;
             [self didChangeValueForKey:@"filesToCopyConvert"];
             
             if (scanOnly){
-                [self storeScannedForConvertWithSource:file Destination:transformedURL];
+                [self storeScannedForConvertWithSource:file Destination:outURL];
             } else {
-                [self convertWithSource:file Destination:transformedURL];
+                [self convertWithSource:file Destination:outURL];
             }
-            return transformedURL;
         } else if ([extensionsToCopy containsObject:[file.pathExtension lowercaseString]]) {
             // NSLog(@"checking to see if %@ exists at dest path %@", fileURL, destFileURL);
             // skip out if the file already exists (no need to copy)
@@ -386,14 +401,19 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             } else {
                 [self copyWithSource:file Destination:destinationFile];
             }
+            outURL = destinationFile;
         } else {
             // NSLog(@"don't know what extension %@ is.  Skipping", fileURL.pathExtension);
             // save extension to skipped set for stat purposes
             [self.skippedExtensions addObject:file.pathExtension];
+            return nil;
         }
+
+        if (genre) genreHack(outURL, genre);
         
+        return destinationFile;
     }
-    return destinationFile;
+    
 }
 
 
@@ -461,6 +481,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     int digits = 0; do { number /= 10; digits++; } while (number != 0);
     
     for (id item in node.playlist.items) {
+        
+        if (isCancelled) break;
         ITLibMediaItem *track = item;
         ++idx;
         
@@ -513,8 +535,8 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             if (track.location) {
                 NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly
                                             setGenre:self.hackGenre? node.playlist.name:nil];
-                if (!result) return NO;
-                [playlistFilenames addObject:[result lastPathComponent]];
+                if (result)
+                    [playlistFilenames addObject:[result lastPathComponent]];
                 
             }
         }

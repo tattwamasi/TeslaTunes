@@ -154,20 +154,22 @@
         defaultTag = 0; // if we were processing scanned items when quit, set to scan next
     }
     [defaults setInteger:defaultTag forKey:@"opTypeButtonSelection"];
+    [defaults setBool:self.ccDirs.hackGenre forKey:@"setPlaylistItemGenreToPlaylistName"];
+
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     theApp = [[NSApplication sharedApplication] delegate];
     
-
-    // Do any additional setup after loading the view.
     timeFormatter = [[NSDateFormatter alloc] init];
     [timeFormatter setDateStyle:NSDateFormatterMediumStyle];
     [timeFormatter setTimeStyle:NSDateFormatterMediumStyle];
     
     self.ccDirs = [[CopyConvertDirs alloc] init];
+    self.ccDirs.hackGenre = [defaults boolForKey:@"setPlaylistItemGenreToPlaylistName"];
     
     self.CCScanResultsPopupItem.enabled=NO;
     ccDirReceptionist = [Receptionist receptionistForKeyPath:@"isProcessing" object:self.ccDirs queue:[NSOperationQueue mainQueue] task:^(NSString *keyPath, id object, NSDictionary *change) {
@@ -183,7 +185,6 @@
     playlists = [[PlaylistSelections alloc] init];
     theApp.playlists = playlists;
 
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.copyFolder     = [defaults boolForKey:@"copyFolder"];
     self.copyPlaylists  = [defaults boolForKey:@"copyPlaylists"];
     [self.opTypeButton selectItemWithTag:[defaults integerForKey:@"opTypeButtonSelection"]];
