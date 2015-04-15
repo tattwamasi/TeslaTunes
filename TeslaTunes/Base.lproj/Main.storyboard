@@ -252,7 +252,6 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="checkmarkClicked:" target="XfG-lQ-9wD" id="rBN-VO-Qk7"/>
-                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="Gen-vl-QJR"/>
                                     <binding destination="XfG-lQ-9wD" name="value" keyPath="self.ccDirs.hackGenre" id="zmv-g1-QwT">
                                         <dictionary key="options">
                                             <integer key="NSNoSelectionPlaceholder" value="0"/>
@@ -260,6 +259,7 @@
                                             <integer key="NSNullPlaceholder" value="0"/>
                                         </dictionary>
                                     </binding>
+                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="Gen-vl-QJR"/>
                                 </connections>
                             </button>
                             <popUpButton autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GH1-1u-h2x" userLabel="Operation type popup">
@@ -309,6 +309,22 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1eU-II-ftW" userLabel="NumberOfFilesScanned">
                                             <rect key="frame" x="102" y="388" width="4" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="KcW-5N-SZY">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pae-oz-aHU" userLabel="FilesMarkedForOrDeleted:">
+                                            <rect key="frame" x="16" y="366" width="110" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Marked for/Deleted:" id="Dkc-cC-slV">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5sN-qD-1ks" userLabel="NumberOfFilesMarkedOrDeleted">
+                                            <rect key="frame" x="130" y="366" width="4" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="9Gg-Sm-XVt">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -369,11 +385,15 @@
                                 </view>
                                 <constraints>
                                     <constraint firstItem="1Oi-qv-bwK" firstAttribute="top" secondItem="p6W-b9-tqn" secondAttribute="bottom" constant="8" symbolic="YES" id="04A-BY-bEh"/>
+                                    <constraint firstItem="pae-oz-aHU" firstAttribute="leading" secondItem="Bmc-7B-QiY" secondAttribute="leading" id="Bmr-6z-Tyj"/>
+                                    <constraint firstItem="pae-oz-aHU" firstAttribute="top" secondItem="5sN-qD-1ks" secondAttribute="top" id="Bnm-K1-h6z"/>
                                     <constraint firstAttribute="centerX" secondItem="7Dp-8U-ga1" secondAttribute="leading" id="CPL-h8-9Gb"/>
                                     <constraint firstItem="p6W-b9-tqn" firstAttribute="leading" secondItem="7Dp-8U-ga1" secondAttribute="leading" id="Ca3-Nc-R9l"/>
                                     <constraint firstItem="Bmc-7B-QiY" firstAttribute="leading" secondItem="2hX-ai-bcL" secondAttribute="leading" constant="16" id="Ggx-yF-EmM"/>
+                                    <constraint firstItem="5sN-qD-1ks" firstAttribute="leading" secondItem="pae-oz-aHU" secondAttribute="trailing" constant="8" symbolic="YES" id="ItF-Mt-a5M"/>
                                     <constraint firstItem="9Uc-OL-ju2" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="top" id="LJt-1L-gR5"/>
                                     <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="top" id="V5N-11-Ltl"/>
+                                    <constraint firstItem="pae-oz-aHU" firstAttribute="top" secondItem="Bmc-7B-QiY" secondAttribute="bottom" constant="8" symbolic="YES" id="cJD-1b-oFc"/>
                                     <constraint firstItem="rXA-6K-o4C" firstAttribute="top" secondItem="1Oi-qv-bwK" secondAttribute="bottom" constant="8" symbolic="YES" id="chY-hn-ggm"/>
                                     <constraint firstItem="1eU-II-ftW" firstAttribute="leading" secondItem="Bmc-7B-QiY" secondAttribute="trailing" constant="8" symbolic="YES" id="eLM-MN-Qko"/>
                                     <constraint firstItem="p6W-b9-tqn" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="bottom" constant="8" symbolic="YES" id="jhP-gJ-KCn"/>
@@ -424,6 +444,7 @@
                         <outlet property="destinationPath" destination="N8v-pA-fRa" id="7zb-Us-CGg"/>
                         <outlet property="doItButton" destination="k3G-E8-VKF" id="lhS-cS-tee"/>
                         <outlet property="numberOfFilesCopiedOrConvertedLabel" destination="xCN-9H-iZ9" id="oY8-eP-vgv"/>
+                        <outlet property="numberOfFilesForDeletionLabel" destination="5sN-qD-1ks" id="vy9-pR-jQw"/>
                         <outlet property="numberOfFilesScannedLabel" destination="1eU-II-ftW" id="IvD-iw-Kyw"/>
                         <outlet property="numberOfFilesToCopyOrConvertLabel" destination="9Uc-OL-ju2" id="4NG-cX-Y7V"/>
                         <outlet property="opTypeButton" destination="GH1-1u-h2x" id="3Dv-iB-Su2"/>

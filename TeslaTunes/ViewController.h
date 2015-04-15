@@ -19,16 +19,18 @@
 @property (weak) IBOutlet NSPathControl *destinationPath;
 
 @property (weak) IBOutlet NSButton *doItButton;
+@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
+
 @property (weak) IBOutlet NSPopUpButton *opTypeButton;
 @property (weak) IBOutlet NSMenuItem *CCScanResultsPopupItem;
 
 @property NSString *report;
 
 @property (weak) IBOutlet NSTextField *numberOfFilesScannedLabel;
+@property (weak) IBOutlet NSTextField *numberOfFilesForDeletionLabel;
+
 @property (weak) IBOutlet NSTextField *numberOfFilesToCopyOrConvertLabel;
 @property (weak) IBOutlet NSTextField *numberOfFilesCopiedOrConvertedLabel;
-@property (weak) IBOutlet NSProgressIndicator *progressIndicator;
-
 @property CopyConvertDirs *ccDirs;
 
 @end

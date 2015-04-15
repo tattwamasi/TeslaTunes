@@ -88,6 +88,7 @@
     [self.numberOfFilesScannedLabel setIntegerValue: self.ccDirs.filesChecked];
     [self.numberOfFilesToCopyOrConvertLabel setIntegerValue: self.ccDirs.filesToCopyConvert];
     [self.numberOfFilesCopiedOrConvertedLabel setIntegerValue: self.ccDirs.filesCopyConverted];
+    [self.numberOfFilesForDeletionLabel setIntegerValue: self.ccDirs.filesMarkedForOrDeleted];
 }
 -(void) updateProgressTimerFired:(NSTimer *)t {
     [self updateProgress];

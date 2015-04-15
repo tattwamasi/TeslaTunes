@@ -24,6 +24,7 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
     @public
     const NSURL *sourceURL;
     const NSURL *destinationURL;
+    const NSString *genre;
 }
 @end
 
@@ -34,6 +35,7 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
 @property (readonly) unsigned filesChecked;
 @property (readonly) unsigned filesToCopyConvert;
 @property (readonly) unsigned filesCopyConverted;
+@property (readonly) unsigned filesMarkedForOrDeleted;
 @property (readonly) BOOL isProcessing;
 @property (readonly) BOOL scanReady;
 

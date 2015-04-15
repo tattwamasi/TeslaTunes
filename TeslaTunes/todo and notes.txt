@@ -48,3 +48,13 @@ the create directory with intermediates failed saying the directory already exis
 
 
 left running overnight, an open failed, assert fired for empty metadata - example of error path to be handled.  file locations can time out, for example network drive flakiness, USB drive getting pulled out, etc.  (for that matter, they can get full, have an error, etc.)
+
+
+
+notes:
+Saw an issue with unicode(?) UTF-8 representations, see:
+adding to playlistFilename url "file:///Users/rarnold/devel/TeslaTunesProjects/TeslaTunesCL/testdir/dest/Playlists/Redemption%20Songs%20A/02-Whatever%20It%20Takes...-Sine%CC%81ad%20Lohan-No%20Mermaid.flac" - from URL "file:///Users/rarnold/devel/TeslaTunesProjects/TeslaTunesCL/testdir/dest/Playlists/Redemption%20Songs%20A/02-Whatever%20It%20Takes...-Sin%C3%A9ad%20Lohan-No%20Mermaid.flac"
+
+The 2 urls came from the same url.  The first is what you get with [url URLbyStandardizingPath] and the second is just a print of the url.  The accent character on Sinead (above the e) gets represented two different ways.
+I resolved by switching the writes and checks for playlist items to remove to all store the [url URLbyStandardizingPath]  version.
+

@@ -11,6 +11,10 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
+#include <tag/tag.h>
+#include <tag/fileref.h>
+#include <tag/tfile.h>
+
 
 #include "flac_utils.h"
 
@@ -24,6 +28,20 @@ NSString *sanitizeFilename(NSString* f) {
                                                                   range: NSMakeRange(0, [f length]) ];
     return sanitizedString;
 }
+
+
+
+void genreHack(const NSURL *url, const NSString *genre) {
+    //NSLog(@"genreHack: file \"%s\", genre \"%@\".",[url fileSystemRepresentation], genre);
+    TagLib::FileRef f([url fileSystemRepresentation], false);
+    TagLib::Tag *t = f.tag();
+    t->setGenre([genre UTF8String]);
+    //NSLog(@"Set genre of %@ to %s", url, t->genre().toCString(true) );
+    if (!f.save()){
+        NSLog(@"warning:  couldn't set genre of %@ to %s", url, t->genre().toCString(true));
+    }
+}
+
 
 // make the destination filename out of the base path of destination and the relative path of the new item
 NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const NSURL* srcURL) {
@@ -54,9 +72,9 @@ NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const
         relPathRange.location = basePathComponents.count; // start the relative path at the end of the base path
         relPathRange.length = srcPathComponents.count - basePathComponents.count;
     }
-    NSURL *dstURL = [NSURL fileURLWithPathComponents:[[dstBasePath pathComponents]
-                                                      arrayByAddingObjectsFromArray:[srcPathComponents
-                                                                                     subarrayWithRange:relPathRange]]];
+    NSURL *dstURL = [NSURL fileURLWithPathComponents:
+                     [[dstBasePath pathComponents] arrayByAddingObjectsFromArray:
+                      [srcPathComponents subarrayWithRange:relPathRange]]];
     
     return dstURL;
 }
@@ -105,12 +123,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 
 @implementation FileOp
 
-- (instancetype)initWithSourceURL:(const NSURL *)s DestinationURL:(const NSURL*)d
+- (instancetype)initWithSourceURL:(const NSURL *)s DestinationURL:(const NSURL*)d  withGenre: (const NSString *) g
 {
     self = [super init];
     if (self) {
         sourceURL=s;
         destinationURL=d;
+        genre=g;
     }
     return self;
 }
@@ -121,6 +140,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 @property (readwrite) unsigned filesChecked;
 @property (readwrite) unsigned filesToCopyConvert;
 @property (readwrite) unsigned filesCopyConverted;
+@property (readwrite) unsigned filesMarkedForOrDeleted;
 
 @property (readwrite) BOOL scanReady;
 
@@ -188,6 +208,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     // if we had a scan ready from before... well we won't after we start whatever we are doing here
     self.scanReady = NO;
     self.filesCopyConverted = 0;
+    self.filesMarkedForOrDeleted = 0;
     _skippedExtensions = [[NSCountedSet alloc] init ];
     _copiedExtensions = [[NSCountedSet alloc] init];
     
@@ -224,14 +245,14 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 }
 
 
-- (void) storeScannedForCopyWithSource:(const NSURL*)s Destination:(const NSURL*)d {
-    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d];
+- (void) storeScannedForCopyWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString *) genre {
+    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withGenre: genre];
     [copyOps addObject:newOp];
     [self.copiedExtensions addObject:s.pathExtension];
     
 }
-- (void) storeScannedForConvertWithSource:(const NSURL*)s Destination:(const NSURL*)d {
-    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d];
+- (void) storeScannedForConvertWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString *) genre  {
+    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withGenre: genre];
     [convertOps addObject:newOp];
     [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
 }
@@ -248,28 +269,61 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     }
 }
 
--(void) convertWithSource:(const NSURL*)s Destination:(const NSURL*)d {
+BOOL makeDirsAsNeeded(const NSURL* d) {
+    NSError *theError;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent]
+                   withIntermediateDirectories:YES attributes:nil error:&theError]) {
+        // createDirectory returns YES even if the dir already exists because
+        // the "withIntermediateDirectories" flag is set according to the documentation,
+        // so if it fails, it's a real issue... BUT turns out the documentation may be wrong.
+        // In testing, I sometimes got dir already exists errors presumably when multiple threads
+        // were trying this same operation with several songs on a new album.
+        // So not sure what I should really do -- added all the code below to try to figure out
+        // if it's a real error.
+        BOOL isDir;
+        if ([theError code] != NSFileWriteFileExistsError) {
+            // an error, so let's skip the conversion
+            NSLog(@"warning: couldn't make target directory; %@ code (%ld).  Skipping handling of %@",
+                  [theError localizedDescription], (long)[theError code], d);
+            return NO;
+        }
+        if ([fileManager fileExistsAtPath:[[d URLByDeletingLastPathComponent] path]
+                              isDirectory:&isDir]) {
+            if (!isDir) {
+                NSLog(@"warning: when handling \"%@\", tried to make the directory to hold it, "
+                      "but a file already existed by that name that was not a directory.  Skipping "
+                      "conversion.", d);
+                return NO;
+            }
+        } else {
+            NSLog(@"warning: beats me what's happening.  Report this.  Tried to create directory to "
+                  "hold %@, but got a file exists error, yet I looked and the file doesn't exist.  "
+                  "Skipping conversion.)", d);
+            return NO;
+        }
+    }
+    
+    // if we're here either the directory was made, or it wasn't made this time, but it
+    // exists and is a directory.
+    return YES;
+}
+
+-(void) convertWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString*) genre {
     [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     if (isCancelled) return;
     [opSubQ addOperationWithBlock:^(void){
-        NSError *theError;
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent]
-                       withIntermediateDirectories:YES attributes:nil error:&theError]) {
-            // createDirectory returns YES even if the dir already exists because
-            // the "withIntermediateDirectories" flag is set, so if it fails, it's a real issue
-            NSLog(@"warning: couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
-                  [theError domain], [theError localizedDescription], [theError localizedFailureReason], (long)[theError code]);
-            //return;
-        }
-        
-        //NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
-        if (ConvertAlacToFlac(s, d, &(isCancelled))) {
-            [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
-            [self willChangeValueForKey:@"filesCopyConverted"];
-            ++_filesCopyConverted;
-            [self didChangeValueForKey:@"filesCopyConverted"];
+        if (makeDirsAsNeeded(d)) {
+            //NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
+            if (ConvertAlacToFlac([s URLByStandardizingPath], [d URLByStandardizingPath], &(isCancelled))) {
+                [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
+                [self willChangeValueForKey:@"filesCopyConverted"];
+                ++_filesCopyConverted;
+                [self didChangeValueForKey:@"filesCopyConverted"];
+                if (genre)
+                    genreHack(d, genre);
+            }
         }
     }];
     //NSLog(@"convert queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
@@ -277,34 +331,26 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 }
 
 
--(void) copyWithSource:(const NSURL*)s Destination:(const NSURL*)d {
+-(void) copyWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString*) genre {
     [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     [opSubQ addOperationWithBlock:^(void){
-        NSError *theError;
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        if (NO ==[fileManager createDirectoryAtURL:[d URLByDeletingLastPathComponent]
-                       withIntermediateDirectories:YES attributes:nil error:&theError]) {
-            // createDirectory returns YES even if the dir already exists because
-            // the "withIntermediateDirectories" flag is set, so if it fails, it's a real issue
-            // TODO: in one run early in development, the above statement was not true - got
-            // dir already exists errors presumably when multiple threads were trying this same operation
-            // with several songs on a new album.  So not sure what I should really do -- for now trying to
-            // continue rather than return - the copy should fail too if it's an issue.
-            NSLog(@"warning:  couldn't make target directory, error was domain %@, desc %@ - fail reason %@, code (%ld)",
-                  [theError domain], [theError localizedDescription], [theError localizedFailureReason], (long)[theError code]);
-            // return;
-        }
-        
-        //NSLog(@"\nCopying %s to %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
-        if (![fileManager copyItemAtURL:[s URLByStandardizingPath] toURL:[d URLByStandardizingPath] error:&theError]){
-            NSLog(@"Couldn't copy file \"%@\" to \"%@\", %@ - %@, (%ld)", s, d,
-                  [theError localizedDescription], [theError localizedFailureReason], (long)[theError code] );
-        } else {
-            [self.copiedExtensions addObject:s.pathExtension];
-            [self willChangeValueForKey:@"filesCopyConverted"];
-            ++_filesCopyConverted;
-            [self didChangeValueForKey:@"filesCopyConverted"];
+        if (makeDirsAsNeeded(d)) {
+            NSError *theError;
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            
+            //NSLog(@"\nCopying %s to %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
+            if (![fileManager copyItemAtURL:[s URLByStandardizingPath] toURL:[d URLByStandardizingPath] error:&theError]){
+                NSLog(@"Couldn't copy file \"%@\" to \"%@\", %@ (%ld)", s, d,
+                      [theError localizedDescription], (long)[theError code] );
+            } else {
+                [self.copiedExtensions addObject:s.pathExtension];
+                [self willChangeValueForKey:@"filesCopyConverted"];
+                ++_filesCopyConverted;
+                [self didChangeValueForKey:@"filesCopyConverted"];
+                if (genre)
+                    genreHack(d, genre);
+            }
         }
     }];
     //NSLog(@"copy queued, current opSubQ depth:%lu", (unsigned long)opSubQ.operationCount);
@@ -315,37 +361,27 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     for (FileOp *f in copyOps) {
         @autoreleasepool {
             if (isCancelled) break;
-            [self copyWithSource:f->sourceURL Destination:f->destinationURL];
+            [self copyWithSource:f->sourceURL
+                     Destination:f->destinationURL withGenre: f->genre];
         }
     }
     for (FileOp *f in convertOps) {
         @autoreleasepool {
             if (isCancelled) break;
-            [self convertWithSource:f->sourceURL Destination:f->destinationURL];
+            [self convertWithSource:f->sourceURL
+                        Destination:f->destinationURL withGenre: f->genre];
         }
     }
     for (NSURL *f in delOps) {
         if (isCancelled) break;
+        ++self.filesMarkedForOrDeleted;
         NSError *e;
-        if (![[NSFileManager defaultManager] removeItemAtURL:[f standardizedURL] error:&e]) {
+        if (![[NSFileManager defaultManager] removeItemAtURL:f
+                                                       error:&e]) {
             // check and report potential cleanup failure - note that if f is nil, the operation returns YES
             // TODO: see above
-            NSLog(@"Couldn't remove from playlist folder item URL \"%@\".", [f standardizedURL]);
+            NSLog(@"Couldn't remove from playlist folder item URL \"%@\". %@ (%ld)", f, [e localizedDescription], [e code]);
         }
-    }
-}
-
-#include <tag/tag.h>
-#include <tag/fileref.h>
-#include <tag/tfile.h>
-
-void genreHack(const NSURL *url, const NSString *genre) {
-    TagLib::FileRef f([url fileSystemRepresentation], false);
-    TagLib::Tag *t = f.tag();
-    t->setGenre([genre UTF8String]);
-    NSLog(@"Set genre of %@ to %s", url, t->genre().toCString(true) );
-    if (!f.save()){
-        NSLog(@"warning:  could set genre of %@ to %s", url, t->genre().toCString(true));
     }
 }
 
@@ -382,9 +418,9 @@ void genreHack(const NSURL *url, const NSString *genre) {
             [self didChangeValueForKey:@"filesToCopyConvert"];
             
             if (scanOnly){
-                [self storeScannedForConvertWithSource:file Destination:outURL];
+                [self storeScannedForConvertWithSource:file Destination:outURL withGenre: genre];
             } else {
-                [self convertWithSource:file Destination:outURL];
+                [self convertWithSource:file Destination:outURL  withGenre: genre];
             }
         } else if ([extensionsToCopy containsObject:[file.pathExtension lowercaseString]]) {
             // NSLog(@"checking to see if %@ exists at dest path %@", fileURL, destFileURL);
@@ -397,9 +433,9 @@ void genreHack(const NSURL *url, const NSString *genre) {
             ++_filesToCopyConvert;
             [self didChangeValueForKey:@"filesToCopyConvert"];
             if (scanOnly) {
-                [self storeScannedForCopyWithSource:file Destination:destinationFile];
+                [self storeScannedForCopyWithSource:file Destination:destinationFile  withGenre: genre];
             } else {
-                [self copyWithSource:file Destination:destinationFile];
+                [self copyWithSource:file Destination:destinationFile withGenre: genre];
             }
             outURL = destinationFile;
         } else {
@@ -408,10 +444,8 @@ void genreHack(const NSURL *url, const NSString *genre) {
             [self.skippedExtensions addObject:file.pathExtension];
             return nil;
         }
-
-        if (genre) genreHack(outURL, genre);
         
-        return destinationFile;
+        return outURL;
     }
     
 }
@@ -427,13 +461,17 @@ void genreHack(const NSURL *url, const NSString *genre) {
          {
              // this could happen without it being an error in the event the
              // destination playlist doesn't exist yet, for example when doing
-             // a scan only for the first time on a playlist.  If that's the case,
+             // a scan only for the first time on a playlist, or simply getting the operations to copy
+             // a playlist queued up behind other ops in the queue, then hitting the prune code before
+             // any of them had gotten to execute yet. Regardless, if that's the case,
              // it isn't an error, and there obviously won't be anything to remove.
-             if (error  && !scanOnly) {
-                 NSLog(@"Error when looking for destination playlist folder to prune [Error] %@ (%@)", error, url);
+             if (error  && (error.code != NSFileReadNoSuchFileError)) {
+                 NSLog(@"Error when looking for destination playlist folder \"%@\" to prune. %@ (%ld)%@",
+                       dir, [error localizedDescription],
+                       [error code], url? [NSString stringWithFormat:@" Happened when looking at \"%@\"",url] : @"");
                  return NO;
              }
-             
+             // either no error?!? or error code is no such file which probably means the scenario in the above comment happened
              return YES;
          }];
     
@@ -442,17 +480,32 @@ void genreHack(const NSURL *url, const NSString *genre) {
             return NO;
         }
         
-        if (![fileSet containsObject:[fileURL lastPathComponent]]) {
+        if (![fileSet containsObject:[fileURL URLByStandardizingPath]]) {
             // if scan only, queue the delete, if not then do the delete
+            ++self.filesMarkedForOrDeleted;
+            
+            // If the URL is a directory then the delete will recursively remove any files/dirs in it,
+            // so tell the enumerator to skip descendents so we don't work harder than needed
+            // Note that under current design there should be no subdirectories, so this would be cruft
+            // left over from manual moving things around (or this comment needs updating and hope we aren't
+            // deleting something wrong!
+            NSNumber *isDirectory;
+            [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
+            if ([isDirectory boolValue]) {
+                [enumerator skipDescendants];
+            }
+            
             if (scanOnly) {
+                //NSLog(@"adding op to remove \"%@\"", fileURL);
                 [delOps addObject:fileURL];
             } else {
-                //NSLog(@"removing %@", [fileURL standardizedURL]);
+                //NSLog(@"removing %@", fileURL);
                 NSError *e;
-                if (![[NSFileManager defaultManager] removeItemAtURL:[fileURL standardizedURL] error:&e]) {
+                if (![[NSFileManager defaultManager] removeItemAtURL:fileURL error:&e]) {
                     // check and report potential cleanup failure - note that if f is nil, the operation returns YES
                     // TODO: see above
-                    NSLog(@"Couldn't remove from playlist folder item URL \"%@\".", [fileURL standardizedURL]);
+                    NSLog(@"Couldn't remove from playlist folder item URL \"%@\". %@ (%ld)",
+                          fileURL, [e localizedDescription], [e code]);
                 }
                 
             }
@@ -471,8 +524,8 @@ void genreHack(const NSURL *url, const NSString *genre) {
 // Return NO if processing was interrupted, either by error, or by cancel flag being set, YES otherwise
 - (BOOL) processPlaylistNode:(PlaylistNode *) node toDestinationDirectoryURL: destinationDir
              performScanOnly: (BOOL) scanOnly {
-    NSURL *destinationFolderForPlaylist = [destinationDir
-                                           URLByAppendingPathComponent: sanitizeFilename(node.playlist.name)];
+    NSURL *destinationFolderForPlaylist = [[destinationDir
+                                           URLByAppendingPathComponent: sanitizeFilename(node.playlist.name)] URLByStandardizingPath];
     //NSLog(@"playlist %@ was selected and will be copied to %s", node.playlist.name, destinationFolderForPlaylist.fileSystemRepresentation);
     NSMutableSet *playlistFilenames = [[NSMutableSet alloc] init];
     
@@ -524,7 +577,7 @@ void genreHack(const NSURL *url, const NSString *genre) {
                                                    idx, track.title, track.artist.name, track.album.title,
                                                    [track.location pathExtension] ]);
 
-            NSURL *destFileURL = [destinationFolderForPlaylist URLByAppendingPathComponent: filename];
+            NSURL *destFileURL = [[destinationFolderForPlaylist URLByAppendingPathComponent: filename] URLByStandardizingPath];
             
 #if 0
             NSLog(@"Copying track %@ from location type %lu, locations %s to %s", track.title,
@@ -535,9 +588,10 @@ void genreHack(const NSURL *url, const NSString *genre) {
             if (track.location) {
                 NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly
                                             setGenre:self.hackGenre? node.playlist.name:nil];
-                if (result)
-                    [playlistFilenames addObject:[result lastPathComponent]];
-                
+                if (result) {
+                    [playlistFilenames addObject:result];
+                    //NSLog(@"adding to playlistFilename url \"%@\"", result);
+                }
             }
         }
     }
@@ -584,7 +638,8 @@ void genreHack(const NSURL *url, const NSString *genre) {
                                                             errorHandler:^BOOL(NSURL *url, NSError *error)
                                              {
                                                  if (error) {
-                                                     NSLog(@"[Error] %@ (%@)", error, url);
+                                                     NSLog(@"warning: error trying to scan source directory %@. %@ (%@)",
+                                                           sourceDir, error, url);
                                                      return NO;
                                                  }
                                                  
