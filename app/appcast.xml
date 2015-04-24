@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>TeslaTunes</title>
+        <link>http://teslatunes.loci.net/app/appcast.xml</link>
+        <description>Most recent changes with links to updates.</description>
+        <language>en</language>
+        <item>
+            <title>Version 1.2.0</title>
+            <sparkle:releaseNotesLink>https://github.com/tattwamasi/TeslaTunes/releases/tag/1.2.0</sparkle:releaseNotesLink>
+            <pubDate>Fri, 24 Apr 2015 16:50:17 -0700</pubDate>
+            <enclosure
+                url="https://github.com/tattwamasi/TeslaTunes/releases/download/1.2.0/TeslaTunes_1.2.0.zip"
+                sparkle:version="1.2.0"
+                type="application/octet-stream"
+                length="2632063"
+            />
+        </item>
+    </channel>
+</rss>
