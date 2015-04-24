@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
+		E55A71AA1AE64A4400AB75E2 /* GenSparkleInfo */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = E55A71AC1AE64A4400AB75E2 /* Build configuration list for PBXAggregateTarget "GenSparkleInfo" */;
+			buildPhases = (
+				E55A71AB1AE64A4400AB75E2 /* ShellScript */,
+			);
+			dependencies = (
+				E55A71B01AE64A8F00AB75E2 /* PBXTargetDependency */,
+			);
+			name = GenSparkleInfo;
+			productName = GenGitVersioning;
+		};
 		E5CC88B71AB5927E00C8951F /* GenGitVersioning */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = E5CC88BA1AB5927E00C8951F /* Build configuration list for PBXAggregateTarget "GenGitVersioning" */;
@@ -30,6 +42,8 @@
 		E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */; };
 		E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */; };
 		E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */; };
+		E55A71A61AE6417F00AB75E2 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E55A71A51AE6417F00AB75E2 /* Sparkle.framework */; };
+		E55A71A71AE641AD00AB75E2 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = E55A71A51AE6417F00AB75E2 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */; };
 		E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */; };
 		E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E58A24B81AC9282300E8DDE4 /* AppKit.framework */; };
@@ -42,6 +56,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E55A71AF1AE64A8F00AB75E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E502D0BB1A739D1500BE86E2;
+			remoteInfo = TeslaTunes;
+		};
 		E5CC88BC1AB593AA00C8951F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
@@ -58,6 +79,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				E55A71A71AE641AD00AB75E2 /* Sparkle.framework in CopyFiles */,
 				E5F876801ADE49D800F9A362 /* tag.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,8 +101,9 @@
 		E52E87961ADD9AA900B08A74 /* tag.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tag.framework; path = ../../taglib/taglib/tag.framework; sourceTree = "<group>"; };
 		E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = ../../../../../Library/Frameworks/iTunesLibrary.framework; sourceTree = "<group>"; };
+		E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = /Library/Frameworks/iTunesLibrary.framework; sourceTree = "<absolute>"; };
 		E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TeslaTunes.entitlements; sourceTree = "<group>"; };
+		E55A71A51AE6417F00AB75E2 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = ../Sparkle.framework; sourceTree = "<group>"; };
 		E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistPickViewController.h; sourceTree = "<group>"; };
 		E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistPickViewController.m; sourceTree = "<group>"; };
 		E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSelections.h; sourceTree = "<group>"; };
@@ -102,6 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E5F8767F1ADE477000F9A362 /* tag.framework in Frameworks */,
+				E55A71A61AE6417F00AB75E2 /* Sparkle.framework in Frameworks */,
 				E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */,
 				E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */,
 				E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */,
@@ -115,11 +139,7 @@
 		E502D0B31A739D1500BE86E2 = {
 			isa = PBXGroup;
 			children = (
-				E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */,
-				E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */,
-				E52E87961ADD9AA900B08A74 /* tag.framework */,
-				E58A24B81AC9282300E8DDE4 /* AppKit.framework */,
-				E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */,
+				E55A71A41AE6415700AB75E2 /* Frameworks */,
 				E502D0BE1A739D1500BE86E2 /* TeslaTunes */,
 				E502D0BD1A739D1500BE86E2 /* Products */,
 			);
@@ -164,6 +184,19 @@
 				E502D0C91A739D1500BE86E2 /* Images.xcassets */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E55A71A41AE6415700AB75E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E55A71A51AE6417F00AB75E2 /* Sparkle.framework */,
+				E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */,
+				E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */,
+				E52E87961ADD9AA900B08A74 /* tag.framework */,
+				E58A24B81AC9282300E8DDE4 /* AppKit.framework */,
+				E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E58A24B41AC8E15400E8DDE4 /* utils */ = {
@@ -239,6 +272,7 @@
 			targets = (
 				E502D0BB1A739D1500BE86E2 /* TeslaTunes */,
 				E5CC88B71AB5927E00C8951F /* GenGitVersioning */,
+				E55A71AA1AE64A4400AB75E2 /* GenSparkleInfo */,
 			);
 		};
 /* End PBXProject section */
@@ -257,6 +291,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		E55A71AB1AE64A4400AB75E2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -o errexit\n\n#[ $BUILD_STYLE = Release ] || { echo Distribution target requires \"'Release'\" build style; false; }\n\nVERSION=$(defaults read \"$BUILT_PRODUCTS_DIR/$PROJECT_NAME.app/Contents/Info\" CFBundleVersion)\nVERSIONTXT=$(defaults read \"$BUILT_PRODUCTS_DIR/$PROJECT_NAME.app/Contents/Info\" CFBundleShortVersionString)\nDOWNLOAD_BASE_URL=\"http://teslatunes.loci.net/app/\"\nRELEASENOTES_URL=\"http://teslatunes.loci.net/app/release-notes.html#version-$VERSIONTXT\"\n\nARCHIVE_FILENAME=\"${PROJECT_NAME}_${VERSIONTXT}.zip\"\nDOWNLOAD_URL=\"$DOWNLOAD_BASE_URL/$ARCHIVE_FILENAME\"\n\nWD=$PWD\ncd \"$BUILT_PRODUCTS_DIR\"\nrm -f \"$PROJECT_NAME\"*.zip\nditto -ck --keepParent \"$PROJECT_NAME.app\" \"$ARCHIVE_FILENAME\"\n\nSIZE=$(stat -f %z \"$ARCHIVE_FILENAME\")\nPUBDATE=$(LC_TIME=en_US date +\"%a, %d %b %G %T %z\")\n\ncat <<EOF\n<item>\n<title>Version $VERSIONTXT</title>\n<sparkle:releaseNotesLink>$RELEASENOTES_URL</sparkle:releaseNotesLink>\n<pubDate>$PUBDATE</pubDate>\n<enclosure\nurl=\"$DOWNLOAD_URL\"\nsparkle:version=\"$VERSION\"\nsparkle:shortVersionString=\"$VERSIONTXT\"\ntype=\"application/octet-stream\"\nlength=\"$SIZE\"\n/>\n</item>\nEOF\n";
+		};
 		E5CC88BB1AB5928F00C8951F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -292,6 +339,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		E55A71B01AE64A8F00AB75E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E502D0BB1A739D1500BE86E2 /* TeslaTunes */;
+			targetProxy = E55A71AF1AE64A8F00AB75E2 /* PBXContainerItemProxy */;
+		};
 		E5CC88BD1AB593AA00C8951F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E5CC88B71AB5927E00C8951F /* GenGitVersioning */;
@@ -422,6 +474,8 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					/Library/Frameworks/iTunesLibrary.framework,
 					/Users/rarnold/devel/taglib/taglib,
+					"$(PROJECT_DIR)",
+					/Users/rarnold/devel/TeslaTunesProjects,
 				);
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -451,6 +505,8 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					/Library/Frameworks/iTunesLibrary.framework,
 					/Users/rarnold/devel/taglib/taglib,
+					"$(PROJECT_DIR)",
+					/Users/rarnold/devel/TeslaTunesProjects,
 				);
 				INFOPLIST_FILE = TeslaTunes/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -465,6 +521,20 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+			};
+			name = Release;
+		};
+		E55A71AD1AE64A4400AB75E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "GenGitVersioning copy";
+			};
+			name = Debug;
+		};
+		E55A71AE1AE64A4400AB75E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "GenGitVersioning copy";
 			};
 			name = Release;
 		};
@@ -499,6 +569,15 @@
 			buildConfigurations = (
 				E502D0DD1A739D1600BE86E2 /* Debug */,
 				E502D0DE1A739D1600BE86E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E55A71AC1AE64A4400AB75E2 /* Build configuration list for PBXAggregateTarget "GenSparkleInfo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E55A71AD1AE64A4400AB75E2 /* Debug */,
+				E55A71AE1AE64A4400AB75E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
