@@ -451,6 +451,9 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
 }
 
 
+
+// Used to delete media from playlist folders while syncing a playlist.  Also used to delete playlist folders
+// from the Playlist top level folder on the destination, for playlists that are no longer selected.
 - (BOOL) pruneFilesNotInSet: (const NSSet*) fileSet inDirectory: (const NSURL*) dir
             performScanOnly: (BOOL) scanOnly {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -480,20 +483,21 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             return NO;
         }
         
+        
+        // If the URL is a directory and it's in our fileSet, then we'll call it good.  We don't want to recurse into it
+        // and end up deleting things we shouldn't, due to this being called with only playlist folders in the fileSet, as
+        // part of the playlist cleanup of playlists no longer selected.
+        // If the URL is a directory, and it's not in our fileSet, then the delete will recursively remove any files/dirs in it,
+        // so either way we tell the enumerator to skip descendents so we don't work harder than needed.
+        NSNumber *isDirectory;
+        [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
+        if ([isDirectory boolValue]) {
+            [enumerator skipDescendants];
+        }
+        
         if (![fileSet containsObject:[fileURL URLByStandardizingPath]]) {
             // if scan only, queue the delete, if not then do the delete
             ++self.filesMarkedForOrDeleted;
-            
-            // If the URL is a directory then the delete will recursively remove any files/dirs in it,
-            // so tell the enumerator to skip descendents so we don't work harder than needed
-            // Note that under current design there should be no subdirectories, so this would be cruft
-            // left over from manual moving things around (or this comment needs updating and hope we aren't
-            // deleting something wrong!
-            NSNumber *isDirectory;
-            [fileURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:nil];
-            if ([isDirectory boolValue]) {
-                [enumerator skipDescendants];
-            }
             
             if (scanOnly) {
                 //NSLog(@"adding op to remove \"%@\"", fileURL);
@@ -522,10 +526,8 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
 // playlist order and eliminates collisions.  Also, delete any other files in the folder
 // that weren't in the playlist.
 // Return NO if processing was interrupted, either by error, or by cancel flag being set, YES otherwise
-- (BOOL) processPlaylistNode:(PlaylistNode *) node toDestinationDirectoryURL: destinationDir
+- (BOOL) processPlaylistNode:(PlaylistNode *) node toDestinationDirectoryURL: destinationFolderForPlaylist
              performScanOnly: (BOOL) scanOnly {
-    NSURL *destinationFolderForPlaylist = [[destinationDir
-                                           URLByAppendingPathComponent: sanitizeFilename(node.playlist.name)] URLByStandardizingPath];
     //NSLog(@"playlist %@ was selected and will be copied to %s", node.playlist.name, destinationFolderForPlaylist.fileSystemRepresentation);
     NSMutableSet *playlistFilenames = [[NSMutableSet alloc] init];
     
@@ -557,16 +559,15 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             dispatch_sync(dispatch_get_main_queue(), ^(){
                 response = [alert runModal];
             });
+            
             if (response == NSAlertFirstButtonReturn) {
                 return NO;
-            } else {
-                continue;
             }
+            continue;
+            
         }
         
         @autoreleasepool {
-            
-            
             // Had planned to match majorlance's applescript and keep same name format,
             // but not sure why it really makes sense to keep playlist name in it if we are putting this in
             // it's own folder.  Also it seems like we need to put the playlist order in the filename,
@@ -679,16 +680,24 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
     }
     if (playlistSelections && !isCancelled) {
         PlaylistNode *playlistTree = [playlistSelections getTree];
-        [playlistTree enumerateTreeUsingBlock:^(PlaylistNode *node, BOOL *stop) {
+        NSMutableSet *playlistFolders = [[NSMutableSet alloc] init];
+        
+        [playlistTree enumerateTreeUsingBlock:^(PlaylistNode* node, BOOL* stop) {
             if (node.playlist && ([node.selectedState integerValue] == NSOnState) && node.playlist.items) {
-                if (![self processPlaylistNode:node toDestinationDirectoryURL: playlistFolderURL performScanOnly:scanOnly]) {
+                NSURL* destinationFolderForPlaylist = [[playlistFolderURL
+                                                        URLByAppendingPathComponent:sanitizeFilename(node.playlist.name)] URLByStandardizingPath];
+                [playlistFolders addObject:destinationFolderForPlaylist];
+                if (![self processPlaylistNode:node toDestinationDirectoryURL: destinationFolderForPlaylist performScanOnly:scanOnly]) {
                     *stop = YES;
                 }
                 
             }
         }];
+        if (!isCancelled) {
+            [self pruneFilesNotInSet:playlistFolders inDirectory:playlistFolderURL performScanOnly:scanOnly];
+        }
     }
-    
+
     self.scanReady = (scanOnly && (convertOps.count || copyOps.count || delOps.count) );
 }
 
