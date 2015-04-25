@@ -1,30 +1,29 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8" >
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" >
     <title>Tesla Tunes by tattwamasi</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/styles.css" >
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css" >
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" >
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
   <body>
-    <div class="wrapper">
+    <div class="wrapper" >
       <header>
         <h1>Tesla Tunes</h1>
-        <p>An OS X Utility to copy your iTunes or other music library, automatically converting Apple Lossless to Flac, to a destination for use with your Tesla Model S</p>
+        <p>An OS X Utility to copy your iTunes playlists and/or other music library, automatically converting Apple Lossless to Flac, to a destination for use with your Tesla Model S</p>
 
-        <p class="view"><a href="https://github.com/tattwamasi/TeslaTunes">View the Project on GitHub <small>tattwamasi/TeslaTunes</small></a></p>
+        <p class="view" ><a href="https://github.com/tattwamasi/TeslaTunes" >View the Project on GitHub</a></p>
 
 
         <ul>
-          <li><a href="https://github.com/tattwamasi/TeslaTunes/releases/latest">Download Latest<strong>Release</strong></a></li>
-          <li></li>
-          <li><a href="https://github.com/tattwamasi/TeslaTunes">View On <strong>GitHub</strong></a></li>
+			<li></li>
+          <li><a href="https://github.com/tattwamasi/TeslaTunes/releases/latest" >Download Latest<strong>Release</strong></a></li>
+			<li></li>
         </ul>
       </header>
       <section>
@@ -32,7 +31,7 @@
 
 <p>I wrote it to simplify a reoccurring need to get new music from my home music library into the external drive I use in my Model S. My library is mostly composed of Apple Lossless tracks, but also has a number of other formats as well, chiefly mp3, aac (m4a), and a few wave files.  While it's easy enough to copy the whole library manually, there are a few issues that make that enough of a pain that I wanted something easier - thus this utility was created:</p>
 
-<ol class="task-list">
+<ol class="task-list" >
     <li> Unfortunately the Model S doesn't (yet) handle the Apple Lossless format - though it does handle FLAC, another lossless audio format which Apple Lossless can be converted to.</li>
     <li> I don't want to convert all my Apple Lossless to FLAC in my home library, though I'd reconsider if Apple started directly supporting it.</li>
     <li>While other programs exist that can copy or sync directories, none of them worked automatically while also handling automatic conversion of <em>just</em> files that need to be converted, while leaving others alone.</li>
@@ -40,38 +39,49 @@
 
 <p>So I built this.  The app will scan a source and destination directory of your choosing (and remember it, so you don't have to choose it each time), and will copy or convert as appropriate all files in the source directory that don't exist in the destination directory (including in converted FLAC form, if the source is Apple Lossless).  </p>
 
-<ul class="task-list">
+<ul class="task-list" >
     <li>It won't copy files it doesn't think the Model S can play (though as noted will convert Apple Lossless to FLAC automatically).</li>
     <li>It won't overwrite any files, and it won't create extra copies of any files, including leaving around Apple Lossless copies at the destination.</li>
     <li>It won't leave partially copied or converted files laying around if you stop it partway through (though no promises in the event of crashes, system hangs, etc.).</li>
     <li>
-    <p>It's vaguely fast... with qualifications. See project README.md for details</p>
-
+    <p>It's vaguely fast... with qualifications. See project README for details</p>
     </li>
+    <li>By popular demand, it handles playlists from iTunes, as best as we can given the Model S lacks actual playlist support
+
+<ul>
+<li>A folder named Playlists is created on the destination path.  Inside it, individual playlists are created as folders.</li>
+<li>In each individual playlist folder, the media is copied and named by playlist position, song name, artist, etc., for example:  06-Redemption Song-Bob Marley &amp; The Wailers-Legend.flac</li>
+<li>Songs in a playlist multiple times or in multiple playlists are copied multiple times. This is because of the lack of actual support for playlists.</li>
+<li>Also by popular demand, the app supports an option for setting the genre of the songs in a playlist folder to the name of the playlist.  This enables a workaround method of listening to playlists songs by selecting them in the genre listings instead of selecting them by folder.  This works around the display limitations of play by folder not showing all of the song information, and may also work better for art display.</li>
 </ul>
+</li>
+</ul>
+
+<p>My intent for this project, in addition to the obvious one of make life easier with the music library management, was to use it as a testbed for different implementations as well.  I wanted to do largely the same small program in Swift, Objective C, and (to the extent I could) standard and portable as possible C++ (C++14 / 17 to be more specific).  I also wanted to make Windows and Linux versions with as much common code as possible, as interest and time permits.  That said, I wanted to go ahead and put this out there on the off chance it may help a few other people with the same library management goals as me.</p>
 
 <p>While I want to work on this as a sample project for trying out different implementations, I'll try to keep that at the development playground level and not expose that stuff in any actual releases.</p>
 
-<p><a href="https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png" target="_blank"><img src="https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png" alt="EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy" title="EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy" style="max-width:100%;"></a></p>
+<p><a href="https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png" target="_blank" ><img src="https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png" alt="EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy" title="EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy" style="max-width:100%; " ></a></p>
 
 
       </section>
       <footer>
-        <p>This project is maintained by <a href="https://github.com/tattwamasi">tattwamasi</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        <p>This project is maintained by <a href="https://github.com/tattwamasi" >tattwamasi</a></p>
+        <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist" >orderedlist</a></small></p>
       </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
+    <script src="javascripts/scale.fix.js" ></script>
+              <script type="text/javascript" >
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
-          <script type="text/javascript">
+          <script type="text/javascript" >
             try {
               var pageTracker = _gat._getTracker("UA-60782633-2");
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
 
-  </body>
-</html>
+  
+
+</body></html>
