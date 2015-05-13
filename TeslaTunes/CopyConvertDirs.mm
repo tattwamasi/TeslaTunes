@@ -14,6 +14,9 @@
 #include <tag/tag.h>
 #include <tag/fileref.h>
 #include <tag/tfile.h>
+#include <tag/tpropertymap.h>
+
+
 
 
 #include "flac_utils.h"
@@ -27,19 +30,6 @@ NSString *sanitizeFilename(NSString* f) {
                                                                 options:NSRegularExpressionSearch
                                                                   range: NSMakeRange(0, [f length]) ];
     return sanitizedString;
-}
-
-
-
-void genreHack(const NSURL *url, const NSString *genre) {
-    //NSLog(@"genreHack: file \"%s\", genre \"%@\".",[url fileSystemRepresentation], genre);
-    TagLib::FileRef f([url fileSystemRepresentation], false);
-    TagLib::Tag *t = f.tag();
-    t->setGenre([genre UTF8String]);
-    //NSLog(@"Set genre of %@ to %s", url, t->genre().toCString(true) );
-    if (!f.save()){
-        NSLog(@"warning:  couldn't set genre of %@ to %s", url, t->genre().toCString(true));
-    }
 }
 
 
@@ -123,13 +113,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 
 @implementation FileOp
 
-- (instancetype)initWithSourceURL:(const NSURL *)s DestinationURL:(const NSURL*)d  withGenre: (const NSString *) g
+- (instancetype)initWithSourceURL:(const NSURL *)s DestinationURL:(const NSURL*)d  withPlaylist: (const NSString *) p
 {
     self = [super init];
     if (self) {
         sourceURL=s;
         destinationURL=d;
-        genre=g;
+        playlist=p;
     }
     return self;
 }
@@ -245,14 +235,79 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 }
 
 
-- (void) storeScannedForCopyWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString *) genre {
-    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withGenre: genre];
+// manipulate the tags on the media item at url taking into account
+// current settings of tag options
+// Return YES if tags were successfully updated, NO otherwise.
+- (BOOL) twiddleTags: (const NSURL *) url withPlaylist: (const NSString *) playlist {
+    
+    TagLib::FileRef f([url fileSystemRepresentation], false);
+    TagLib::Tag *t = f.tag();
+    
+    if (!t) {
+        NSLog(@"Couldn't get tags from %@, so couldn't update them.", url);
+        return NO;
+    }
+    bool needsSaving = false;
+    if (playlist) {
+        if (self.stripTagsForPlaylists) {
+            // note: had originally planned to strip all tags.  Genre will be added back later if hackGenre is true
+            // however, the S only has play groupings for album, artist, song, and genre, so instead of removing all tags,
+            // let's try just removing these.
+            t->setAlbum(TagLib::String::null);
+            t->setArtist(TagLib::String::null);
+            t->setTitle(TagLib::String::null);
+            t->setGenre(TagLib::String::null);
+            needsSaving = true;
+        }
+        if (self.hackGenre) {
+            t->setGenre([playlist UTF8String]);
+            needsSaving = true;
+            //NSLog(@"Set genre of %@ to %s", url, t->genre().toCString(true) );
+        }
+    }
+    if (self.remapAlbumArtistToArtistAndTitle && !(playlist && self.stripTagsForPlaylists)) {
+        // if there's an album artist, set artist to album artist, and add artist to title
+        // auto props = t->properties();
+        auto props = f.file()->properties();
+#if 0
+        NSLog(@"Remap Check for %s", [url fileSystemRepresentation]);
+        for (auto p : props) {
+            NSLog(@"Property: %s  => %s", p.first.toCString(true), p.second.toString().toCString(true) );
+        }
+        auto unsupportedData = props.unsupportedData();
+        for (auto s : unsupportedData) {
+            NSLog(@"Unsupported data item: \"%s\"", s.toCString(true));
+        }
+#endif
+        auto albumArtistList = props["ALBUMARTIST"];
+        if (! albumArtistList.isEmpty() ) {
+            auto albumArtist = albumArtistList.front();
+            auto newTitle = t->title();
+            newTitle += " - ";
+            newTitle += t->artist();
+            t->setTitle(newTitle);
+            t->setArtist(albumArtist);
+            needsSaving = true;
+            //NSLog(@"Remap %s:  Set title to %s, and artist to %s.", url.fileSystemRepresentation, t->title().toCString(true), t->artist().toCString(true));
+        }
+    }
+    // todo:  see if save optimizes for case where nothing changed, or set flag so we don't save if we didn't do anything
+    if (needsSaving && !f.save()){
+        NSLog(@"warning:  couldn't save file after updating tags of %@", playlist?
+              [NSString stringWithFormat:@"%@ in playlist %@", url, playlist] : url);
+        return NO;
+    }
+    return YES;
+}
+
+- (void) storeScannedForCopyWithSource:(const NSURL*)s Destination:(const NSURL*)d withPlaylist: (const NSString *) playlist {
+    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withPlaylist: playlist];
     [copyOps addObject:newOp];
     [self.copiedExtensions addObject:s.pathExtension];
     
 }
-- (void) storeScannedForConvertWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString *) genre  {
-    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withGenre: genre];
+- (void) storeScannedForConvertWithSource:(const NSURL*)s Destination:(const NSURL*)d withPlaylist: (const NSString *) playlist  {
+    FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withPlaylist: playlist];
     [convertOps addObject:newOp];
     [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
 }
@@ -309,7 +364,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
     return YES;
 }
 
--(void) convertWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString*) genre {
+-(void) convertWithSource:(const NSURL*)s Destination:(const NSURL*)d withPlaylist: (const NSString*) playlist {
     [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     if (isCancelled) return;
@@ -321,8 +376,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
                 [self willChangeValueForKey:@"filesCopyConverted"];
                 ++_filesCopyConverted;
                 [self didChangeValueForKey:@"filesCopyConverted"];
-                if (genre)
-                    genreHack(d, genre);
+                [self twiddleTags:d withPlaylist:playlist];
             }
         }
     }];
@@ -331,7 +385,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
 }
 
 
--(void) copyWithSource:(const NSURL*)s Destination:(const NSURL*)d withGenre: (const NSString*) genre {
+-(void) copyWithSource:(const NSURL*)s Destination:(const NSURL*)d withPlaylist: (const NSString*) playlist {
     [self chillTillQueueLengthIsReasonable:opSubQ];
     // make the parent directory (and all other intermediate directories) if needed, then copy
     [opSubQ addOperationWithBlock:^(void){
@@ -348,8 +402,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
                 [self willChangeValueForKey:@"filesCopyConverted"];
                 ++_filesCopyConverted;
                 [self didChangeValueForKey:@"filesCopyConverted"];
-                if (genre)
-                    genreHack(d, genre);
+                [self twiddleTags:d withPlaylist:playlist];
             }
         }
     }];
@@ -362,14 +415,14 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
         @autoreleasepool {
             if (isCancelled) break;
             [self copyWithSource:f->sourceURL
-                     Destination:f->destinationURL withGenre: f->genre];
+                     Destination:f->destinationURL withPlaylist: f->playlist];
         }
     }
     for (FileOp *f in convertOps) {
         @autoreleasepool {
             if (isCancelled) break;
             [self convertWithSource:f->sourceURL
-                        Destination:f->destinationURL withGenre: f->genre];
+                        Destination:f->destinationURL withPlaylist: f->playlist];
         }
     }
     for (NSURL *f in delOps) {
@@ -391,7 +444,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
 // setGenre will, if not nil, set the genre of the destination file, iff copied/converted.
 // TODO: check returns of copys/converts and return appropriately
 - (NSURL *) processFileURL:(const NSURL *) file toDestination: destinationFile
-           performScanOnly: (BOOL) scanOnly setGenre: (NSString*) genre {
+           performScanOnly: (BOOL) scanOnly withPlaylist: (NSString*) playlist {
     @autoreleasepool {
         if (isCancelled) return nil;
         NSString *filename;
@@ -418,9 +471,9 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             [self didChangeValueForKey:@"filesToCopyConvert"];
             
             if (scanOnly){
-                [self storeScannedForConvertWithSource:file Destination:outURL withGenre: genre];
+                [self storeScannedForConvertWithSource:file Destination:outURL withPlaylist: playlist];
             } else {
-                [self convertWithSource:file Destination:outURL  withGenre: genre];
+                [self convertWithSource:file Destination:outURL  withPlaylist: playlist];
             }
         } else if ([extensionsToCopy containsObject:[file.pathExtension lowercaseString]]) {
             // NSLog(@"checking to see if %@ exists at dest path %@", fileURL, destFileURL);
@@ -433,9 +486,9 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             ++_filesToCopyConvert;
             [self didChangeValueForKey:@"filesToCopyConvert"];
             if (scanOnly) {
-                [self storeScannedForCopyWithSource:file Destination:destinationFile  withGenre: genre];
+                [self storeScannedForCopyWithSource:file Destination:destinationFile  withPlaylist: playlist];
             } else {
-                [self copyWithSource:file Destination:destinationFile withGenre: genre];
+                [self copyWithSource:file Destination:destinationFile withPlaylist: playlist];
             }
             outURL = destinationFile;
         } else {
@@ -454,6 +507,13 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
 
 // Used to delete media from playlist folders while syncing a playlist.  Also used to delete playlist folders
 // from the Playlist top level folder on the destination, for playlists that are no longer selected.
+// NOTE: We use fileSystemRepresentation NSStrings instead of URLs when comparing files from the directory
+// enumerator to ones in the fileset.  This is because a URL will end in a / if it already exists,
+// but will not if it doesn't exist yet -  makes sense, but would mess up simple string matching of URLs
+// and was causing a bug.
+// The fileSystemRepresentation is the same whether it exists yet or not, and when read back
+// from the dir enumerator
+
 - (BOOL) pruneFilesNotInSet: (const NSSet*) fileSet inDirectory: (const NSURL*) dir
             performScanOnly: (BOOL) scanOnly {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -495,7 +555,11 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             [enumerator skipDescendants];
         }
         
-        if (![fileSet containsObject:[fileURL URLByStandardizingPath]]) {
+        // TODO: not sure if containsObject works the way I expect here - seems like I'm asking if a new NSString object
+        //  which happens to have the same data in it as another object in the set, is contained in the set.
+        //  I'd expect that to never work since they are different objects, but ObjC surprises me at times - not
+        //  sure how the equality is checked.
+        if (![fileSet containsObject:[NSString stringWithUTF8String:fileURL.fileSystemRepresentation]]) {
             // if scan only, queue the delete, if not then do the delete
             ++self.filesMarkedForOrDeleted;
             
@@ -503,7 +567,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
                 //NSLog(@"adding op to remove \"%@\"", fileURL);
                 [delOps addObject:fileURL];
             } else {
-                //NSLog(@"removing %@", fileURL);
+                //NSLog(@"pruning %s", fileURL.fileSystemRepresentation);
                 NSError *e;
                 if (![[NSFileManager defaultManager] removeItemAtURL:fileURL error:&e]) {
                     // check and report potential cleanup failure - note that if f is nil, the operation returns YES
@@ -588,10 +652,10 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             
             if (track.location) {
                 NSURL *result = [self processFileURL:track.location toDestination: destFileURL performScanOnly:scanOnly
-                                            setGenre:self.hackGenre? node.playlist.name:nil];
+                                            withPlaylist: node.playlist.name];
                 if (result) {
-                    [playlistFilenames addObject:result];
-                    //NSLog(@"adding to playlistFilename url \"%@\"", result);
+                    [playlistFilenames addObject:[NSString stringWithUTF8String:result.fileSystemRepresentation]];
+                    //NSLog(@"adding to playlistFilename %s", result.fileSystemRepresentation);
                 }
             }
         }
@@ -673,7 +737,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
                     }
                     continue;
                 }
-                [self processFileURL:fileURL toDestination: destFileURL performScanOnly:scanOnly setGenre:nil];
+                [self processFileURL:fileURL toDestination: destFileURL performScanOnly:scanOnly withPlaylist:nil];
             }
         }
         
@@ -686,7 +750,12 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             if (node.playlist && ([node.selectedState integerValue] == NSOnState) && node.playlist.items) {
                 NSURL* destinationFolderForPlaylist = [[playlistFolderURL
                                                         URLByAppendingPathComponent:sanitizeFilename(node.playlist.name)] URLByStandardizingPath];
-                [playlistFolders addObject:destinationFolderForPlaylist];
+                // NOTE: path will end in a / if it already exists, but will not if it doesn't exist yet -
+                // makes sense, but would mess up simple string matching of URLs in the prunefiles step, so use
+                // the fileSystemRepresentation, which will be the same whether it exists yet or not, and when read back
+                // from the dir enumerator
+                [playlistFolders addObject:[NSString stringWithUTF8String:destinationFolderForPlaylist.fileSystemRepresentation]];
+                //NSLog(@"adding playlist folder to avoid pruning list, %s", destinationFolderForPlaylist.fileSystemRepresentation);
                 if (![self processPlaylistNode:node toDestinationDirectoryURL: destinationFolderForPlaylist performScanOnly:scanOnly]) {
                     *stop = YES;
                 }

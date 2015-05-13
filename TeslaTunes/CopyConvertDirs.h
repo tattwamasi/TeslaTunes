@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
     @public
     const NSURL *sourceURL;
     const NSURL *destinationURL;
-    const NSString *genre;
+    const NSString *playlist; // if file is a member of a playlist, the playlist name (nil otherwise)
 }
 @end
 
@@ -39,7 +39,12 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
 @property (readonly) BOOL isProcessing;
 @property (readonly) BOOL scanReady;
 
-@property BOOL hackGenre;
+// Option for working around "album fragmentation"
+@property BOOL remapAlbumArtistToArtistAndTitle;
+// Options for playlist manipulation
+@property BOOL hackGenre; // set genre tag to playlist name
+@property BOOL stripTagsForPlaylists; // strip all tags from playlist items (except genre, if hackGenre is set) in order
+                                      // to not clutter the album/song/artist play modes with duplicates
 
 - (CopyConvertDirs*) init;
 

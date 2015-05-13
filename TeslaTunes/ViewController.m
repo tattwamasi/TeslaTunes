@@ -156,6 +156,8 @@
     }
     [defaults setInteger:defaultTag forKey:@"opTypeButtonSelection"];
     [defaults setBool:self.ccDirs.hackGenre forKey:@"setPlaylistItemGenreToPlaylistName"];
+    [defaults setBool:self.ccDirs.stripTagsForPlaylists forKey:@"stripTagsForPlaylists"];
+    [defaults setBool:self.ccDirs.remapAlbumArtistToArtistAndTitle forKey:@"remapAlbumArtistToArtistAndTitle"];
 
 }
 
@@ -171,6 +173,8 @@
     
     self.ccDirs = [[CopyConvertDirs alloc] init];
     self.ccDirs.hackGenre = [defaults boolForKey:@"setPlaylistItemGenreToPlaylistName"];
+    self.ccDirs.stripTagsForPlaylists = [defaults boolForKey:@"stripTagsForPlaylists"];
+    self.ccDirs.remapAlbumArtistToArtistAndTitle = [defaults boolForKey:@"remapAlbumArtistToArtistAndTitle"];
     
     self.CCScanResultsPopupItem.enabled=NO;
     ccDirReceptionist = [Receptionist receptionistForKeyPath:@"isProcessing" object:self.ccDirs queue:[NSOperationQueue mainQueue] task:^(NSString *keyPath, id object, NSDictionary *change) {

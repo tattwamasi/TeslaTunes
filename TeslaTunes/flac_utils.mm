@@ -10,8 +10,11 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 
+#include <tag/tag.h>
+#include <tag/fileref.h>
+#include <tag/tfile.h>
+#include <tag/tpropertymap.h>
 
-#include <mp4v2/mp4v2.h>
 #include <FLAC++/metadata.h>
 #include <FLAC++/encoder.h>
 
@@ -81,16 +84,15 @@ void FlacEncoderFromAlac::progress_callback(FLAC__uint64 bytes_written, FLAC__ui
 
 #endif
 
-// adapted from sbooth's Max UtilityFunctions.m
 void addVorbisCommentIfExists( FLAC__StreamMetadata		*block,
-                              const char				*key,
-                              const char 				*value)
+                              const TagLib::String      &key,
+                              const TagLib::String      &value)
 {
-    if (value && key) {
+    if ((value!=TagLib::String::null) && (key!=TagLib::String::null)) {
         FLAC__StreamMetadata_VorbisComment_Entry	entry;
         FLAC__bool									result;
-        
-        result			= FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, key, value);
+        //NSLog(@"Adding Vorbis Comment tag \"%s\" ==> \"%s\"", key.toCString(true), value.toCString(true));
+        result=FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, key.toCString(true), value.toCString(true));
         NSCAssert1(YES == result, NSLocalizedStringFromTable(@"The call to %@ failed.", @"Exceptions", @""), @"FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair");
         
         result = FLAC__metadata_object_vorbiscomment_append_comment(block, entry, NO);
@@ -99,151 +101,65 @@ void addVorbisCommentIfExists( FLAC__StreamMetadata		*block,
 }
 
 
-FLAC__StreamMetadata *MakeFlacImgTag(NSImage *img) {
-    FLAC__StreamMetadata *block = FLAC__metadata_object_new(FLAC__METADATA_TYPE_PICTURE);
-    if (block) {
-        NSEnumerator		*enumerator					= nil;
-        NSImageRep			*currentRepresentation		= nil;
-        NSBitmapImageRep	*bitmapRep					= nil;
-        NSData				*imageData					= nil;
-        const char			*errorDescription;
-        NSSize				size;
-        
-        // from sbooth's max - todo: is this actually going to go through multiple loops?  If so and if found, why not break early?
-        enumerator = [[img representations] objectEnumerator];
-        while((currentRepresentation = [enumerator nextObject])) {
-            if([currentRepresentation isKindOfClass:[NSBitmapImageRep class]]) {
-                bitmapRep = (NSBitmapImageRep *)currentRepresentation;
-            }
-        }
-        
-        // Create a bitmap representation if one doesn't exist
-        if(nil == bitmapRep) {
-            size = [img size];
-            [img lockFocus];
-            bitmapRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0, 0, size.width, size.height)];
-            [img unlockFocus];
-        }
-        
-        imageData	= [bitmapRep representationUsingType:NSPNGFileType properties:nil];
-        
-        // Add the image data to the metadata block
-        block->data.picture.type		= FLAC__STREAM_METADATA_PICTURE_TYPE_FRONT_COVER;
-        
-        FLAC__bool result = FLAC__metadata_object_picture_set_mime_type(block, const_cast<char*>("image/png"), YES);
-        assert(result == YES);
-        result = FLAC__metadata_object_picture_set_data(block, reinterpret_cast<FLAC__byte*>(const_cast<void*>([imageData bytes]))  , static_cast<FLAC__uint32>([imageData  length]), YES);
-        assert(result == YES);
-        
-        block->data.picture.width		= [bitmapRep size].width;
-        block->data.picture.height		= [bitmapRep size].height;
-        block->data.picture.depth		= static_cast<FLAC__uint32>([bitmapRep bitsPerPixel]);
-        
-        result = FLAC__metadata_object_picture_is_legal(block, &errorDescription);
-        if (!result) {
-            NSLog(@"Flac metadata picture tag error %s", errorDescription);
-        }
-    }
-    return block;
-}
-
-
+// Read the metadata from the mp4 (Apple Lossless) file, creating FLAC metadata objects and
+// storing them in the metadata vector.  Return the number of metadata entries in the vector.
 auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetadata *> &metadata ){
-    // read the metadata from alac file a
-    auto mp4FileHandle	= MP4Read(mp4.fileSystemRepresentation);
-    
-    if(MP4_INVALID_FILE_HANDLE == mp4FileHandle) {
+    TagLib::FileRef f(mp4.fileSystemRepresentation, false);
+    TagLib::Tag *t = f.tag();
+    if (!t) {
+        NSLog(@"Couldn't read tags from \"%s\".", mp4.fileSystemRepresentation);
         return metadata.size();
     }
-    
-    // Read the tags
-    auto tags = MP4TagsAlloc();
-    if (NULL == tags) {
-        MP4Close(mp4FileHandle);
-        return metadata.size();
-    }
-    MP4TagsFetch(tags, mp4FileHandle);
-    
-    // we should be able to create all the flac metadata now. It'll be
-    // 1) the Vorbis comment
-    // 2) any artwork tags
     auto vorb = FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT);
     if (!vorb) {
         return metadata.size();
     }
-    // Album title
-    addVorbisCommentIfExists(vorb, "ALBUM", tags->album);
-    // Artist -- TODO:  should album artist really override artist?? Seems odd - think I'm conforming to the way sbooth's Max does it.  Investigate.
-    if(tags->albumArtist)
-        addVorbisCommentIfExists(vorb, "ARTIST", tags->albumArtist);
-    else if(tags->artist)
-        addVorbisCommentIfExists(vorb, "ARTIST",tags->artist);
-    
-    // Genre  -- TODO:  should we look at the genreType instead and translate?
-    addVorbisCommentIfExists(vorb, "GENRE", tags->genre);
-    
-    // Year
-    addVorbisCommentIfExists(vorb, "DATE", tags->releaseDate);
-    
-    // Composer
-    addVorbisCommentIfExists(vorb, "COMPOSER", tags->composer);
-    
+    auto props = f.file()->properties();
+    //NSLog(@"Properties in Apple Lossless file %s", mp4.fileSystemRepresentation);
+    for (auto p : props) {
+        //NSLog(@"Property: \"%s\" (%u) => \"%s\"", p.first.toCString(true), p.second.size(), p.second.toString().toCString(true) );
+        if (p.first == "TRACKNUMBER") {
+            // taglib seems to format the property as t/n where t is the current track number and n is the number of tracks.
+            // if this is the form, then split it up and set both TRACKNUMBER and TRACKTOTAL.  If we can't scan it in the
+            // t/n form, then just set TRACKNUMBER to the value and hope for the best.
+            unsigned track, total;
+            int itemsRead = sscanf(p.second.front().toCString(), "%u/%u", &track, &total);
+            if (itemsRead == 2) {
+                addVorbisCommentIfExists(vorb, p.first, std::to_string(track) );
+                addVorbisCommentIfExists(vorb, "TRACKTOTAL", std::to_string(total) );
+            } else {
+                addVorbisCommentIfExists(vorb, p.first, p.second.front() );
+            }
+        } else if (p.first == "DISCNUMBER") {
+            // same thing as TRACKNUMBER above.
+            unsigned disc, total;
+            int itemsRead = sscanf(p.second.front().toCString(), "%u/%u", &disc, &total);
+            if (itemsRead == 2) {
+                addVorbisCommentIfExists(vorb, p.first, std::to_string(disc) );
+                addVorbisCommentIfExists(vorb, "DISCTOTAL", std::to_string(total) );
+            } else {
+                addVorbisCommentIfExists(vorb, p.first, p.second.front() );
+            }
+        } else {
+            addVorbisCommentIfExists(vorb, p.first, p.second.front());
+        }
+    }
+#if 0
+    auto unsupportedData = props.unsupportedData();
+    for (auto s : unsupportedData) {
+        NSLog(@"Unsupported data item: \"%s\"", s.toCString(true));
+    }
+#endif
     // Comment
-    addVorbisCommentIfExists(vorb, "DESCRIPTION", tags->comments);
-
-    // Track title
-    addVorbisCommentIfExists(vorb, "TITLE", tags->name);
-    
-    // Track number
-    if(tags->track) {
-        if(tags->track->index)
-            addVorbisCommentIfExists(vorb, "TRACKNUMBER", [NSNumber numberWithUnsignedShort:tags->track->index].stringValue.UTF8String);
-        if(tags->track->total)
-            addVorbisCommentIfExists(vorb, "TRACKTOTAL", [NSNumber numberWithUnsignedShort:tags->track->total].stringValue.UTF8String);
+    if (t->comment() != TagLib::String::null) {
+        NSLog(@"********** ALAC file had a comment, %s", t->comment().toCString(true));
     }
-    // Compilation
-    if(tags->compilation)
-        addVorbisCommentIfExists(vorb, "COMPILATION", [NSNumber numberWithBool:*(tags->compilation)].stringValue.UTF8String);
-    
-    
-    // Disc number
-    if(tags->disk) {
-        if(tags->disk->index)
-            addVorbisCommentIfExists(vorb, "DISKNUMBER", [NSNumber numberWithUnsignedShort:tags->disk->index].stringValue.UTF8String);
-        if(tags->disk->total)
-            addVorbisCommentIfExists(vorb, "DISKTOTAL", [NSNumber numberWithUnsignedShort:tags->disk->total].stringValue.UTF8String);
-    }
-
-    // Other tags to potentially add:  ISRC, MCN, ENCODER, ENCODING
-    
+    addVorbisCommentIfExists(vorb, "DESCRIPTION", t->comment());
     // done with Vorbis tag
     metadata.push_back(vorb);
-    
-    
-    // Album art
-    // Both mp4 and flac can contain multiple artwork tags in the file, but assume the first one is the front cover art and
-    // just copy the rest as other
-    for(int i = 0; i< tags->artworkCount; ++i) {
-        MP4TagArtwork artwork = (tags->artwork)[i];
-        NSData *artworkData = [NSData dataWithBytes:artwork.data length:artwork.size];
-        NSImage *image = [[NSImage alloc] initWithData:artworkData] ;
-        
-        FLAC__StreamMetadata *fimg = MakeFlacImgTag(image);
-        if (fimg) {
-            if (i>0) {
-                // change the artwork type - only set first as cover
-                fimg->data.picture.type		= FLAC__STREAM_METADATA_PICTURE_TYPE_OTHER;
-            }
-            metadata.push_back(fimg);
-        }
-    } // end for
-    
-    MP4TagsFree(tags);
-    MP4Close(mp4FileHandle);
-
-    
     return metadata.size();
 }
+
 
 void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, const NSURL *f){
     // clean/free up the metadata

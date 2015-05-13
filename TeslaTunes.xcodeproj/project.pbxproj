@@ -486,7 +486,6 @@
 				OTHER_LDFLAGS = (
 					"/usr/local/lib/libFLAC++.a",
 					/usr/local/lib/libFLAC.a,
-					/usr/local/lib/libmp4v2.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -517,7 +516,6 @@
 				OTHER_LDFLAGS = (
 					"/usr/local/lib/libFLAC++.a",
 					/usr/local/lib/libFLAC.a,
-					/usr/local/lib/libmp4v2.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

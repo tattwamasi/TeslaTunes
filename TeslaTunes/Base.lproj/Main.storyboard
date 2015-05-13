@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14E7f" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14E11f" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7531"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7702"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
@@ -197,6 +197,7 @@
                             </box>
                             <button horizontalHuggingPriority="950" verticalHuggingPriority="650" translatesAutoresizingMaskIntoConstraints="NO" id="Uui-lL-AZP">
                                 <rect key="frame" x="17" y="548" width="166" height="18"/>
+                                <string key="toolTip">The chosen folder and all subfolders will be copied into the "Music" folder created at the chosen destination location.  Only files which the Model S can play will be copied, and Apple Lossless files will be converted to FLAC</string>
                                 <buttonCell key="cell" type="check" title="Copy whole Library/Folder:" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="K4g-CI-aj1">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
@@ -226,7 +227,7 @@
                                     </binding>
                                 </connections>
                             </pathControl>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="CTb-Sv-D8V">
+                            <button toolTip="Selected playlists will be copied into individual folders inside a &quot;Playlists&quot; folder at the destination music location" translatesAutoresizingMaskIntoConstraints="NO" id="CTb-Sv-D8V">
                                 <rect key="frame" x="17" y="503" width="107" height="18"/>
                                 <buttonCell key="cell" type="check" title="Copy Playlist(s):" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="8Hb-2z-Kom">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -253,6 +254,7 @@
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="qpL-Ph-6BW" userLabel="Genre hack checkbox">
                                 <rect key="frame" x="18" y="485" width="138" height="18"/>
+                                <string key="toolTip">If selected will replace any existing genre tag in a playlist's media files with the playlist name. This allows you to use the play by Genre functionality as a way to play playlists.  Individual playlist folders will still be created and can still be used. </string>
                                 <buttonCell key="cell" type="check" title="Set genre to playlist name" bezelStyle="regularSquare" imagePosition="left" controlSize="mini" state="on" inset="2" id="Ov8-JV-4gf">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="miniSystem"/>
@@ -267,6 +269,25 @@
                                         </dictionary>
                                     </binding>
                                     <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="Gen-vl-QJR"/>
+                                </connections>
+                            </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="wIO-U8-xb6" userLabel="Strip tags checkbox">
+                                <rect key="frame" x="18" y="470" width="116" height="18"/>
+                                <string key="toolTip">If selected will remove title, album, artist, and (if the set genre option is not selected) genre from items in playlists.  This might be useful if you also copy a whole library to avoid having duplicate entries in the play by album, artist, and song views</string>
+                                <buttonCell key="cell" type="check" title="Strip tags in playlists" bezelStyle="regularSquare" imagePosition="left" controlSize="mini" state="on" inset="2" id="bpY-Pw-srM">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="miniSystem"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="checkmarkClicked:" target="XfG-lQ-9wD" id="OB7-fO-IiY"/>
+                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="sgc-H2-gip"/>
+                                    <binding destination="XfG-lQ-9wD" name="value" keyPath="self.ccDirs.stripTagsForPlaylists" id="F7h-1L-qUC">
+                                        <dictionary key="options">
+                                            <integer key="NSNoSelectionPlaceholder" value="0"/>
+                                            <integer key="NSNotApplicablePlaceholder" value="0"/>
+                                            <integer key="NSNullPlaceholder" value="0"/>
+                                        </dictionary>
+                                    </binding>
                                 </connections>
                             </button>
                             <popUpButton autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GH1-1u-h2x" userLabel="Operation type popup">
@@ -415,6 +436,24 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="BEZ-qw-mKg" userLabel="Remap album artist checkbox">
+                                <rect key="frame" x="241" y="485" width="169" height="18"/>
+                                <string key="toolTip">The Model S play by album functionlity doesn't currently handle the Album Artist properly.  Select this option to check the album artist, and if it exists, remap the album artist to the artist tag, and append the artist name to the song title.  This will keep albums from becoming "fragmented" in album view</string>
+                                <buttonCell key="cell" type="check" title="Remap album artists-&gt;artist, etc." bezelStyle="regularSquare" imagePosition="left" controlSize="mini" state="on" inset="2" id="Lm9-n1-HHm">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="miniSystem"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="checkmarkClicked:" target="XfG-lQ-9wD" id="EcF-RA-zrY"/>
+                                    <binding destination="XfG-lQ-9wD" name="value" keyPath="self.ccDirs.remapAlbumArtistToArtistAndTitle" id="v6C-6X-rBU">
+                                        <dictionary key="options">
+                                            <integer key="NSNoSelectionPlaceholder" value="0"/>
+                                            <integer key="NSNotApplicablePlaceholder" value="0"/>
+                                            <integer key="NSNullPlaceholder" value="0"/>
+                                        </dictionary>
+                                    </binding>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="GrP-Yi-E8S" firstAttribute="leading" secondItem="k3G-E8-VKF" secondAttribute="trailing" constant="8" symbolic="YES" id="0gN-Up-BaY"/>
@@ -427,16 +466,20 @@
                             <constraint firstItem="2hX-ai-bcL" firstAttribute="top" secondItem="GrP-Yi-E8S" secondAttribute="bottom" constant="16" id="7Wf-sX-bFO"/>
                             <constraint firstItem="2hX-ai-bcL" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="86Y-j4-39V"/>
                             <constraint firstItem="FQv-nv-0rU" firstAttribute="bottom" secondItem="LoI-ED-tTh" secondAttribute="bottom" priority="700" constant="10" id="9tV-IG-hhZ"/>
+                            <constraint firstItem="wIO-U8-xb6" firstAttribute="top" secondItem="qpL-Ph-6BW" secondAttribute="bottom" constant="5" symbolic="YES" id="BlE-ma-wwa"/>
                             <constraint firstItem="qpL-Ph-6BW" firstAttribute="top" secondItem="CTb-Sv-D8V" secondAttribute="bottom" constant="8" symbolic="YES" id="CXg-je-yye"/>
                             <constraint firstItem="N9v-xm-2rm" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="CZP-cG-G7H"/>
+                            <constraint firstItem="qpL-Ph-6BW" firstAttribute="centerY" secondItem="BEZ-qw-mKg" secondAttribute="centerY" id="GAr-E5-GIf"/>
                             <constraint firstAttribute="centerX" secondItem="FQv-nv-0rU" secondAttribute="centerX" id="GCH-kI-iTy"/>
                             <constraint firstAttribute="trailing" secondItem="2hX-ai-bcL" secondAttribute="trailing" constant="20" symbolic="YES" id="LEF-YE-EIc"/>
+                            <constraint firstItem="LoI-ED-tTh" firstAttribute="leading" secondItem="BEZ-qw-mKg" secondAttribute="leading" id="N5H-Sh-zQd"/>
                             <constraint firstAttribute="bottom" secondItem="2hX-ai-bcL" secondAttribute="bottom" constant="20" symbolic="YES" id="OHQ-lp-eWJ"/>
                             <constraint firstItem="LoI-ED-tTh" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" symbolic="YES" id="VSt-uf-aCF"/>
                             <constraint firstItem="k3G-E8-VKF" firstAttribute="centerY" secondItem="GH1-1u-h2x" secondAttribute="centerY" id="Vhj-tz-1LG"/>
                             <constraint firstItem="m9N-AO-c54" firstAttribute="centerY" secondItem="CTb-Sv-D8V" secondAttribute="centerY" id="aqE-pg-yNM"/>
                             <constraint firstItem="m9N-AO-c54" firstAttribute="leading" secondItem="CTb-Sv-D8V" secondAttribute="trailing" constant="8" symbolic="YES" id="baj-Pt-p3a"/>
                             <constraint firstItem="CTb-Sv-D8V" firstAttribute="leading" secondItem="qpL-Ph-6BW" secondAttribute="leading" constant="-2" id="ect-dC-7lm"/>
+                            <constraint firstItem="wIO-U8-xb6" firstAttribute="leading" secondItem="qpL-Ph-6BW" secondAttribute="leading" id="fjA-HO-9uj"/>
                             <constraint firstAttribute="centerX" secondItem="GH1-1u-h2x" secondAttribute="trailing" constant="8" id="flv-SP-hPY"/>
                             <constraint firstItem="k3G-E8-VKF" firstAttribute="centerY" secondItem="GrP-Yi-E8S" secondAttribute="centerY" id="gBS-DY-XQp"/>
                             <constraint firstItem="Uui-lL-AZP" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="tiz-r1-I2d"/>

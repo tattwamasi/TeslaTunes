@@ -1,25 +1,27 @@
 todo:
 
-Determine if genre hack, like majorlance's applescript does, is worthwhile or not.  If so, look at taglib to support setting them on the destination files in the playlist sync code.
-
 write license files to allow appropriate usage rather than showing code but reserving all rights by defaults.
-
-(done) Since we're now creating filenames from track data in the playlist feature, add filename sanitization to avoid illegal filenames.  This goes for directory name too, since it comes from the playlist name.
-    * added code, but not sure what chars are illegal.  The applescript seems to block a lot more than needed.
-
 Scan through code todo tags and, you know, do them :)
 
+fixed (switched from mp4v2 to taglib)[
+Genre doesn't seem to be properly detected and then set by the flac conversion in flac_utils.mm
+ALBUMARTIST does seem to be somehow supported in FLAC according to mp3tags, so look into handling that properly
+Also, see if it makes sense to drop the mp4v2 lib now that we're using taglib, if taglib will be as reliable and complete for our needs
+]
+(fixed) Taglib propertymap "ALBUMARTIST" isn't getting filled out as expected, breaking our remap album artist code.
 
 Add error handling and notification pathway so the inner processing code can unwind and clean up properly, for example deleting half made files, and get the information back to the user rather than just sitting there in a failed assert, etc.
 * added code to delete partially converted flac files, still need to plumb actual progress and error information flow back to user
-* added alert popups if playlist locations aren't set, which I've seen happen when a
-library on a networked drive is not available.
+* added alert popups if playlist locations aren't set, which I've seen happen when a library on a networked drive is not available.
 
 Change progress icon and add a details arrow similar to iTunes or safari down arrow and blue line indeterminate progress indicator.
 Add new window for details, probably a table view of all queued operations with their progress and status.
 
-
 See if there is a way to make the path controls show a little more context - with just the last component shown, makes it easy to loose track of where the directories actually are since in many cases the last path component is likely to be named the same, something like "Music" for example.
+(done) Determine if genre hack, like majorlance's applescript does, is worthwhile or not.  If so, look at taglib to support setting them on the destination files in the playlist sync code.
+
+(done) Since we're now creating filenames from track data in the playlist feature, add filename sanitization to avoid illegal filenames.  This goes for directory name too, since it comes from the playlist name.
+* added code, but not sure what chars are illegal.  The applescript seems to block a lot more than needed.
 
 
 (done) If no default source, then use iTunes properties to guess at sources location
@@ -29,26 +31,67 @@ See if there is a way to make the path controls show a little more context - wit
      get back to a never run state even after deleting prefs and autosave.
 
 (done) Code signing and packaging
-
 (done) (if still a placeholder) App icon
 (done) About this app popup
-
 (done) sleep disable reenable on app exit, in case exit is called without a chance for inProcess handler to run
-
 (done - so far as I can see) make sure no signing keys, etc. get stored
-
 (done) release build testing
-
 (done) semantic versioning setup
 
 
 issues seen:
-the create directory with intermediates failed saying the directory already existed - shouldn't be able to.  Only happened once that I saw, in an earlier build, when things were heavily threaded and a bunch of converts got started at around the same time.  Need to investigate how it could happen and an appropriate error path
-    * haven't been able to recreate, but changed code to still try the copy even if the dir create fails.
-
-
 left running overnight, an open failed, assert fired for empty metadata - example of error path to be handled.  file locations can time out, for example network drive flakiness, USB drive getting pulled out, etc.  (for that matter, they can get full, have an error, etc.)
 
+5/7/2015:  After adding tag stripping and album artist remapping, saw:
+2015-05-07 01:44:45.561 TeslaTunes[3530:678657] Processing started at May 7, 2015, 1:44:45 AM
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/01 Follow.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/01 Follow.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/02 What Can I Say.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/02 What Can I Say.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/03 Closer To You.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/03 Closer To You.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/04 Throw It Away.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/04 Throw It Away.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/05 Happy.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/05 Happy.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/06 Someday Never Comes.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/06 Someday Never Comes.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/07 Fall Apart Again.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/07 Fall Apart Again.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/08 In My Own Eyes.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/08 In My Own Eyes.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/09 Gone.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/09 Gone.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/10 Tragedy.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/10 Tragedy.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/11 Sixty Years On [Live].m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/11 Sixty Years On [Live].m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/12 Tragedy.m4a": In atom ---- missing child atom data
+ReadChildAtoms: "/Volumes/AIRDISK/iTunes Lossless/iTunes Music/Music/Brandi Carlile/Brandi Carlile/12 Tragedy.m4a": In atom ---- missing child atom data
+TagLib: ID3v2.4 no longer supports the frame type TDAT.  It will be discarded from the tag.
+TagLib: ID3v2.4 no longer supports the frame type TDA.  It will be discarded from the tag.
+TagLib: ID3v2.4 no longer supports the frame type TIM.  It will be discarded from the tag.
+TagLib: A frame of unsupported or unknown type 'TDA' has been discarded
+TagLib: A frame of unsupported or unknown type 'TIM' has been discarded
+TagLib: ID3v2.4 no longer supports the frame type TDA.  It will be discarded from the tag.
+TagLib: ID3v2.4 no longer supports the frame type TIM.  It will be discarded from the tag.
+TagLib: A frame of unsupported or unknown type 'TDA' has been discarded
+TagLib: A frame of unsupported or unknown type 'TIM' has been discarded
+TagLib: ID3v2.4 no longer supports the frame type TDA.  It will be discarded from the tag.
+TagLib: ID3v2.4 no longer supports the frame type TIM.  It will be discarded from the tag.
+TagLib: A frame of unsupported or unknown type 'TDA' has been discarded
+TagLib: A frame of unsupported or unknown type 'TIM' has been discarded
+TagLib: ID3v2.4 no longer supports the frame type TDA.  It will be discarded from the tag.
+TagLib: ID3v2.4 no longer supports the frame type TIM.  It will be discarded from the tag.
+TagLib: A frame of unsupported or unknown type 'TDA' has been discarded
+TagLib: A frame of unsupported or unknown type 'TIM' has been discarded
+TagLib: Could not open file /Volumes/MUSIC/Playlists/Great Stuff vol. 1/09-American Pie (Original)-Don McLean-American Pie.flac
+TagLib: FileRef::tag() - Called without a valid file.
+(lldb)
+
+ReadChildAtoms prints are from mp4v2 library.  Only example I could find.  Conversion still happens and songs seem ok.  Saving issue though to explore later
+TagLib mp3 tag code causes second set of prints.  Didn't identify which mp3 files caused.  Saving to investigate later. Copy still happens.
+Final actual error was due to a race condition caused by a prune files bug due to the file URL for a playlist folder sometimes having a trailing '/' and sometimes not.  Fixed the issue.
 
 
 notes:
