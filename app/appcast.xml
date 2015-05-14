@@ -5,31 +5,31 @@
         <link>http://teslatunes.loci.net/app/appcast.xml</link>
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
-    <item>
-        <title>Version 1.2.1</title>
-        <description><![CDATA[
-            <p><strong><em>New options for <em>""Remap album artist->artist,etc."</em> and <em>"Strip tags for playlists"</em></em></strong></p>
+        <item>
+            <title>Version 1.2.1</title>
+            <description><![CDATA[
+                <p><strong><em>New options for <em>""Remap album artist->artist,etc."</em> and <em>"Strip tags for playlists"</em></em></strong></p>
 
-            <p>By request added two options to help workaround limitations in the Model S media player.</p>
+                <p>By request added two options to help workaround limitations in the Model S media player.</p>
 
-            <ul>
-                <li><strong>"Remap album artist->artist, etc."</strong> is a new option to help prevent cases where an album which contains multiple artists, but a single album artist, would get split into multiple album listings under the Model S play by album view.  By remapping the album artist to the artist tag, the Model S will show all the songs under the same album again.  In order to not lose the artist tag info, it is appended to the song title</li>
-                <li><strong>"Strip tags in playlists"</strong> will cause the app to remove the title, album, artist, and (if the <strong>"Set genre to playlist name"</strong> option is not selected) the genre tags from all songs in the destination playlists.  This might help with duplicate entries getting listed when using the Model S play by album, song, or artist views, at the expense of not having the tags displaying when playing the songs through the playlists, whether via the genre map option or via folder.  Note that currently the Model S doesn't display the tags via the play by folder view anyway, so not really losing anything in that case.</li>
-            </ul>
+                <ul>
+                    <li><strong>"Remap album artist->artist, etc."</strong> is a new option to help prevent cases where an album which contains multiple artists, but a single album artist, would get split into multiple album listings under the Model S play by album view.  By remapping the album artist to the artist tag, the Model S will show all the songs under the same album again.  In order to not lose the artist tag info, it is appended to the song title</li>
+                    <li><strong>"Strip tags in playlists"</strong> will cause the app to remove the title, album, artist, and (if the <strong>"Set genre to playlist name"</strong> option is not selected) the genre tags from all songs in the destination playlists.  This might help with duplicate entries getting listed when using the Model S play by album, song, or artist views, at the expense of not having the tags displaying when playing the songs through the playlists, whether via the genre map option or via folder.  Note that currently the Model S doesn't display the tags via the play by folder view anyway, so not really losing anything in that case.</li>
+                </ul>
 
 
-            <p>These options default to off, but will remember their settings just like the other options.</p>
+                <p>These options default to off, but will remember their settings just like the other options.</p>
 
-            <p>This release also fixes a couple bugs including some Apple Lossless to FLAC tag issues and a playlist sync bug that would affect first time syncs of a playlist.</p>
-            ]]>
-        </description>
-        <pubDate>Thu, 14 May 2015 02:52:20 -0700</pubDate>
-        <enclosure
-            url="https://github.com/tattwamasi/TeslaTunes/releases/download/1.2.1/TeslaTunes_1.2.1.zip"
-            sparkle:version="1.2.1"
-            type="application/octet-stream"
-            length="3354177"
-            />
-
+                <p>This release also fixes a couple bugs including some Apple Lossless to FLAC tag issues and a playlist sync bug that would affect first time syncs of a playlist.</p>
+                ]]>
+            </description>
+            <pubDate>Thu, 14 May 2015 02:52:20 -0700</pubDate>
+            <enclosure
+                url="https://github.com/tattwamasi/TeslaTunes/releases/download/1.2.1/TeslaTunes_1.2.1.zip"
+                sparkle:version="1.2.1"
+                type="application/octet-stream"
+                length="3354177"
+                />
+        </item>
     </channel>
 </rss>
