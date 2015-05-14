@@ -114,10 +114,16 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
     if (!vorb) {
         return metadata.size();
     }
+    if (!f.file()) {
+        NSLog(@"Couldn't read extended tags from \"%s\".", mp4.fileSystemRepresentation);
+    }
     auto props = f.file()->properties();
     //NSLog(@"Properties in Apple Lossless file %s", mp4.fileSystemRepresentation);
     for (auto p : props) {
         //NSLog(@"Property: \"%s\" (%u) => \"%s\"", p.first.toCString(true), p.second.size(), p.second.toString().toCString(true) );
+        if (p.second.size() != 1) {
+            NSLog(@"warning: expected one, but found %u values for tag \"%s\".", p.second.size(), p.first.toCString(true));
+        }
         if (p.first == "TRACKNUMBER") {
             // taglib seems to format the property as t/n where t is the current track number and n is the number of tracks.
             // if this is the form, then split it up and set both TRACKNUMBER and TRACKTOTAL.  If we can't scan it in the
@@ -140,8 +146,11 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
             } else {
                 addVorbisCommentIfExists(vorb, p.first, p.second.front() );
             }
+        } else if (p.first == "COMMENT") {
+            addVorbisCommentIfExists(vorb, "DESCRIPTION", p.second.front());
+            addVorbisCommentIfExists(vorb, p.first, p.second.front() );
         } else {
-            addVorbisCommentIfExists(vorb, p.first, p.second.front());
+            addVorbisCommentIfExists(vorb, p.first, p.second.front() );
         }
     }
 #if 0
@@ -150,11 +159,7 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
         NSLog(@"Unsupported data item: \"%s\"", s.toCString(true));
     }
 #endif
-    // Comment
-    if (t->comment() != TagLib::String::null) {
-        NSLog(@"********** ALAC file had a comment, %s", t->comment().toCString(true));
-    }
-    addVorbisCommentIfExists(vorb, "DESCRIPTION", t->comment());
+
     // done with Vorbis tag
     metadata.push_back(vorb);
     return metadata.size();
