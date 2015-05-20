@@ -492,9 +492,9 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             }
             outURL = destinationFile;
         } else {
-            // NSLog(@"don't know what extension %@ is.  Skipping", fileURL.pathExtension);
+            NSLog(@"don't know what extension \"%@\" is.  Skipping", file.pathExtension? file.pathExtension: @"<no extension>");
             // save extension to skipped set for stat purposes
-            [self.skippedExtensions addObject:file.pathExtension];
+            [self.skippedExtensions addObject:file.pathExtension? file.pathExtension : @"no extension"];
             return nil;
         }
         

@@ -116,6 +116,7 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
     }
     if (!f.file()) {
         NSLog(@"Couldn't read extended tags from \"%s\".", mp4.fileSystemRepresentation);
+        return metadata.size();
     }
     auto props = f.file()->properties();
     //NSLog(@"Properties in Apple Lossless file %s", mp4.fileSystemRepresentation);
