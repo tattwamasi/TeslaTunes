@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14E11f" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15E39c" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7702"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -21,7 +22,7 @@
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Check for Updates..." id="QPh-if-KeQ">
+                                        <menuItem title="Check for Updates..." state="on" id="QPh-if-KeQ">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="checkForUpdates:" target="PwX-1Y-uLi" id="r1A-8Y-Azq"/>
@@ -160,7 +161,7 @@
                             </box>
                             <box title="Destination music location:" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="LoI-ED-tTh">
                                 <rect key="frame" x="242" y="506" width="208" height="57"/>
-                                <view key="contentView">
+                                <view key="contentView" id="Tc3-Zh-3oF">
                                     <rect key="frame" x="1" y="1" width="206" height="41"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -187,15 +188,15 @@
                                     </subviews>
                                 </view>
                                 <constraints>
-                                    <constraint firstItem="N8v-pA-fRa" firstAttribute="leading" secondItem="LoI-ED-tTh" secondAttribute="leading" constant="16" id="8dx-th-QyU"/>
-                                    <constraint firstAttribute="bottom" secondItem="N8v-pA-fRa" secondAttribute="bottom" constant="11" id="WKY-Yy-R1j"/>
-                                    <constraint firstAttribute="trailing" secondItem="N8v-pA-fRa" secondAttribute="trailing" constant="47" id="ci0-3n-YAO"/>
-                                    <constraint firstItem="N8v-pA-fRa" firstAttribute="top" secondItem="LoI-ED-tTh" secondAttribute="top" constant="25" id="fTm-Xq-Ymx"/>
+                                    <constraint firstAttribute="bottom" secondItem="N8v-pA-fRa" secondAttribute="bottom" constant="11" id="5W2-Pe-df8"/>
+                                    <constraint firstAttribute="trailing" secondItem="N8v-pA-fRa" secondAttribute="trailing" constant="47" id="Nd0-qt-xgK"/>
+                                    <constraint firstItem="N8v-pA-fRa" firstAttribute="leading" secondItem="LoI-ED-tTh" secondAttribute="leading" constant="16" id="Yw5-LM-qBy"/>
+                                    <constraint firstItem="N8v-pA-fRa" firstAttribute="top" secondItem="LoI-ED-tTh" secondAttribute="top" constant="25" id="d4v-d5-ydZ"/>
                                 </constraints>
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <button horizontalHuggingPriority="950" verticalHuggingPriority="650" translatesAutoresizingMaskIntoConstraints="NO" id="Uui-lL-AZP">
+                            <button horizontalHuggingPriority="950" verticalHuggingPriority="650" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uui-lL-AZP">
                                 <rect key="frame" x="17" y="548" width="166" height="18"/>
                                 <string key="toolTip">The chosen folder and all subfolders will be copied into the "Music" folder created at the chosen destination location.  Only files which the Model S can play will be copied, and Apple Lossless files will be converted to FLAC</string>
                                 <buttonCell key="cell" type="check" title="Copy whole Library/Folder:" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="K4g-CI-aj1">
@@ -252,7 +253,7 @@
                                     <segue destination="m6e-2U-DRX" kind="popover" popoverAnchorView="m9N-AO-c54" popoverBehavior="t" preferredEdge="maxY" id="Qv9-tH-Qib"/>
                                 </connections>
                             </button>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="qpL-Ph-6BW" userLabel="Genre hack checkbox">
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qpL-Ph-6BW" userLabel="Genre hack checkbox">
                                 <rect key="frame" x="18" y="485" width="138" height="18"/>
                                 <string key="toolTip">If selected will replace any existing genre tag in a playlist's media files with the playlist name. This allows you to use the play by Genre functionality as a way to play playlists.  Individual playlist folders will still be created and can still be used. </string>
                                 <buttonCell key="cell" type="check" title="Set genre to playlist name" bezelStyle="regularSquare" imagePosition="left" controlSize="mini" state="on" inset="2" id="Ov8-JV-4gf">
@@ -271,7 +272,7 @@
                                     <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="Gen-vl-QJR"/>
                                 </connections>
                             </button>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="wIO-U8-xb6" userLabel="Strip tags checkbox">
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wIO-U8-xb6" userLabel="Strip tags checkbox">
                                 <rect key="frame" x="18" y="470" width="116" height="18"/>
                                 <string key="toolTip">If selected will remove title, album, artist, and (if the set genre option is not selected) genre from items in playlists.  This might be useful if you also copy a whole library to avoid having duplicate entries in the play by album, artist, and song views</string>
                                 <buttonCell key="cell" type="check" title="Strip tags in playlists" bezelStyle="regularSquare" imagePosition="left" controlSize="mini" state="on" inset="2" id="bpY-Pw-srM">
@@ -280,7 +281,6 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="checkmarkClicked:" target="XfG-lQ-9wD" id="OB7-fO-IiY"/>
-                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="sgc-H2-gip"/>
                                     <binding destination="XfG-lQ-9wD" name="value" keyPath="self.ccDirs.stripTagsForPlaylists" id="F7h-1L-qUC">
                                         <dictionary key="options">
                                             <integer key="NSNoSelectionPlaceholder" value="0"/>
@@ -288,9 +288,10 @@
                                             <integer key="NSNullPlaceholder" value="0"/>
                                         </dictionary>
                                     </binding>
+                                    <binding destination="XfG-lQ-9wD" name="enabled" keyPath="self.copyPlaylists" id="sgc-H2-gip"/>
                                 </connections>
                             </button>
-                            <popUpButton autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GH1-1u-h2x" userLabel="Operation type popup">
+                            <popUpButton autoresizesSubviews="NO" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GH1-1u-h2x" userLabel="Operation type popup">
                                 <rect key="frame" x="40" y="449" width="192" height="22"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" autoenablesItems="NO" id="p4b-07-Cpf">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -322,11 +323,11 @@
                             </progressIndicator>
                             <box verticalHuggingPriority="249" title="Results:" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="2hX-ai-bcL">
                                 <rect key="frame" x="17" y="16" width="440" height="421"/>
-                                <view key="contentView">
+                                <view key="contentView" id="3Nk-YD-9bv">
                                     <rect key="frame" x="1" y="1" width="438" height="405"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Bmc-7B-QiY">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bmc-7B-QiY">
                                             <rect key="frame" x="16" y="388" width="82" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Files Scanned:" id="VdV-ES-IhJ">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -334,7 +335,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1eU-II-ftW" userLabel="NumberOfFilesScanned">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1eU-II-ftW" userLabel="NumberOfFilesScanned">
                                             <rect key="frame" x="102" y="388" width="4" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="KcW-5N-SZY">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -342,7 +343,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pae-oz-aHU" userLabel="FilesMarkedForOrDeleted:">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pae-oz-aHU" userLabel="FilesMarkedForOrDeleted:">
                                             <rect key="frame" x="16" y="366" width="110" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Marked for/Deleted:" id="Dkc-cC-slV">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -350,7 +351,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5sN-qD-1ks" userLabel="NumberOfFilesMarkedOrDeleted">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5sN-qD-1ks" userLabel="NumberOfFilesMarkedOrDeleted">
                                             <rect key="frame" x="130" y="366" width="4" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="9Gg-Sm-XVt">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -358,7 +359,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7Dp-8U-ga1">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Dp-8U-ga1">
                                             <rect key="frame" x="217" y="388" width="133" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Files to copy or convert:" id="obf-Wq-bgv">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -366,7 +367,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9Uc-OL-ju2" userLabel="NumberOfFilesToCopyOrConvert">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Uc-OL-ju2" userLabel="NumberOfFilesToCopyOrConvert">
                                             <rect key="frame" x="354" y="388" width="4" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="ECo-3U-jYK">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -374,7 +375,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="p6W-b9-tqn">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="p6W-b9-tqn">
                                             <rect key="frame" x="217" y="366" width="129" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Files copied/converted:" id="eNy-a7-YER">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -382,7 +383,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xCN-9H-iZ9" userLabel="NumberOfFilesCopiedOrConverted">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xCN-9H-iZ9" userLabel="NumberOfFilesCopiedOrConverted">
                                             <rect key="frame" x="350" y="366" width="4" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="h9V-19-et4">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -390,7 +391,7 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rXA-6K-o4C" userLabel="report">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rXA-6K-o4C" userLabel="report">
                                             <rect key="frame" x="16" y="322" width="74" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" placeholderString="(still working)" id="9Jm-Yz-ryV">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -401,7 +402,7 @@
                                                 <binding destination="XfG-lQ-9wD" name="value" keyPath="self.report" id="ERO-QB-AMk"/>
                                             </connections>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1Oi-qv-bwK">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Oi-qv-bwK">
                                             <rect key="frame" x="16" y="344" width="44" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Report:" id="0OU-cA-XKA">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -412,31 +413,31 @@
                                     </subviews>
                                 </view>
                                 <constraints>
-                                    <constraint firstItem="1Oi-qv-bwK" firstAttribute="top" secondItem="p6W-b9-tqn" secondAttribute="bottom" constant="8" symbolic="YES" id="04A-BY-bEh"/>
-                                    <constraint firstItem="pae-oz-aHU" firstAttribute="leading" secondItem="Bmc-7B-QiY" secondAttribute="leading" id="Bmr-6z-Tyj"/>
-                                    <constraint firstItem="pae-oz-aHU" firstAttribute="top" secondItem="5sN-qD-1ks" secondAttribute="top" id="Bnm-K1-h6z"/>
-                                    <constraint firstAttribute="centerX" secondItem="7Dp-8U-ga1" secondAttribute="leading" id="CPL-h8-9Gb"/>
-                                    <constraint firstItem="p6W-b9-tqn" firstAttribute="leading" secondItem="7Dp-8U-ga1" secondAttribute="leading" id="Ca3-Nc-R9l"/>
-                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="leading" secondItem="2hX-ai-bcL" secondAttribute="leading" constant="16" id="Ggx-yF-EmM"/>
-                                    <constraint firstItem="5sN-qD-1ks" firstAttribute="leading" secondItem="pae-oz-aHU" secondAttribute="trailing" constant="8" symbolic="YES" id="ItF-Mt-a5M"/>
-                                    <constraint firstItem="9Uc-OL-ju2" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="top" id="LJt-1L-gR5"/>
-                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="top" id="V5N-11-Ltl"/>
-                                    <constraint firstItem="pae-oz-aHU" firstAttribute="top" secondItem="Bmc-7B-QiY" secondAttribute="bottom" constant="8" symbolic="YES" id="cJD-1b-oFc"/>
-                                    <constraint firstItem="rXA-6K-o4C" firstAttribute="top" secondItem="1Oi-qv-bwK" secondAttribute="bottom" constant="8" symbolic="YES" id="chY-hn-ggm"/>
-                                    <constraint firstItem="1eU-II-ftW" firstAttribute="leading" secondItem="Bmc-7B-QiY" secondAttribute="trailing" constant="8" symbolic="YES" id="eLM-MN-Qko"/>
-                                    <constraint firstItem="p6W-b9-tqn" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="bottom" constant="8" symbolic="YES" id="jhP-gJ-KCn"/>
-                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="1eU-II-ftW" secondAttribute="top" id="k7I-k6-EcA"/>
-                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="leading" secondItem="1Oi-qv-bwK" secondAttribute="leading" id="o7v-Bj-g7h"/>
-                                    <constraint firstItem="9Uc-OL-ju2" firstAttribute="leading" secondItem="7Dp-8U-ga1" secondAttribute="trailing" constant="8" symbolic="YES" id="ojV-6u-XDb"/>
-                                    <constraint firstItem="xCN-9H-iZ9" firstAttribute="leading" secondItem="p6W-b9-tqn" secondAttribute="trailing" constant="8" symbolic="YES" id="ooG-pR-B6Z"/>
-                                    <constraint firstItem="1Oi-qv-bwK" firstAttribute="leading" secondItem="rXA-6K-o4C" secondAttribute="leading" id="ql5-4S-2jV"/>
-                                    <constraint firstItem="p6W-b9-tqn" firstAttribute="top" secondItem="xCN-9H-iZ9" secondAttribute="top" id="wHU-J3-1aE"/>
-                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="2hX-ai-bcL" secondAttribute="top" constant="18" id="yiq-4E-mRE"/>
+                                    <constraint firstItem="9Uc-OL-ju2" firstAttribute="leading" secondItem="7Dp-8U-ga1" secondAttribute="trailing" constant="8" symbolic="YES" id="1cV-4L-e7W"/>
+                                    <constraint firstItem="1Oi-qv-bwK" firstAttribute="leading" secondItem="rXA-6K-o4C" secondAttribute="leading" id="49C-IO-TBu"/>
+                                    <constraint firstItem="p6W-b9-tqn" firstAttribute="top" secondItem="xCN-9H-iZ9" secondAttribute="top" id="5XO-V7-7PE"/>
+                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="2hX-ai-bcL" secondAttribute="top" constant="18" id="CXr-8T-eD0"/>
+                                    <constraint firstItem="pae-oz-aHU" firstAttribute="top" secondItem="Bmc-7B-QiY" secondAttribute="bottom" constant="8" symbolic="YES" id="DIZ-EW-QxJ"/>
+                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="leading" secondItem="2hX-ai-bcL" secondAttribute="leading" constant="16" id="IcH-tj-40c"/>
+                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="top" id="JSd-hZ-gEM"/>
+                                    <constraint firstItem="1eU-II-ftW" firstAttribute="leading" secondItem="Bmc-7B-QiY" secondAttribute="trailing" constant="8" symbolic="YES" id="LwU-6F-SmW"/>
+                                    <constraint firstItem="rXA-6K-o4C" firstAttribute="top" secondItem="1Oi-qv-bwK" secondAttribute="bottom" constant="8" symbolic="YES" id="RLX-bO-i8u"/>
+                                    <constraint firstItem="xCN-9H-iZ9" firstAttribute="leading" secondItem="p6W-b9-tqn" secondAttribute="trailing" constant="8" symbolic="YES" id="Zn4-k0-vU6"/>
+                                    <constraint firstAttribute="centerX" secondItem="7Dp-8U-ga1" secondAttribute="leading" id="a9R-aF-qfT"/>
+                                    <constraint firstItem="p6W-b9-tqn" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="bottom" constant="8" symbolic="YES" id="fnj-wS-l73"/>
+                                    <constraint firstItem="9Uc-OL-ju2" firstAttribute="top" secondItem="7Dp-8U-ga1" secondAttribute="top" id="gwn-Ca-XCe"/>
+                                    <constraint firstItem="5sN-qD-1ks" firstAttribute="leading" secondItem="pae-oz-aHU" secondAttribute="trailing" constant="8" symbolic="YES" id="hbL-tN-O7T"/>
+                                    <constraint firstItem="1Oi-qv-bwK" firstAttribute="top" secondItem="p6W-b9-tqn" secondAttribute="bottom" constant="8" symbolic="YES" id="hkb-6k-7Q0"/>
+                                    <constraint firstItem="p6W-b9-tqn" firstAttribute="leading" secondItem="7Dp-8U-ga1" secondAttribute="leading" id="nrR-R6-Hyj"/>
+                                    <constraint firstItem="pae-oz-aHU" firstAttribute="leading" secondItem="Bmc-7B-QiY" secondAttribute="leading" id="oWr-Cr-Yl2"/>
+                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="top" secondItem="1eU-II-ftW" secondAttribute="top" id="qfm-5b-B2X"/>
+                                    <constraint firstItem="Bmc-7B-QiY" firstAttribute="leading" secondItem="1Oi-qv-bwK" secondAttribute="leading" id="vHJ-IX-U7W"/>
+                                    <constraint firstItem="pae-oz-aHU" firstAttribute="top" secondItem="5sN-qD-1ks" secondAttribute="top" id="yom-WR-jBT"/>
                                 </constraints>
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="BEZ-qw-mKg" userLabel="Remap album artist checkbox">
+                            <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BEZ-qw-mKg" userLabel="Remap album artist checkbox">
                                 <rect key="frame" x="241" y="485" width="169" height="18"/>
                                 <string key="toolTip">The Model S play by album functionlity doesn't currently handle the Album Artist properly.  Select this option to check the album artist, and if it exists, remap the album artist to the artist tag, and append the artist name to the song title.  This will keep albums from becoming "fragmented" in album view</string>
                                 <buttonCell key="cell" type="check" title="Remap album artists-&gt;artist, etc." bezelStyle="regularSquare" imagePosition="left" controlSize="mini" state="on" inset="2" id="Lm9-n1-HHm">
