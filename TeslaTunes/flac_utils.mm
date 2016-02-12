@@ -118,6 +118,13 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
         NSLog(@"Couldn't read extended tags from \"%s\".", mp4.fileSystemRepresentation);
         return metadata.size();
     }
+    // TODO FIX the below threw a bad access exception on mp4	NSURL *	@"file:///Volumes/AIRDISK/iTunes%20Lossless/iTunes%20Music/Music/Compilations/Anthology%20Of%20American%20Folk%20Music,%20Vol.%201B_%20%20Ballads/2-01%20Bandit%20Cole%20Younger.m4a"	0x00006080010b7ca0
+    // memo to track it down - don't see how it could be happening given the checks above.
+    // suspected multithread issue, since couldn't reliably recreate it when stepping through the code, but then
+    // stopped seeing it without breakpoints even when running the same data set as first showed the issue.
+    // Seems very odd to me.  I don't see how file can be nil, and properties is a class, not a pointer to a class.
+    // and I've dug through a lot of the code under properties() and don't see where something in there could be hitting
+    // it.
     auto props = f.file()->properties();
     //NSLog(@"Properties in Apple Lossless file %s", mp4.fileSystemRepresentation);
     for (auto p : props) {
@@ -167,6 +174,17 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
 }
 
 
+// TODO: FIX: this is actually problematic. I have the AndPartialFiles part here because
+// the encoding may throw an error for some reason or the user may cancel the operation
+// mid encode.  However, I've seen that the FLAC library will potentially throw an exception
+// in it's destructor if (I think) the file is deleted after init is called with the filename
+// but before the encoder object is destroyed. Need to figure out how to delete any partial
+// files, but not delete a destination file that was already there.  Had considered moving the
+// delete to the caller of ConvertAlacToFlac and having it delete if the ConvertAlacToFlac
+// function returns false, but that would try to delete an existing destination file in the
+// event the conversion failed due to the file already existing, some permission error, etc.
+// Perhaps those are empty cases, but seems overreaching to potentially try to delete something
+// we didn't just create in the conversion step.  Needs more thought.
 void cleanUpMetadataAndPartialFiles(std::vector<FLAC__StreamMetadata*>&metadata, const NSURL *f){
     // clean/free up the metadata
     for (auto entry : metadata) {
