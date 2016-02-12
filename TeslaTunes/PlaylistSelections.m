@@ -72,6 +72,49 @@
 
 @end
 
+bool isPlaylistToDisplay(const ITLibPlaylist* p){
+    if (p.visible && !p.master) { //might be interesting
+                                  // certain playlist distinguished kinds we know we don't want though
+        switch (p.distinguishedKind) {
+            case ITLibDistinguishedPlaylistKindMovies:
+            case ITLibDistinguishedPlaylistKindTVShows:
+            case ITLibDistinguishedPlaylistKindRingtones:
+            case ITLibDistinguishedPlaylistKindVoiceMemos:
+            case ITLibDistinguishedPlaylistKindMusicVideos:
+            case ITLibDistinguishedPlaylistKindLibraryMusicVideos:
+            case ITLibDistinguishedPlaylistKindHomeVideos:
+            case ITLibDistinguishedPlaylistKindApplications:
+                return false;
+                break;
+            default:
+                return true;
+                break;
+        }
+    }
+    return false;
+}
+// while kind is just an enum, it's not in the right order according to how the iTunes UI actually
+// displays them.
+// Though we can see from the header that the enum is small and the values are small, and therefore
+// could just load up an array with sort order values, I'm hesitant since the header could change the
+// values assigned to the enums and blow that up
+int sortOrderOfPlaylistKind(ITLibPlaylistKind kind) {
+    switch (kind) {
+        case ITLibPlaylistKindGeniusMix:
+            return 1;
+        case ITLibPlaylistKindGenius:
+            return 2;
+        case ITLibPlaylistKindFolder:
+            return 3;
+        case ITLibPlaylistKindSmart:
+            return 4;
+        case ITLibPlaylistKindRegular:
+            return 5;
+        default:
+            return 6;
+    }
+}
+
 @implementation PlaylistSelections {
      PlaylistNode *playlistTree;
     ITLibrary *library;
@@ -122,7 +165,7 @@
         }
 
         for (ITLibPlaylist *i in library.allPlaylists) {
-            if (([i isKindOfClass: [ITLibPlaylist class]]) && i.visible && !i.master ) {
+            if (([i isKindOfClass: [ITLibPlaylist class]]) && isPlaylistToDisplay(i)) {
                 NSNumber *savedState = [selected objectForKey:[i.persistentID stringValue]];
                 
                 PlaylistNode *node = [[PlaylistNode alloc] initWithPlaylist:i
@@ -136,10 +179,46 @@
         // proper ordering such that a parent would always have been listed before it's children
         // Also, in the event that somehow a parent is not found, or was perhaps marked not visible,
         // marked as master, etc. we'll just root the node at the top level
-        playlistTree = [[PlaylistNode alloc] initWithPlaylist:nil andState:[NSNumber numberWithInteger:NSOffState]];
+        //
+        // We do however sort the keys such that the playlists are ordered the same way as (as best I can tell)
+        // iTunes displays them, which seems to be by kind of playlist (not distiguished kind), and then
+        // alphabetical within the type.  Within the section labeled Playlists in the iTunes UI, the kind order
+        // seems to be:
+        // Genius, Folder, Smart, Regular.  I can't find an example of GeniusMix - I think it is for the ones under
+        // the Library section of the list. Note, there are a few distinguished kind != 0 (which is
+        // ITLibDistinguishedPlaylistKindNone) playlists that the iTunes UI pulls into the library section, for
+        // example the one named Music (which is ITLibDistinguishedPlaylistKindMusic)
+        // I don't know algorithmically how to know whether to drop those or not - many of the !=0 ones are sorted
+        // into the playlist section, for example the My Top Rated, etc. smart playlists.  So for now, just going to
+        // sort them all in.
+        //
         
+        playlistTree = [[PlaylistNode alloc] initWithPlaylist:nil andState:[NSNumber numberWithInteger:NSOffState]];
         [playlistNodes setObject:playlistTree forKey:[NSNull null]];
-        for (id key in playlistNodes) {
+        
+        NSArray *sortedPlaylistNodes = [playlistNodes keysSortedByValueUsingComparator: ^(PlaylistNode *node1, PlaylistNode *node2) {
+            NSAssert( (node1 && node2), @"Sort comparator for playlists was passed a nil node");
+            
+            // By definition there won't more than one entry with no playlist, and it will be the root node.
+            if (!node1.playlist) {
+                return (NSComparisonResult)NSOrderedAscending;
+            }
+            if (!node2.playlist) {
+                return (NSComparisonResult)NSOrderedDescending;
+            }
+            if (sortOrderOfPlaylistKind(node1.playlist.kind) > sortOrderOfPlaylistKind(node2.playlist.kind)) {
+                return (NSComparisonResult)NSOrderedDescending;
+            }
+            if (sortOrderOfPlaylistKind(node1.playlist.kind) < sortOrderOfPlaylistKind(node2.playlist.kind)) {
+                return (NSComparisonResult)NSOrderedAscending;
+            }
+            
+            // the playlists are of the same kind, so sort case insensitively alphabetically by name of the playlist
+            
+            return [node1.playlist.name localizedCaseInsensitiveCompare:node2.playlist.name];
+            
+        }];
+        for (id key in sortedPlaylistNodes) {
             if (key == [NSNull null]) {
                 continue; // skip root node
             }

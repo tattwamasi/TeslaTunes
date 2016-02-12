@@ -265,6 +265,21 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             //NSLog(@"Set genre of %@ to %s", url, t->genre().toCString(true) );
         }
     }
+    
+    if (self.embedDiscNumberInTrackNumber) {
+        auto props = f.file()->properties();
+        auto proplist = props["DISCNUMBER"];
+        if (!proplist.isEmpty()) {
+            // convert the disc number to an int. If we can and it's > 1, then map it into the track number
+            int discNumber = proplist.front().toInt(); // if this fails, it returns 0 - which works fine for us
+            if (discNumber>1) {
+                t->setTrack(t->track() + discNumber*100);
+                needsSaving = true;
+            }
+            
+        }
+    }
+    
     if (self.remapAlbumArtistToArtistAndTitle && !(playlist && self.stripTagsForPlaylists)) {
         // if there's an album artist, set artist to album artist, and add artist to title
         // auto props = t->properties();

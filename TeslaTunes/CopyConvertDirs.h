@@ -46,6 +46,11 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
 @property BOOL stripTagsForPlaylists; // strip all tags from playlist items (except genre, if hackGenre is set) in order
                                       // to not clutter the album/song/artist play modes with duplicates
 
+// Remap disc number into the track number similar to (but different than) Doug's Applescript,
+// "Embed Disc Number in Track Number v1.0"
+// if disc number > 1 then New track number = disc number*100 + old track number
+@property BOOL embedDiscNumberInTrackNumber;
+
 - (CopyConvertDirs*) init;
 
 // Uses NSOperationQueue and NSOperation to concurrently run.  TODO: delegate or something to indicate when finished,etc.
