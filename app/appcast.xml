@@ -6,6 +6,32 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>Version 1.2.3</title>
+            <description><![CDATA[
+            <div class="markdown-body">
+                        <ul>
+                            <li>Added a new option <code>Embed multivolume disc # into track #</code>.  This option will change the track number for tracks on the 2nd and subsequent volumes of multivolume sets to be the volume number * 100 + the track number.  This is useful when the album name is the same for each volume in the set, and all the tracks from all the volumes are getting displayed together.  Without this option, you'd have a bunch of track 1s, then a bunch of track 2s, etc. in some situations.  See issue <a href="https://github.com/tattwamasi/TeslaTunes/issues/4" class="issue-link js-issue-link" data-id="75930162" data-error-text="Failed to load issue title" data-permission-text="Issue title is private" title="Playlist order is weird, and lists unexpected playlists">#4</a>
+                            </li>
+                            <li>Fixed the playlist ordering... sort of.  See issue <a href="https://github.com/tattwamasi/TeslaTunes/issues/7" class="issue-link js-issue-link" data-url="https://github.com/tattwamasi/TeslaTunes/issues/7" data-id="127570189" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#7</a>
+                            </li>
+                            <li>Updated the Sparkle autoupdate component and update URLs to address <a href="https://github.com/sparkle-project/Sparkle/issues/722" class="issue-link js-issue-link" data-id="129913968" data-error-text="Failed to load issue title" data-permission-text="Issue title is private" title="MITM Security Mitigations (VulnSec)">sparkle-project/Sparkle#722</a>
+                            </li>
+                            <li>Updated the app to allow updates on OS X 10.11+.  See <a href="https://github.com/sparkle-project/Sparkle/issues/644" class="issue-link js-issue-link" data-url="https://github.com/sparkle-project/Sparkle/issues/644" data-id="108920780" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">sparkle-project/Sparkle#644</a>
+                            </li>
+                            <li>Updated taglib component.</li>
+                        </ul>
+                              </div>
+                              ]]>
+                          </description>
+            <pubDate>Fri, 12 Feb 2016 05:16:12 -0800</pubDate>
+            <enclosure
+                url="https://github.com/tattwamasi/TeslaTunes/releases/download/1.2.3/TeslaTunes_1.2.3.zip"
+                sparkle:version="1.2.3"
+                type="application/octet-stream"
+                length="3558544"
+                />
+        </item>
+        <item>
             <title>Version 1.2.1</title>
             <description><![CDATA[
                 <p><strong>New options for <em>"Remap album artist->artist, etc."</em> and <em>"Strip tags for playlists"</em></strong></p>
