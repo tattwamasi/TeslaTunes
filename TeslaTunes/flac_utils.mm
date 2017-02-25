@@ -14,6 +14,10 @@
 #include <tag/fileref.h>
 #include <tag/tfile.h>
 #include <tag/tpropertymap.h>
+#include <tag/mp4coverart.h>
+#include <tag/mp4tag.h>
+#include <tag/mp4file.h>
+
 
 #include <FLAC++/metadata.h>
 #include <FLAC++/encoder.h>
@@ -101,6 +105,74 @@ void addVorbisCommentIfExists( FLAC__StreamMetadata		*block,
 }
 
 
+auto CopyArtFromMP4fileURL(const TagLib::FileRef& fr,
+                           std::vector<FLAC__StreamMetadata *> &metadata) {
+    TagLib::MP4::File* file = dynamic_cast<TagLib::MP4::File*>(fr.file());
+    if (!file) {
+        NSLog(@"tried to read mp4 coverart from a non mp4 file.");
+        return metadata.size();
+    }
+
+    TagLib::MP4::CoverArtList cover_art_list = file->tag()->itemListMap()["covr"].toCoverArtList();
+    FLAC__bool									result;
+    
+    if(!cover_art_list.isEmpty()) {
+        
+        TagLib::MP4::CoverArt cover_art = cover_art_list.front();
+        
+        const char *mime_type = 0;
+        switch (cover_art.format()) {
+            case TagLib::MP4::CoverArt::Format::PNG:
+                mime_type = "image/png";
+                break;
+            case TagLib::MP4::CoverArt::Format::JPEG:
+                mime_type = "image/jpeg";
+                break;
+            default:
+                NSLog(@"%s, unsupported cover art format: %u size %u",
+                      file->name(), cover_art.format(), cover_art.data().size());
+                return metadata.size();
+        }
+        
+        auto meta_pic = FLAC__metadata_object_new(FLAC__METADATA_TYPE_PICTURE);
+        if (!meta_pic) {
+            return metadata.size();
+        }
+        
+        meta_pic->data.picture.type = FLAC__STREAM_METADATA_PICTURE_TYPE_FRONT_COVER;
+        
+        result = FLAC__metadata_object_picture_set_mime_type(meta_pic, const_cast<char *>(mime_type), YES);
+        NSCAssert1(YES == result, NSLocalizedStringFromTable(@"The call to %@ failed.", @"Exceptions", @""), @"FLAC__metadata_object_picture_set_mime_type");
+        
+        result = FLAC__metadata_object_picture_set_data(meta_pic, (unsigned char *) cover_art.data().data(), cover_art.data().size()  , true);
+        NSCAssert1(YES == result, NSLocalizedStringFromTable(@"The call to %@ failed.", @"Exceptions", @""), @"FLAC__metadata_object_picture_set_data");
+        
+        // As per docs at : https://wiki.xiph.org/VorbisComment#Cover_art
+        // Image dimension fields
+        // The height, width, colour depth and 'number of colours' fields are for purely informational purposes.
+        // Applications MUST NOT use them for decoding purposes, but MAY display them to the user and MAY use them
+        // to make a decision whether to skip the block (for example if selecting the most appropriate among multiple blocks).
+        //
+        // Applications writing picture blocks MUST set these fields correctly OR set them all to zero.
+        meta_pic->data.picture.width = 0;
+        meta_pic->data.picture.height = 0;
+        meta_pic->data.picture.depth = 0;
+        meta_pic->data.picture.colors = 0;
+        const char *errorDescription = 0;
+        
+        result = FLAC__metadata_object_picture_is_legal(meta_pic, &errorDescription);
+        if (!result) {
+            // writing it anyway, but leave a msg
+            NSLog(@"FLAC__metadata_object_picture_is_legal: %s",errorDescription);
+        }
+        metadata.push_back(meta_pic);
+    }
+    
+ 
+    return metadata.size();
+    
+}
+
 // Read the metadata from the mp4 (Apple Lossless) file, creating FLAC metadata objects and
 // storing them in the metadata vector.  Return the number of metadata entries in the vector.
 auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetadata *> &metadata ){
@@ -118,6 +190,7 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
         NSLog(@"Couldn't read extended tags from \"%s\".", mp4.fileSystemRepresentation);
         return metadata.size();
     }
+    
     // TODO FIX the below threw a bad access exception on mp4	NSURL *	@"file:///Volumes/AIRDISK/iTunes%20Lossless/iTunes%20Music/Music/Compilations/Anthology%20Of%20American%20Folk%20Music,%20Vol.%201B_%20%20Ballads/2-01%20Bandit%20Cole%20Younger.m4a"	0x00006080010b7ca0
     // memo to track it down - don't see how it could be happening given the checks above.
     // suspected multithread issue, since couldn't reliably recreate it when stepping through the code, but then
@@ -170,6 +243,7 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
 
     // done with Vorbis tag
     metadata.push_back(vorb);
+    CopyArtFromMP4fileURL(f, metadata);
     return metadata.size();
 }
 
