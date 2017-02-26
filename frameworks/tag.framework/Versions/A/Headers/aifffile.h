@@ -64,7 +64,7 @@ namespace TagLib {
          * \note In the current implementation, \a propertiesStyle is ignored.
          */
         File(FileName file, bool readProperties = true,
-             Properties::ReadStyle propertiesStyle = Properties::Average);
+             AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average);
 
         /*!
          * Constructs an AIFF file from \a stream.  If \a readProperties is true the
@@ -76,7 +76,7 @@ namespace TagLib {
          * \note In the current implementation, \a propertiesStyle is ignored.
          */
         File(IOStream *stream, bool readProperties = true,
-             Properties::ReadStyle propertiesStyle = Properties::Average);
+             AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average);
 
         /*!
          * Destroys this instance of the File.
@@ -95,24 +95,10 @@ namespace TagLib {
         virtual ID3v2::Tag *tag() const;
 
         /*!
-         * Implements the unified property interface -- export function.
-         * This method forwards to ID3v2::Tag::properties().
-         */
-        PropertyMap properties() const;
-
-        void removeUnsupportedProperties(const StringList &properties);
-
-        /*!
-         * Implements the unified property interface -- import function.
-         * This method forwards to ID3v2::Tag::setProperties().
-         */
-        PropertyMap setProperties(const PropertyMap &);
-
-        /*!
          * Returns the AIFF::Properties for this file.  If no audio properties
          * were read then this will return a null pointer.
          */
-        virtual Properties *audioProperties() const;
+        virtual AudioProperties *audioProperties() const;
 
         /*!
          * Saves the file.
@@ -132,7 +118,7 @@ namespace TagLib {
 
         void read(bool readProperties);
 
-        friend class Properties;
+        friend class AudioProperties;
 
         class FilePrivate;
         FilePrivate *d;

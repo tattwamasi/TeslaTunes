@@ -72,11 +72,6 @@ namespace TagLib {
     StringList(const ByteVectorList &vl, String::Type t = String::Latin1);
 
     /*!
-     * Destroys this StringList instance.
-     */
-    virtual ~StringList();
-
-    /*!
      * Concatenate the list of strings into one string separated by \a separator.
      */
     String toString(const String &separator = " ") const;
@@ -94,22 +89,25 @@ namespace TagLib {
     StringList &append(const StringList &l);
 
     /*!
+     * Make a shallow, implicitly shared, copy of \a l.  Because this is
+     * implicitly shared, this method is lightweight and suitable for
+     * pass-by-value usage.
+     */
+    StringList &operator=(const StringList &l);
+
+    /*!
      * Splits the String \a s into several strings at \a pattern.  This will not include
      * the pattern in the returned strings.
      */
     static StringList split(const String &s, const String &pattern);
-
-  private:
-    class StringListPrivate;
-    StringListPrivate *d;
   };
 
-}
+  /*!
+   * \related TagLib::StringList
+   * Send the StringList to an output stream.
+   */
+  TAGLIB_EXPORT std::ostream &operator<<(std::ostream &s, const TagLib::StringList &l);
 
-/*!
- * \related TagLib::StringList
- * Send the StringList to an output stream.
- */
-std::ostream &operator<<(std::ostream &s, const TagLib::StringList &l);
+}
 
 #endif

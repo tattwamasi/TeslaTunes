@@ -89,7 +89,7 @@ namespace TagLib {
       };
 
       Picture();
-      Picture(const ByteVector &data);
+      explicit Picture(const ByteVector &data);
       ~Picture();
 
       /*!
@@ -198,8 +198,6 @@ namespace TagLib {
       class PicturePrivate;
       PicturePrivate *d;
     };
-
-    typedef List<Picture> PictureList;
 
   }
 

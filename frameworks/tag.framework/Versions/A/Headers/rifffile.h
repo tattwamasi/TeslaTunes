@@ -52,11 +52,8 @@ namespace TagLib {
       virtual ~File();
 
     protected:
-
-      enum Endianness { BigEndian, LittleEndian };
-
-      File(FileName file, Endianness endianness);
-      File(IOStream *stream, Endianness endianness);
+      File(FileName file, ByteOrder endianness);
+      File(IOStream *stream, ByteOrder endianness);
 
       /*!
        * \return The size of the main RIFF chunk.
@@ -66,12 +63,12 @@ namespace TagLib {
       /*!
        * \return The number of chunks in the file.
        */
-      unsigned int chunkCount() const;
+      size_t chunkCount() const;
 
       /*!
        * \return The offset within the file for the selected chunk number.
        */
-      unsigned int chunkOffset(unsigned int i) const;
+      long long chunkOffset(unsigned int i) const;
 
       /*!
        * \return The size of the chunk data.
@@ -145,7 +142,7 @@ namespace TagLib {
 
       void read();
       void writeChunk(const ByteVector &name, const ByteVector &data,
-                      unsigned long offset, unsigned long replace = 0);
+                      long long offset, size_t replace = 0);
 
       /*!
        * Update the global RIFF size based on the current internal structure.

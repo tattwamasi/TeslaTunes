@@ -175,7 +175,7 @@ namespace TagLib {
        * The ownership of this header will be assigned to the frame and the
        * header will be deleted when the frame is destroyed.
        */
-      Frame(Header *h);
+      explicit Frame(Header *h);
 
       /*!
        * Returns a pointer to the frame header.
@@ -223,8 +223,7 @@ namespace TagLib {
        * updated to return the position just after the string that has been read.
        * This is useful for reading strings sequentially.
        */
-      String readStringField(const ByteVector &data, String::Type encoding,
-                             int *positon = 0);
+      String readStringField(const ByteVector &data, String::Type encoding, size_t &positon);
 
       /*!
        * Checks a the list of string values to see if they can be used with the

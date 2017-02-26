@@ -77,7 +77,7 @@ namespace TagLib {
        * Parses an Xing/VBRI header based on \a data which contains the entire
        * first MPEG frame.
        */
-      XingHeader(const ByteVector &data);
+      explicit XingHeader(const ByteVector &data);
 
       /*!
        * Destroy this XingHeader instance.
@@ -104,15 +104,6 @@ namespace TagLib {
        * Returns the type of the VBR header.
        */
       HeaderType type() const;
-
-      /*!
-       * Returns the offset for the start of this Xing header, given the
-       * version and channels of the frame
-       *
-       * \deprecated Always returns 0.
-       */
-      static int xingHeaderOffset(TagLib::MPEG::Header::Version v,
-                                  TagLib::MPEG::Header::ChannelMode c);
 
     private:
       XingHeader(const XingHeader &);

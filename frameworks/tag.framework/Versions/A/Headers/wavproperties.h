@@ -46,35 +46,19 @@ namespace TagLib {
        * API.
        */
 
-      class TAGLIB_EXPORT Properties : public AudioProperties
+      class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
       {
       public:
         /*!
          * Create an instance of WAV::Properties with the data read from the
-         * ByteVector \a data.
-         *
-         * \deprecated
-         */
-        Properties(const ByteVector &data, ReadStyle style);
-
-        /*!
-         * Create an instance of WAV::Properties with the data read from the
-         * ByteVector \a data and the length calculated using \a streamLength.
-         *
-         * \deprecated
-         */
-        Properties(const ByteVector &data, unsigned int streamLength, ReadStyle style);
-
-        /*!
-         * Create an instance of WAV::Properties with the data read from the
          * WAV::File \a file.
          */
-        Properties(File *file, ReadStyle style);
+        AudioProperties(File *file, ReadStyle style = Average);
 
         /*!
          * Destroys this WAV::Properties instance.
          */
-        virtual ~Properties();
+        virtual ~AudioProperties();
 
         /*!
          * Returns the length of the file in seconds.  The length is rounded down to
@@ -92,16 +76,14 @@ namespace TagLib {
          *
          * \see lengthInMilliseconds()
          */
-        // BIC: make virtual
-        int lengthInSeconds() const;
+        virtual int lengthInSeconds() const;
 
         /*!
          * Returns the length of the file in milliseconds.
          *
          * \see lengthInSeconds()
          */
-        // BIC: make virtual
-        int lengthInMilliseconds() const;
+        virtual int lengthInMilliseconds() const;
 
         /*!
          * Returns the average bit rate of the file in kb/s.
@@ -133,7 +115,11 @@ namespace TagLib {
         int sampleWidth() const;
 
         /*!
-         * Returns the number of sample frames.
+         * Returns the total number of the samples.
+         *
+         * If the format ID is not 1, always returns 0.
+         *
+         * \see format()
          */
         unsigned int sampleFrames() const;
 
@@ -148,9 +134,6 @@ namespace TagLib {
         int format() const;
 
       private:
-        Properties(const Properties &);
-        Properties &operator=(const Properties &);
-
         void read(File *file);
 
         class PropertiesPrivate;

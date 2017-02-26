@@ -26,35 +26,36 @@
 #ifndef TAGLIB_IOSTREAM_H
 #define TAGLIB_IOSTREAM_H
 
-#include "taglib_export.h"
-#include "taglib.h"
 #include "tbytevector.h"
 
 namespace TagLib {
 
 #ifdef _WIN32
+
+  class String;
+
   class TAGLIB_EXPORT FileName
   {
   public:
     FileName(const wchar_t *name);
     FileName(const char *name);
-
     FileName(const FileName &name);
 
-    operator const wchar_t *() const;
-    operator const char *() const;
+    ~FileName();
 
-    const std::wstring &wstr() const;
-    const std::string  &str() const;
+    FileName &operator=(const FileName &name);
 
-    String toString() const;
+    const wchar_t *wstr() const;
 
   private:
-    const std::string  m_name;
-    const std::wstring m_wname;
+    class FileNamePrivate;
+    FileNamePrivate *d;
   };
+
 #else
+
   typedef const char *FileName;
+
 #endif
 
   //! An abstract class that provides operations on a sequence of bytes
@@ -89,7 +90,7 @@ namespace TagLib {
     /*!
      * Reads a block of size \a length at the current get pointer.
      */
-    virtual ByteVector readBlock(unsigned long length) = 0;
+    virtual ByteVector readBlock(size_t length) = 0;
 
     /*!
      * Attempts to write the block \a data at the current get pointer.  If the
@@ -109,8 +110,7 @@ namespace TagLib {
      * \note This method is slow since it requires rewriting all of the file
      * after the insertion point.
      */
-    virtual void insert(const ByteVector &data,
-                        unsigned long start = 0, unsigned long replace = 0) = 0;
+    virtual void insert(const ByteVector &data, long long start = 0, size_t replace = 0) = 0;
 
     /*!
      * Removes a block of the file starting a \a start and continuing for
@@ -119,7 +119,7 @@ namespace TagLib {
      * \note This method is slow since it involves rewriting all of the file
      * after the removed portion.
      */
-    virtual void removeBlock(unsigned long start = 0, unsigned long length = 0) = 0;
+    virtual void removeBlock(long long start = 0, size_t length = 0) = 0;
 
     /*!
      * Returns true if the file is read only (or if the file can not be opened).
@@ -138,7 +138,7 @@ namespace TagLib {
      *
      * \see Position
      */
-    virtual void seek(long offset, Position p = Beginning) = 0;
+    virtual void seek(long long offset, Position p = Beginning) = 0;
 
     /*!
      * Reset the end-of-stream and error flags on the stream.
@@ -148,19 +148,21 @@ namespace TagLib {
     /*!
      * Returns the current offset within the stream.
      */
-    virtual long tell() const = 0;
+    virtual long long tell() const = 0;
 
     /*!
      * Returns the length of the stream.
      */
-    virtual long length() = 0;
+    virtual long long length() = 0;
 
     /*!
      * Truncates the stream to a \a length.
      */
-    virtual void truncate(long length) = 0;
+    virtual void truncate(long long length) = 0;
 
   private:
+    // Noncopyable. Derived classes as well.
+
     IOStream(const IOStream &);
     IOStream &operator=(const IOStream &);
   };

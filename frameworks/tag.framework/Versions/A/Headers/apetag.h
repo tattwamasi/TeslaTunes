@@ -34,6 +34,9 @@
 
 #include "apeitem.h"
 
+#define FRONT_COVER "COVER ART (FRONT)"
+#define BACK_COVER "COVER ART (BACK)"
+
 namespace TagLib {
 
   class File;
@@ -49,7 +52,7 @@ namespace TagLib {
      *
      * \see APE::Tag::itemListMap()
      */
-    typedef Map<const String, Item> ItemListMap;
+    typedef Map<String, Item> ItemListMap;
 
 
     //! An APE tag implementation
@@ -66,7 +69,7 @@ namespace TagLib {
        * Create an APE tag and parse the data in \a file with APE footer at
        * \a tagOffset.
        */
-      Tag(TagLib::File *file, long footerLocation);
+      Tag(TagLib::File *file, long long footerLocation);
 
       /*!
        * Destroys this Tag instance.
@@ -95,6 +98,15 @@ namespace TagLib {
       virtual unsigned int year() const;
       virtual unsigned int track() const;
 
+      /**
+       * @brief pictures
+       * According to :
+       * http://www.hydrogenaud.io/forums/index.php?showtopic=40603&st=50&p=504669&#entry504669
+       * http://git.videolan.org/?p=vlc.git;a=blob;f=modules/meta_engine/taglib.cpp
+       * @return
+       */
+      virtual PictureMap pictures() const;
+
       virtual void setTitle(const String &s);
       virtual void setArtist(const String &s);
       virtual void setAlbum(const String &s);
@@ -102,6 +114,7 @@ namespace TagLib {
       virtual void setGenre(const String &s);
       virtual void setYear(unsigned int i);
       virtual void setTrack(unsigned int i);
+      virtual void setPictures(const PictureMap &l);
 
       /*!
        * Implements the unified tag dictionary interface -- export function.

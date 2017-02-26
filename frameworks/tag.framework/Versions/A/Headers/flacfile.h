@@ -84,18 +84,6 @@ namespace TagLib {
       };
 
       /*!
-       * Constructs a FLAC file from \a file.  If \a readProperties is true the
-       * file's audio properties will also be read.
-       *
-       * \note In the current implementation, \a propertiesStyle is ignored.
-       *
-       * \deprecated This constructor will be dropped in favor of the one below
-       * in a future version.
-       */
-      File(FileName file, bool readProperties = true,
-           Properties::ReadStyle propertiesStyle = Properties::Average);
-
-      /*!
        * Constructs an FLAC file from \a file.  If \a readProperties is true the
        * file's audio properties will also be read.
        *
@@ -104,27 +92,27 @@ namespace TagLib {
        *
        * \note In the current implementation, \a propertiesStyle is ignored.
        */
-      // BIC: merge with the above constructor
-      File(FileName file, ID3v2::FrameFactory *frameFactory,
+      File(FileName file,
            bool readProperties = true,
-           Properties::ReadStyle propertiesStyle = Properties::Average);
+           AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average,
+           ID3v2::FrameFactory *frameFactory = 0);
 
       /*!
-       * Constructs a FLAC file from \a stream.  If \a readProperties is true the
+       * Constructs a FLAC file from \a file.  If \a readProperties is true the
        * file's audio properties will also be read.
-       *
-       * \note TagLib will *not* take ownership of the stream, the caller is
-       * responsible for deleting it after the File object.
        *
        * If this file contains and ID3v2 tag the frames will be created using
        * \a frameFactory.
        *
        * \note In the current implementation, \a propertiesStyle is ignored.
+       *
+       * \note TagLib will *not* take ownership of the stream, the caller is
+       * responsible for deleting it after the File object.
        */
-      // BIC: merge with the above constructor
-      File(IOStream *stream, ID3v2::FrameFactory *frameFactory,
+      File(IOStream *stream,
            bool readProperties = true,
-           Properties::ReadStyle propertiesStyle = Properties::Average);
+           AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average,
+           ID3v2::FrameFactory *frameFactory = 0);
 
       /*!
        * Destroys this instance of the File.
@@ -142,29 +130,19 @@ namespace TagLib {
       virtual TagLib::Tag *tag() const;
 
       /*!
-       * Implements the unified property interface -- export function.
-       * If the file contains more than one tag (e.g. XiphComment and ID3v1),
-       * only the first one (in the order XiphComment, ID3v2, ID3v1) will be
-       * converted to the PropertyMap.
-       */
-      PropertyMap properties() const;
-
-      void removeUnsupportedProperties(const StringList &);
-
-      /*!
        * Implements the unified property interface -- import function.
        * This always creates a Xiph comment, if none exists. The return value
        * relates to the Xiph comment only.
        * Ignores any changes to ID3v1 or ID3v2 comments since they are not allowed
        * in the FLAC specification.
        */
-      PropertyMap setProperties(const PropertyMap &);
+      virtual PropertyMap setProperties(const PropertyMap &);
 
       /*!
        * Returns the FLAC::Properties for this file.  If no audio properties
        * were read then this will return a null pointer.
        */
-      virtual Properties *audioProperties() const;
+      virtual AudioProperties *audioProperties() const;
 
       /*!
        * Save the file.  This will primarily save the XiphComment, but
@@ -241,22 +219,6 @@ namespace TagLib {
        * \deprecated This value should be passed in via the constructor
        */
       void setID3v2FrameFactory(const ID3v2::FrameFactory *factory);
-
-      /*!
-       * Returns the block of data used by FLAC::Properties for parsing the
-       * stream properties.
-       *
-       * \deprecated Always returns an empty vector.
-       */
-      ByteVector streamInfoData(); // BIC: remove
-
-      /*!
-       * Returns the length of the audio-stream, used by FLAC::Properties for
-       * calculating the bitrate.
-       *
-       * \deprecated Always returns zero.
-       */
-      long streamLength();  // BIC: remove
 
       /*!
        * Returns a list of pictures attached to the FLAC file.

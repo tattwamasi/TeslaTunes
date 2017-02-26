@@ -45,19 +45,19 @@ namespace TagLib {
      * AudioProperties API.
      */
 
-    class TAGLIB_EXPORT Properties : public AudioProperties
+    class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
     {
     public:
       /*!
-       * Create an instance of MPEG::Properties with the data read from the
-       * MPEG::File \a file.
+       * Creates an instance of MPEG::AudioProperties with the data read from
+       * the MPEG::File \a file.
        */
-      Properties(File *file, ReadStyle style = Average);
+      AudioProperties(File *file, ReadStyle style = Average);
 
       /*!
-       * Destroys this MPEG Properties instance.
+       * Destroys this MPEG::AudioProperties instance.
        */
-      virtual ~Properties();
+      virtual ~AudioProperties();
 
       /*!
        * Returns the length of the file in seconds.  The length is rounded down to
@@ -75,16 +75,14 @@ namespace TagLib {
        *
        * \see lengthInMilliseconds()
        */
-      // BIC: make virtual
-      int lengthInSeconds() const;
+      virtual int lengthInSeconds() const;
 
       /*!
        * Returns the length of the file in milliseconds.
        *
        * \see lengthInSeconds()
        */
-      // BIC: make virtual
-      int lengthInMilliseconds() const;
+      virtual int lengthInMilliseconds() const;
 
       /*!
        * Returns the average bit rate of the file in kb/s.
@@ -138,9 +136,6 @@ namespace TagLib {
       bool isOriginal() const;
 
     private:
-      Properties(const Properties &);
-      Properties &operator=(const Properties &);
-
       void read(File *file);
 
       class PropertiesPrivate;

@@ -76,7 +76,7 @@ namespace TagLib {
          * \note In the current implementation, \a propertiesStyle is ignored.
          */
         File(FileName file, bool readProperties = true,
-             Properties::ReadStyle propertiesStyle = Properties::Average);
+             AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average);
 
         /*!
          * Constructs a WAV file from \a stream.  If \a readProperties is true the
@@ -88,7 +88,7 @@ namespace TagLib {
          * \note In the current implementation, \a propertiesStyle is ignored.
          */
         File(IOStream *stream, bool readProperties = true,
-             Properties::ReadStyle propertiesStyle = Properties::Average);
+             AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average);
 
         /*!
          * Destroys this instance of the File.
@@ -96,12 +96,10 @@ namespace TagLib {
         virtual ~File();
 
         /*!
-         * Returns the ID3v2 Tag for this file.
-         *
-         * \note This method does not return all the tags for this file for
-         * backward compatibility.  Will be fixed in TagLib 2.0.
+         * Returns the Tag for this file.  This will be an ID3v2 tag, an INFO tag
+         * or a combination of the two.
          */
-        ID3v2::Tag *tag() const;
+        virtual TagLib::Tag *tag() const;
 
         /*!
          * Returns the ID3v2 Tag for this file.
@@ -135,24 +133,16 @@ namespace TagLib {
         void strip(TagTypes tags = AllTags);
 
         /*!
-         * Implements the unified property interface -- export function.
-         * This method forwards to ID3v2::Tag::properties().
-         */
-        PropertyMap properties() const;
-
-        void removeUnsupportedProperties(const StringList &properties);
-
-        /*!
          * Implements the unified property interface -- import function.
          * This method forwards to ID3v2::Tag::setProperties().
          */
-        PropertyMap setProperties(const PropertyMap &);
+        virtual PropertyMap setProperties(const PropertyMap &);
 
         /*!
          * Returns the WAV::Properties for this file.  If no audio properties
          * were read then this will return a null pointer.
          */
-        virtual Properties *audioProperties() const;
+        virtual AudioProperties *audioProperties() const;
 
         /*!
          * Saves the file.
@@ -182,7 +172,7 @@ namespace TagLib {
         void read(bool readProperties);
         void removeTagChunks(TagTypes tags);
 
-        friend class Properties;
+        friend class AudioProperties;
 
         class FilePrivate;
         FilePrivate *d;

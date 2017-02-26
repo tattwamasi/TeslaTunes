@@ -88,6 +88,8 @@ namespace TagLib {
        */
       virtual unsigned int track() const;
 
+      PictureMap pictures() const;
+
       /*!
        * Returns the name of the tracker used to create/edit the module file.
        * Only XM files store this tag to the file as such, for other formats
@@ -150,6 +152,8 @@ namespace TagLib {
        * Not supported by module files and therefore ignored.
        */
       virtual void setTrack(unsigned int track);
+
+      void setPictures(const PictureMap &l);
 
       /*!
        * Sets the tracker name to \a trackerName.  If \a trackerName is

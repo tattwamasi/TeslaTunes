@@ -33,11 +33,15 @@ namespace TagLib {
 
   namespace Mod {
 
-    class TAGLIB_EXPORT Properties : public AudioProperties
+    class File;
+
+    class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
     {
+      friend class File;
+
     public:
-      Properties(AudioProperties::ReadStyle propertiesStyle);
-      virtual ~Properties();
+      explicit AudioProperties(AudioProperties::ReadStyle propertiesStyle);
+      virtual ~AudioProperties();
 
       int length()               const;
       int lengthInSeconds()      const;
@@ -49,16 +53,11 @@ namespace TagLib {
       unsigned int  instrumentCount()  const;
       unsigned char lengthInPatterns() const;
 
+    private:
       void setChannels(int channels);
 
       void setInstrumentCount(unsigned int sampleCount);
       void setLengthInPatterns(unsigned char lengthInPatterns);
-
-    private:
-      friend class File;
-
-      Properties(const Properties&);
-      Properties &operator=(const Properties&);
 
       class PropertiesPrivate;
       PropertiesPrivate *d;

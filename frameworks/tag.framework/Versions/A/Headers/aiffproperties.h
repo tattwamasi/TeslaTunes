@@ -36,34 +36,28 @@ namespace TagLib {
 
       class File;
 
-      //! An implementation of audio property reading for AIFF
+      //! An implementation of audio property reading for AIFF or AIFF-C
 
       /*!
        * This reads the data from an AIFF stream found in the AudioProperties
        * API.
        */
 
-      class TAGLIB_EXPORT Properties : public AudioProperties
+      class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
       {
       public:
         /*!
-         * Create an instance of AIFF::Properties with the data read from the
-         * ByteVector \a data.
-         *
-         * \deprecated
+         * Create an instance of AIFF::AudioProperties with the data read from
+         * the AIFF::File \a file.
          */
-        Properties(const ByteVector &data, ReadStyle style);
+        AudioProperties(File *file, ReadStyle style = Average);
 
         /*!
-         * Create an instance of AIFF::Properties with the data read from the
-         * AIFF::File \a file.
+         * Destroys this AIFF::AudioProperties instance.
          */
-        Properties(File *file, ReadStyle style);
+        virtual ~AudioProperties();
 
-        /*!
-         * Destroys this AIFF::Properties instance.
-         */
-        virtual ~Properties();
+        virtual bool isNull() const;
 
         /*!
          * Returns the length of the file in seconds.  The length is rounded down to
@@ -81,16 +75,14 @@ namespace TagLib {
          *
          * \see lengthInMilliseconds()
          */
-        // BIC: make virtual
-        int lengthInSeconds() const;
+        virtual int lengthInSeconds() const;
 
         /*!
          * Returns the length of the file in milliseconds.
          *
          * \see lengthInSeconds()
          */
-        // BIC: make virtual
-        int lengthInMilliseconds() const;
+        virtual int lengthInMilliseconds() const;
 
         /*!
          * Returns the average bit rate of the file in kb/s.
@@ -151,9 +143,6 @@ namespace TagLib {
         String compressionName() const;
 
       private:
-        Properties(const Properties &);
-        Properties &operator=(const Properties &);
-
         void read(File *file);
 
         class PropertiesPrivate;

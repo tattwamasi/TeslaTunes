@@ -37,7 +37,7 @@ namespace TagLib {
     class File;
 
     //! An implementation of MP4 audio properties
-    class TAGLIB_EXPORT Properties : public AudioProperties
+    class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
     {
     public:
       enum Codec {
@@ -46,8 +46,8 @@ namespace TagLib {
         ALAC
       };
 
-      Properties(File *file, Atoms *atoms, ReadStyle style = Average);
-      virtual ~Properties();
+      AudioProperties(File *file, Atoms *atoms, ReadStyle style = Average);
+      virtual ~AudioProperties();
 
       /*!
        * Returns the length of the file in seconds.  The length is rounded down to
@@ -65,16 +65,14 @@ namespace TagLib {
        *
        * \see lengthInMilliseconds()
        */
-      // BIC: make virtual
-      int lengthInSeconds() const;
+      virtual int lengthInSeconds() const;
 
       /*!
        * Returns the length of the file in milliseconds.
        *
        * \see lengthInSeconds()
        */
-      // BIC: make virtual
-      int lengthInMilliseconds() const;
+      virtual int lengthInMilliseconds() const;
 
       /*!
        * Returns the average bit rate of the file in kb/s.
@@ -105,6 +103,8 @@ namespace TagLib {
        * Returns the codec used in the file.
        */
       Codec codec() const;
+
+      String toString() const;
 
     private:
       void read(File *file, Atoms *atoms);

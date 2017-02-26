@@ -26,12 +26,8 @@
 #ifndef TAGLIB_STRING_H
 #define TAGLIB_STRING_H
 
-#include "taglib_export.h"
-#include "taglib.h"
 #include "tbytevector.h"
-
 #include <string>
-#include <iostream>
 
 /*!
  * \relates TagLib::String
@@ -68,7 +64,7 @@ namespace TagLib {
 
   /*!
    * This is an implicitly shared \e wide string.  For storage it uses
-   * TagLib::wstring, but as this is an <i>implementation detail</i> this of
+   * TagLib::std::wstring, but as this is an <i>implementation detail</i> this of
    * course could change.  Strings are stored internally as UTF-16(without BOM/
    * CPU byte order)
    *
@@ -86,8 +82,8 @@ namespace TagLib {
   public:
 
 #ifndef DO_NOT_DOCUMENT
-    typedef TagLib::wstring::iterator Iterator;
-    typedef TagLib::wstring::const_iterator ConstIterator;
+    typedef std::wstring::iterator Iterator;
+    typedef std::wstring::const_iterator ConstIterator;
 #endif
 
     /**
@@ -104,8 +100,7 @@ namespace TagLib {
        */
       UTF16 = 1,
       /*!
-       * UTF16 <i>big endian</i>.  16 bit characters.  This is the encoding used
-       * internally by TagLib.
+       * UTF16 <i>big endian</i>.  16 bit characters.
        */
       UTF16BE = 2,
       /*!
@@ -115,7 +110,11 @@ namespace TagLib {
       /*!
        * UTF16 <i>little endian</i>.  16 bit characters.
        */
-      UTF16LE = 4
+      UTF16LE = 4,
+      /*!
+       * UTF16 in the <i>native byte order</i> of the system.  16 bit characters.
+       */
+      UTF16Native = 5
     };
 
     /*!
@@ -141,20 +140,22 @@ namespace TagLib {
     /*!
      * Makes a deep copy of the data in \a s.
      *
-     * /note If \a t is UTF16LE, the byte order of \a s will be swapped regardless
-     * of the CPU byte order.  If UTF16BE, it will not be swapped.  This behavior
-     * will be changed in TagLib2.0.
+     * \note This should only be used with the 16-bit codecs UTF16, UTF16BE or
+     * UTF16LE, when used with other codecs it will simply print a warning and
+     * exit.  UTF16BE or UTF16LE is automatically chosen as default according
+     * to the CPU byte order
      */
-    String(const wstring &s, Type t = UTF16BE);
+    String(const std::wstring &s, Type t = UTF16Native);
 
     /*!
      * Makes a deep copy of the data in \a s.
      *
-     * /note If \a t is UTF16LE, the byte order of \a s will be swapped regardless
-     * of the CPU byte order.  If UTF16BE, it will not be swapped.  This behavior
-     * will be changed in TagLib2.0.
+     * \note This should only be used with the 16-bit codecs UTF16, UTF16BE or
+     * UTF16LE, when used with other codecs it will simply print a warning and
+     * exit.  UTF16BE or UTF16LE is automatically chosen as default according
+     * to the CPU byte order
      */
-    String(const wchar_t *s, Type t = UTF16BE);
+    String(const wchar_t *s, Type t = UTF16Native);
 
     /*!
      * Makes a deep copy of the data in \a c.
@@ -166,8 +167,13 @@ namespace TagLib {
 
     /*!
      * Makes a deep copy of the data in \a c.
+     *
+     * \note This should only be used with the 16-bit codecs UTF16, UTF16BE or
+     * UTF16LE, when used with other codecs it will simply print a warning and
+     * exit.  UTF16BE or UTF16LE is automatically chosen as default according
+     * to the CPU byte order
      */
-    String(wchar_t c, Type t = Latin1);
+    String(wchar_t c, Type t = UTF16Native);
 
     /*!
      * Makes a deep copy of the data in \a s.
@@ -202,7 +208,7 @@ namespace TagLib {
      *
      * \see toCWString()
      */
-    wstring toWString() const;
+    const std::wstring &toWString() const;
 
     /*!
      * Creates and returns a standard C-style (null-terminated) version of this
@@ -266,16 +272,16 @@ namespace TagLib {
 
     /*!
      * Finds the first occurrence of pattern \a s in this string starting from
-     * \a offset.  If the pattern is not found, -1 is returned.
+     * \a offset.  If the pattern is not found, \a npos is returned.
      */
-    int find(const String &s, int offset = 0) const;
+    size_t find(const String &s, size_t offset = 0) const;
 
     /*!
      * Finds the last occurrence of pattern \a s in this string, searched backwards,
      * either from the end of the string or starting from \a offset. If the pattern
-     * is not found, -1 is returned.
+     * is not found, \a npos is returned.
      */
-    int rfind(const String &s, int offset = -1) const;
+    size_t rfind(const String &s, size_t offset = npos()) const;
 
     /*!
      * Splits the string on each occurrence of \a separator.
@@ -291,7 +297,7 @@ namespace TagLib {
      * Extract a substring from this string starting at \a position and
      * continuing for \a n characters.
      */
-    String substr(unsigned int position, unsigned int n = 0xffffffff) const;
+    String substr(size_t position, size_t n = npos()) const;
 
     /*!
      * Append \a s to the current string and return a reference to the current
@@ -314,33 +320,17 @@ namespace TagLib {
     /*!
      * Returns the size of the string.
      */
-    unsigned int size() const;
+    size_t size() const;
 
     /*!
      * Returns the length of the string.  Equivalent to size().
      */
-    unsigned int length() const;
+    size_t length() const;
 
     /*!
      * Returns true if the string is empty.
-     *
-     * \see isNull()
      */
     bool isEmpty() const;
-
-    /*!
-     * Returns true if this string is null -- i.e. it is a copy of the
-     * String::null string.
-     *
-     * \note A string can be empty and not null.  So do not use this method to
-     * check if the string is empty.
-     *
-     * \see isEmpty()
-     *
-     * \deprecated
-     */
-     // BIC: remove
-    bool isNull() const;
 
     /*!
      * Returns a ByteVector containing the string's data.  If \a t is Latin1 or
@@ -357,20 +347,11 @@ namespace TagLib {
     /*!
      * Convert the string to an integer.
      *
-     * Returns the integer if the conversion was successful or 0 if the
-     * string does not represent a number.
+     * If the conversion was successful, it sets the value of \a *ok to true and
+     * returns the integer.  Otherwise it sets \a *ok to false and the result is
+     * undefined.
      */
-    // BIC: merge with the method below
-    int toInt() const;
-
-    /*!
-     * Convert the string to an integer.
-     *
-     * If the conversion was successful, it sets the value of \a *ok to
-     * true and returns the integer. Otherwise it sets \a *ok to false
-     * and the result is undefined.
-     */
-    int toInt(bool *ok) const;
+    int toInt(bool *ok = 0) const;
 
     /*!
      * Returns a string with the leading and trailing whitespace stripped.
@@ -395,15 +376,15 @@ namespace TagLib {
     /*!
      * Returns a reference to the character at position \a i.
      */
-    wchar_t &operator[](int i);
+    wchar_t &operator[](size_t i);
 
     /*!
      * Returns a const reference to the character at position \a i.
      */
-    const wchar_t &operator[](int i) const;
+    const wchar_t &operator[](size_t i) const;
 
     /*!
-     * Compares each character of the String with each character of \a s and
+     * Compares each character of the String with each character in \a s and
      * returns true if the strings match.
      */
     bool operator==(const String &s) const;
@@ -477,7 +458,7 @@ namespace TagLib {
     /*!
      * Performs a deep copy of the data in \a s.
      */
-    String &operator=(const wstring &s);
+    String &operator=(const std::wstring &s);
 
     /*!
      * Performs a deep copy of the data in \a s.
@@ -517,15 +498,11 @@ namespace TagLib {
     bool operator<(const String &s) const;
 
     /*!
-     * A null string provided for convenience.
-     *
-     * \warning Do not modify this variable.  It will mess up the internal state
-     * of TagLib.
-     *
-     * \deprecated
+     * Returns a special value used for \a length parameter in String's member
+     * functions, means "until the end of the string".
+     * As a return value, it is usually used to indicate no matches.
      */
-     // BIC: remove
-    static String null;
+    static size_t npos();
 
   protected:
     /*!
@@ -539,35 +516,36 @@ namespace TagLib {
     class StringPrivate;
     StringPrivate *d;
   };
+
+  /*!
+   * \relates TagLib::String
+   *
+   * Concatenates \a s1 and \a s2 and returns the result as a string.
+   */
+  TAGLIB_EXPORT const TagLib::String operator+(const TagLib::String &s1, const TagLib::String &s2);
+
+  /*!
+   * \relates TagLib::String
+   *
+   * Concatenates \a s1 and \a s2 and returns the result as a string.
+   */
+  TAGLIB_EXPORT const TagLib::String operator+(const char *s1, const TagLib::String &s2);
+
+  /*!
+   * \relates TagLib::String
+   *
+   * Concatenates \a s1 and \a s2 and returns the result as a string.
+   */
+  TAGLIB_EXPORT const TagLib::String operator+(const TagLib::String &s1, const char *s2);
+
+
+  /*!
+   * \relates TagLib::String
+   *
+   * Send the string to an output stream.
+   */
+  TAGLIB_EXPORT std::ostream &operator<<(std::ostream &s, const TagLib::String &str);
 }
 
-/*!
- * \relates TagLib::String
- *
- * Concatenates \a s1 and \a s2 and returns the result as a string.
- */
-TAGLIB_EXPORT const TagLib::String operator+(const TagLib::String &s1, const TagLib::String &s2);
-
-/*!
- * \relates TagLib::String
- *
- * Concatenates \a s1 and \a s2 and returns the result as a string.
- */
-TAGLIB_EXPORT const TagLib::String operator+(const char *s1, const TagLib::String &s2);
-
-/*!
- * \relates TagLib::String
- *
- * Concatenates \a s1 and \a s2 and returns the result as a string.
- */
-TAGLIB_EXPORT const TagLib::String operator+(const TagLib::String &s1, const char *s2);
-
-
-/*!
- * \relates TagLib::String
- *
- * Send the string to an output stream.
- */
-TAGLIB_EXPORT std::ostream &operator<<(std::ostream &s, const TagLib::String &str);
-
 #endif
+

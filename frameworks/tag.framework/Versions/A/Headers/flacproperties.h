@@ -42,27 +42,19 @@ namespace TagLib {
      * API.
      */
 
-    class TAGLIB_EXPORT Properties : public AudioProperties
+    class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
     {
     public:
       /*!
-       * Create an instance of FLAC::Properties with the data read from the
-       * ByteVector \a data.
+       * Creates an instance of FLAC::AudioProperties with the data read from
+       * the ByteVector \a data.
        */
-       // BIC: switch to const reference
-      Properties(ByteVector data, long streamLength, ReadStyle style = Average);
+      AudioProperties(const ByteVector &data, long long streamLength, ReadStyle style = Average);
 
       /*!
-       * Create an instance of FLAC::Properties with the data read from the
-       * FLAC::File \a file.
+       * Destroys this FLAC::AudioProperties instance.
        */
-       // BIC: remove
-      Properties(File *file, ReadStyle style = Average);
-
-      /*!
-       * Destroys this FLAC::Properties instance.
-       */
-      virtual ~Properties();
+      virtual ~AudioProperties();
 
       /*!
        * Returns the length of the file in seconds.  The length is rounded down to
@@ -80,16 +72,14 @@ namespace TagLib {
        *
        * \see lengthInMilliseconds()
        */
-      // BIC: make virtual
-      int lengthInSeconds() const;
+      virtual int lengthInSeconds() const;
 
       /*!
        * Returns the length of the file in milliseconds.
        *
        * \see lengthInSeconds()
        */
-      // BIC: make virtual
-      int lengthInMilliseconds() const;
+      virtual int lengthInMilliseconds() const;
 
       /*!
        * Returns the average bit rate of the file in kb/s.
@@ -134,10 +124,7 @@ namespace TagLib {
       ByteVector signature() const;
 
     private:
-      Properties(const Properties &);
-      Properties &operator=(const Properties &);
-
-      void read(const ByteVector &data, long streamLength);
+      void read(const ByteVector &data, long long streamLength);
 
       class PropertiesPrivate;
       PropertiesPrivate *d;

@@ -31,17 +31,21 @@
 #include "audioproperties.h"
 
 namespace TagLib {
+
   namespace XM {
-    class TAGLIB_EXPORT Properties : public AudioProperties {
-      friend class File;
+
+    class File;
+
+    class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
+    {
     public:
       /*! Flag bits. */
       enum {
         LinearFreqTable = 1 // otherwise its the amiga freq. table
       };
 
-      Properties(AudioProperties::ReadStyle propertiesStyle);
-      virtual ~Properties();
+      explicit AudioProperties(AudioProperties::ReadStyle propertiesStyle);
+      virtual ~AudioProperties();
 
       int length()               const;
       int lengthInSeconds()      const;
@@ -60,6 +64,7 @@ namespace TagLib {
       unsigned short tempo()            const;
       unsigned short bpmSpeed()         const;
 
+    private:
       void setChannels(int channels);
 
       void setLengthInPatterns(unsigned short lengthInPatterns);
@@ -72,9 +77,7 @@ namespace TagLib {
       void setTempo(unsigned short tempo);
       void setBpmSpeed(unsigned short bpmSpeed);
 
-    private:
-      Properties(const Properties&);
-      Properties &operator=(const Properties&);
+      friend class File;
 
       class PropertiesPrivate;
       PropertiesPrivate *d;

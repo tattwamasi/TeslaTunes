@@ -48,17 +48,21 @@ namespace TagLib {
     public:
 
       /*!
-       * Constructs an ASF file from \a file.
+       * Contructs an ASF file from \a file.  If \a readProperties is true the
+       * file's audio properties will also be read using \a propertiesStyle.  If
+       * false, \a propertiesStyle is ignored.
        *
        * \note In the current implementation, both \a readProperties and
        * \a propertiesStyle are ignored.  The audio properties are always
        * read.
        */
       File(FileName file, bool readProperties = true,
-           Properties::ReadStyle propertiesStyle = Properties::Average);
+           AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average);
 
       /*!
-       * Constructs an ASF file from \a stream.
+       * Contructs an ASF file from \a file.  If \a readProperties is true the
+       * file's audio properties will also be read using \a propertiesStyle.  If
+       * false, \a propertiesStyle is ignored.
        *
        * \note In the current implementation, both \a readProperties and
        * \a propertiesStyle are ignored.  The audio properties are always
@@ -68,7 +72,7 @@ namespace TagLib {
        * responsible for deleting it after the File object.
        */
       File(IOStream *stream, bool readProperties = true,
-           Properties::ReadStyle propertiesStyle = Properties::Average);
+           AudioProperties::ReadStyle propertiesStyle = AudioProperties::Average);
 
       /*!
        * Destroys this instance of the File.
@@ -88,25 +92,9 @@ namespace TagLib {
       virtual Tag *tag() const;
 
       /*!
-       * Implements the unified property interface -- export function.
-       */
-      PropertyMap properties() const;
-
-      /*!
-       * Removes unsupported properties. Forwards to the actual Tag's
-       * removeUnsupportedProperties() function.
-       */
-      void removeUnsupportedProperties(const StringList &properties);
-
-      /*!
-       * Implements the unified property interface -- import function.
-       */
-      PropertyMap setProperties(const PropertyMap &);
-
-      /*!
        * Returns the ASF audio properties for this file.
        */
-      virtual Properties *audioProperties() const;
+      virtual AudioProperties *audioProperties() const;
 
       /*!
        * Save the file.

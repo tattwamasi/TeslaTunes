@@ -29,6 +29,7 @@
 #include "tag.h"
 #include "tbytevector.h"
 #include "tstring.h"
+#include "tstringhandler.h"
 #include "tlist.h"
 #include "tmap.h"
 #include "taglib_export.h"
@@ -56,36 +57,6 @@ namespace TagLib {
 
     typedef List<Frame *> FrameList;
     typedef Map<ByteVector, FrameList> FrameListMap;
-
-    //! An abstraction for the ISO-8859-1 string to data encoding in ID3v2 tags.
-
-    /*!
-     * ID3v2 tag can store strings in ISO-8859-1 (Latin1), and TagLib only
-     * supports genuine ISO-8859-1 by default.  However, in practice, non
-     * ISO-8859-1 encodings are often used instead of ISO-8859-1, such as
-     * Windows-1252 for western languages, Shift_JIS for Japanese and so on.
-     *
-     * Here is an option to read such tags by subclassing this class,
-     * reimplementing parse() and setting your reimplementation as the default
-     * with ID3v2::Tag::setStringHandler().
-     *
-     * \note Writing non-ISO-8859-1 tags is not implemented intentionally.
-     * Use UTF-16 or UTF-8 instead.
-     *
-     * \see ID3v2::Tag::setStringHandler()
-     */
-    class TAGLIB_EXPORT Latin1StringHandler
-    {
-    public:
-      Latin1StringHandler();
-      virtual ~Latin1StringHandler();
-
-      /*!
-       * Decode a string from \a data.  The default implementation assumes that
-       * \a data is an ISO-8859-1 (Latin1) character array.
-       */
-      virtual String parse(const ByteVector &data) const;
-    };
 
     //! The main class in the ID3v2 implementation
 
@@ -154,7 +125,7 @@ namespace TagLib {
        *
        * \see FrameFactory
        */
-      Tag(File *file, long tagOffset,
+      Tag(File *file, long long tagOffset,
           const FrameFactory *factory = FrameFactory::instance());
 
       /*!
@@ -171,6 +142,7 @@ namespace TagLib {
       virtual String genre() const;
       virtual unsigned int year() const;
       virtual unsigned int track() const;
+      virtual PictureMap pictures() const;
 
       virtual void setTitle(const String &s);
       virtual void setArtist(const String &s);
@@ -179,6 +151,7 @@ namespace TagLib {
       virtual void setGenre(const String &s);
       virtual void setYear(unsigned int i);
       virtual void setTrack(unsigned int i);
+      virtual void setPictures(const PictureMap &l);
 
       virtual bool isEmpty() const;
 
@@ -319,7 +292,7 @@ namespace TagLib {
        *  once, the description, separated by a "/".
        *
        */
-      PropertyMap properties() const;
+      virtual PropertyMap properties() const;
 
       /*!
        * Removes unsupported frames given by \a properties. The elements of
@@ -332,13 +305,13 @@ namespace TagLib {
        *  - "UNKNOWN/" + frameID, for frames that could not be parsed by TagLib.
        *    In that case, *all* unknown frames with the given ID will be removed.
        */
-      void removeUnsupportedProperties(const StringList &properties);
+      virtual void removeUnsupportedProperties(const StringList &properties);
 
       /*!
        * Implements the unified property interface -- import function.
        * See the comments in properties().
        */
-      PropertyMap setProperties(const PropertyMap &);
+      virtual PropertyMap setProperties(const PropertyMap &);
 
       /*!
        * Render the tag back to binary data, suitable to be written to disk.
@@ -357,10 +330,8 @@ namespace TagLib {
       /*!
        * Gets the current string handler that decides how the "Latin-1" data
        * will be converted to and from binary data.
-       *
-       * \see Latin1StringHandler
        */
-      static Latin1StringHandler const *latin1StringHandler();
+      static TagLib::StringHandler const *latin1StringHandler();
 
       /*!
        * Sets the string handler that decides how the "Latin-1" data will be
@@ -371,9 +342,12 @@ namespace TagLib {
        * \note The caller is responsible for deleting the previous handler
        * as needed after it is released.
        *
-       * \see Latin1StringHandler
+       * \note User defined string handers are not used for rendering tags.
+       * TagLib doesn't support writing non-standard tags.
+       *
+       * \see latin1StringHandler
        */
-      static void setLatin1StringHandler(const Latin1StringHandler *handler);
+      static void setLatin1StringHandler(const TagLib::StringHandler *handler);
 
     protected:
       /*!

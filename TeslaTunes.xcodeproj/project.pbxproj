@@ -33,8 +33,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		D4C763B51E627FD600433AD6 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C763B41E627FD600433AD6 /* Sparkle.framework */; };
+		D4C763B61E627FDE00433AD6 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D4C763B41E627FD600433AD6 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D4DB8F9C1CCECB690069CD84 /* tag.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E87961ADD9AA900B08A74 /* tag.framework */; };
-		D4DB8F9D1CCECB690069CD84 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E55A71A51AE6417F00AB75E2 /* Sparkle.framework */; };
 		E502814E1ACBA133006D996C /* TableCellViewCheckmark.m in Sources */ = {isa = PBXBuildFile; fileRef = E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */; };
 		E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C21A739D1500BE86E2 /* AppDelegate.m */; };
 		E502D0C51A739D1500BE86E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C41A739D1500BE86E2 /* main.m */; };
@@ -44,7 +45,6 @@
 		E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */; };
 		E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */; };
 		E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */; };
-		E55A71A71AE641AD00AB75E2 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = E55A71A51AE6417F00AB75E2 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */; };
 		E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */ = {isa = PBXBuildFile; fileRef = E58A24B61AC91A2A00E8DDE4 /* PlaylistSelections.m */; };
 		E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E58A24B81AC9282300E8DDE4 /* AppKit.framework */; };
@@ -79,7 +79,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E55A71A71AE641AD00AB75E2 /* Sparkle.framework in CopyFiles */,
+				D4C763B61E627FDE00433AD6 /* Sparkle.framework in CopyFiles */,
 				E5F876801ADE49D800F9A362 /* tag.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,6 +87,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D4C763B41E627FD600433AD6 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellViewCheckmark.h; sourceTree = "<group>"; };
 		E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCellViewCheckmark.m; sourceTree = "<group>"; };
 		E502D0BC1A739D1500BE86E2 /* TeslaTunes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeslaTunes.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,7 +104,6 @@
 		E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = /Library/Frameworks/iTunesLibrary.framework; sourceTree = "<absolute>"; };
 		E552F2D41AD3CD6E009A9FDE /* TeslaTunes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = TeslaTunes.entitlements; sourceTree = "<group>"; };
-		E55A71A51AE6417F00AB75E2 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		E58A24B11AC8E04F00E8DDE4 /* PlaylistPickViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistPickViewController.h; sourceTree = "<group>"; };
 		E58A24B21AC8E04F00E8DDE4 /* PlaylistPickViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaylistPickViewController.m; sourceTree = "<group>"; };
 		E58A24B51AC91A2A00E8DDE4 /* PlaylistSelections.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaylistSelections.h; sourceTree = "<group>"; };
@@ -125,7 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4DB8F9C1CCECB690069CD84 /* tag.framework in Frameworks */,
-				D4DB8F9D1CCECB690069CD84 /* Sparkle.framework in Frameworks */,
+				D4C763B51E627FD600433AD6 /* Sparkle.framework in Frameworks */,
 				E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */,
 				E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */,
 				E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */,
@@ -189,7 +189,7 @@
 		E55A71A41AE6415700AB75E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E55A71A51AE6417F00AB75E2 /* Sparkle.framework */,
+				D4C763B41E627FD600433AD6 /* Sparkle.framework */,
 				E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */,
 				E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */,
 				E52E87961ADD9AA900B08A74 /* tag.framework */,
@@ -241,7 +241,7 @@
 		E502D0B41A739D1500BE86E2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Loci Consulting";
 				TargetAttributes = {
 					E502D0BB1A739D1500BE86E2 = {
@@ -377,8 +377,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -387,6 +389,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -429,8 +432,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -439,6 +444,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -469,6 +475,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 69PR7N5WC7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -484,7 +491,7 @@
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INFOPLIST_PREFIX_HEADER = InfoPlist.h;
 				INFOPLIST_PREPROCESS = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"/usr/local/lib/libFLAC++.a",
@@ -503,6 +510,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 69PR7N5WC7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -518,7 +526,7 @@
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INFOPLIST_PREFIX_HEADER = InfoPlist.h;
 				INFOPLIST_PREPROCESS = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"/usr/local/lib/libFLAC++.a",

@@ -253,10 +253,10 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             // note: had originally planned to strip all tags.  Genre will be added back later if hackGenre is true
             // however, the S only has play groupings for album, artist, song, and genre, so instead of removing all tags,
             // let's try just removing these.
-            t->setAlbum(TagLib::String::null);
-            t->setArtist(TagLib::String::null);
-            t->setTitle(TagLib::String::null);
-            t->setGenre(TagLib::String::null);
+            t->setAlbum(TagLib::String::String());
+            t->setArtist(TagLib::String::String());
+            t->setTitle(TagLib::String::String());
+            t->setGenre(TagLib::String::String());
             needsSaving = true;
         }
         if (self.hackGenre) {

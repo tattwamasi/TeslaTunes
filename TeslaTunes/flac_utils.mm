@@ -92,7 +92,7 @@ void addVorbisCommentIfExists( FLAC__StreamMetadata		*block,
                               const TagLib::String      &key,
                               const TagLib::String      &value)
 {
-    if ((value!=TagLib::String::null) && (key!=TagLib::String::null)) {
+    if ((value.isEmpty()) && (key.isEmpty()) ) {
         FLAC__StreamMetadata_VorbisComment_Entry	entry;
         FLAC__bool									result;
         //NSLog(@"Adding Vorbis Comment tag \"%s\" ==> \"%s\"", key.toCString(true), value.toCString(true));
@@ -129,7 +129,7 @@ auto CopyArtFromMP4fileURL(const TagLib::FileRef& fr,
                 mime_type = "image/jpeg";
                 break;
             default:
-                NSLog(@"%s, unsupported cover art format: %u size %u",
+                NSLog(@"%s, unsupported cover art format: %u size %zu",
                       file->name(), cover_art.format(), cover_art.data().size());
                 return metadata.size();
         }
@@ -203,7 +203,7 @@ auto FlacMetadataFromMP4fileURL(const NSURL *mp4, std::vector<FLAC__StreamMetada
     for (auto p : props) {
         //NSLog(@"Property: \"%s\" (%u) => \"%s\"", p.first.toCString(true), p.second.size(), p.second.toString().toCString(true) );
         if (p.second.size() != 1) {
-            NSLog(@"warning: expected one, but found %u values for tag \"%s\".", p.second.size(), p.first.toCString(true));
+            NSLog(@"warning: expected one, but found %zu values for tag \"%s\".", p.second.size(), p.first.toCString(true));
         }
         if (p.first == "TRACKNUMBER") {
             // taglib seems to format the property as t/n where t is the current track number and n is the number of tracks.

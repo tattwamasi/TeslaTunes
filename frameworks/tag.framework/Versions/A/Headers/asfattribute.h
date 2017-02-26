@@ -36,7 +36,6 @@ namespace TagLib
 
   namespace ASF
   {
-
     class File;
     class Picture;
 
@@ -113,7 +112,7 @@ namespace TagLib
       /*!
        * Copies the contents of \a other into this item.
        */
-      ASF::Attribute &operator=(const Attribute &other);
+      Attribute &operator=(const Attribute &other);
 
       /*!
        * Exchanges the content of the Attribute by the content of \a other.
@@ -185,17 +184,13 @@ namespace TagLib
        */
       void setStream(int value);
 
-#ifndef DO_NOT_DOCUMENT
-      /* THIS IS PRIVATE, DON'T TOUCH IT! */
-      String parse(ASF::File &file, int kind = 0);
-#endif
-
       //! Returns the size of the stored data
       int dataSize() const;
 
     private:
       friend class File;
 
+      String parse(ASF::File &file, int kind = 0);
       ByteVector render(const String &name, int kind = 0) const;
 
       class AttributePrivate;

@@ -34,11 +34,14 @@ namespace TagLib {
 
   namespace ASF {
 
-    //! An implementation of ASF audio properties
-    class TAGLIB_EXPORT Properties : public AudioProperties
-    {
-    public:
+    class File;
 
+    //! An implementation of ASF audio properties
+    class TAGLIB_EXPORT AudioProperties : public TagLib::AudioProperties
+    {
+      friend class File;
+
+    public:
       /*!
        * Audio codec types can be used in ASF file.
        */
@@ -71,14 +74,14 @@ namespace TagLib {
       };
 
       /*!
-       * Creates an instance of ASF::Properties.
+       * Creates an instance of ASF::AudioProperties.
        */
-      Properties();
+      AudioProperties();
 
       /*!
-       * Destroys this ASF::Properties instance.
+       * Destroys this ASF::AudioProperties instance.
        */
-      virtual ~Properties();
+      virtual ~AudioProperties();
 
       /*!
        * Returns the length of the file in seconds.  The length is rounded down to
@@ -96,16 +99,14 @@ namespace TagLib {
        *
        * \see lengthInMilliseconds()
        */
-      // BIC: make virtual
-      int lengthInSeconds() const;
+      virtual int lengthInSeconds() const;
 
       /*!
        * Returns the length of the file in milliseconds.
        *
        * \see lengthInSeconds()
        */
-      // BIC: make virtual
-      int lengthInMilliseconds() const;
+      virtual int lengthInMilliseconds() const;
 
       /*!
        * Returns the average bit rate of the file in kb/s.
@@ -159,10 +160,7 @@ namespace TagLib {
        */
       bool isEncrypted() const;
 
-#ifndef DO_NOT_DOCUMENT
-      // deprecated
-      void setLength(int value);
-
+    private:
       void setLengthInMilliseconds(int value);
       void setBitrate(int value);
       void setSampleRate(int value);
@@ -172,9 +170,7 @@ namespace TagLib {
       void setCodecName(const String &value);
       void setCodecDescription(const String &value);
       void setEncrypted(bool value);
-#endif
 
-    private:
       class PropertiesPrivate;
       PropertiesPrivate *d;
     };

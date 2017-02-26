@@ -26,25 +26,15 @@
 #ifndef TAGLIB_H
 #define TAGLIB_H
 
-#include "taglib_config.h"
-
 #define TAGLIB_MAJOR_VERSION 1
 #define TAGLIB_MINOR_VERSION 11
-#define TAGLIB_PATCH_VERSION 0
-
-#if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 1)) || defined(__clang__)
-#define TAGLIB_IGNORE_MISSING_DESTRUCTOR _Pragma("GCC diagnostic ignored \"-Wnon-virtual-dtor\"")
-#else
-#define TAGLIB_IGNORE_MISSING_DESTRUCTOR
-#endif
+#define TAGLIB_PATCH_VERSION 1
 
 #if (defined(_MSC_VER) && _MSC_VER >= 1600)
 #define TAGLIB_CONSTRUCT_BITSET(x) static_cast<unsigned long long>(x)
 #else
 #define TAGLIB_CONSTRUCT_BITSET(x) static_cast<unsigned long>(x)
 #endif
-
-#include <string>
 
 //! A namespace for all TagLib related classes and functions
 
@@ -56,24 +46,47 @@
  * \endcode
  */
 
-namespace TagLib {
+namespace TagLib
+{
+  enum ByteOrder
+  {
+    LittleEndian,
+    BigEndian
+  };
 
   class String;
+  
+  namespace Version
+  {
+    /*!
+     * Returns the version as a string in the form
+     * (Major Version).(Minor Version).(Patch Version), e.g. "4.2.0".
+     */
+    String string();
 
-  // These integer types are deprecated. Do not use them.
+    /*!
+     * Returns the version as an unsigned integer in the form
+     * (Major Version << 16) | (Minor Version << 8) | (Patch Version), e.g. 0x040200
+     * Use this for simple and consistent version comparison, e.g.
+     *     if (TagLib::GetVersion() <= ((1 << 16) | (11 << 8))) return false;
+     */
+    unsigned int combined();
 
-  typedef wchar_t            wchar;   // Assumed to be sufficient to store a UTF-16 char.
-  typedef unsigned char      uchar;
-  typedef unsigned short     ushort;
-  typedef unsigned int       uint;
-  typedef unsigned long      ulong;
-  typedef unsigned long long ulonglong;
+    /*!
+     * Returns the major version, e.g. 4
+     */
+    unsigned int (major)();
 
-  /*!
-   * Unfortunately std::wstring isn't defined on some systems, (i.e. GCC < 3)
-   * so I'm providing something here that should be constant.
-   */
-  typedef std::basic_string<wchar_t> wstring;
+    /*!
+     * Returns the minor version, e.g. 2
+     */
+    unsigned int (minor)();
+
+    /*!
+     * Returns the patch version, e.g. 0
+     */
+    unsigned int patch();
+  }
 }
 
 /*!

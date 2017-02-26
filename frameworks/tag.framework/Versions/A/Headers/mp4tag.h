@@ -60,6 +60,7 @@ namespace TagLib {
         virtual String genre() const;
         virtual unsigned int year() const;
         virtual unsigned int track() const;
+        virtual PictureMap pictures() const;
 
         virtual void setTitle(const String &value);
         virtual void setArtist(const String &value);
@@ -68,6 +69,7 @@ namespace TagLib {
         virtual void setGenre(const String &value);
         virtual void setYear(unsigned int value);
         virtual void setTrack(unsigned int value);
+        virtual void setPictures(const PictureMap &l);
 
         virtual bool isEmpty() const;
 
@@ -101,6 +103,8 @@ namespace TagLib {
          * \return True if the tag contains an entry for \a key.
          */
         bool contains(const String &key) const;
+
+        String toString() const;
 
         PropertyMap properties() const;
         void removeUnsupportedProperties(const StringList& properties);
@@ -139,7 +143,7 @@ namespace TagLib {
         ByteVector renderCovr(const ByteVector &name, const Item &item) const;
 
         void updateParents(const AtomList &path, long delta, int ignore = 0);
-        void updateOffsets(long delta, long offset);
+        void updateOffsets(long delta, long long offset);
 
         void saveNew(ByteVector data);
         void saveExisting(ByteVector data, const AtomList &path);

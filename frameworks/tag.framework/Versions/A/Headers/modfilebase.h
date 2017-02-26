@@ -41,22 +41,22 @@ namespace TagLib {
     class TAGLIB_EXPORT FileBase : public TagLib::File
     {
     protected:
-      FileBase(FileName file);
-      FileBase(IOStream *stream);
+      explicit FileBase(FileName file);
+      explicit FileBase(IOStream *stream);
 
-      void writeString(const String &s, unsigned long size, char padding = 0);
+      void writeString(const String &s, unsigned int size, char padding = 0);
       void writeByte(unsigned char byte);
       void writeU16L(unsigned short number);
-      void writeU32L(unsigned long number);
+      void writeU32L(unsigned int number);
       void writeU16B(unsigned short number);
-      void writeU32B(unsigned long number);
+      void writeU32B(unsigned int number);
 
-      bool readString(String &s, unsigned long size);
+      bool readString(String &s, unsigned int size);
       bool readByte(unsigned char &byte);
       bool readU16L(unsigned short &number);
-      bool readU32L(unsigned long &number);
+      bool readU32L(unsigned int &number);
       bool readU16B(unsigned short &number);
-      bool readU32B(unsigned long &number);
+      bool readU32B(unsigned int &number);
     };
 
   }
