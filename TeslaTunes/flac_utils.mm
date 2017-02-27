@@ -92,7 +92,9 @@ void addVorbisCommentIfExists( FLAC__StreamMetadata		*block,
                               const TagLib::String      &key,
                               const TagLib::String      &value)
 {
-    if ((value.isEmpty()) && (key.isEmpty()) ) {
+    //NSLog(@"Trying to add Vorbis Comment tag \"%s\" ==> \"%s\"", key.toCString(true), value.toCString(true));
+    
+    if ((!value.isEmpty()) && (!key.isEmpty()) ) {
         FLAC__StreamMetadata_VorbisComment_Entry	entry;
         FLAC__bool									result;
         //NSLog(@"Adding Vorbis Comment tag \"%s\" ==> \"%s\"", key.toCString(true), value.toCString(true));
