@@ -614,6 +614,8 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
     NSUInteger number = node.playlist.items.count;
     int digits = 0; do { number /= 10; digits++; } while (number != 0);
     
+    bool ignoreMissingTracks = NO;
+    
     for (id item in node.playlist.items) {
         
         if (isCancelled) break;
@@ -624,26 +626,33 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
         // we need to validate that the location is legit and in some way warn the user or otherwise deal with it
         // if it is not.
         if (!track.location) {
-            NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = [NSString stringWithFormat:
-                                 @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
-                                 "or stop processing altogether so you can try to fix the issue and start over?",
-                                 track.title, node.playlist.name];
-            alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
+            if (ignoreMissingTracks == NO) {
+                NSAlert *alert = [[NSAlert alloc] init];
+                alert.messageText = [NSString stringWithFormat:
+                                     @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
+                                     "or stop processing altogether so you can try to fix the issue and start over?",
+                                     track.title, node.playlist.name];
+                alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
                 "drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
-            [alert addButtonWithTitle:@"Stop processing"];
-            [alert addButtonWithTitle:@"Skip track"];
-            
-            __block NSModalResponse response;
-            dispatch_sync(dispatch_get_main_queue(), ^(){
-                response = [alert runModal];
-            });
-            
-            if (response == NSAlertFirstButtonReturn) {
-                return NO;
+                [alert addButtonWithTitle:@"Stop processing"];
+                [alert addButtonWithTitle:@"Ignore Missing Tracks"];
+                [alert addButtonWithTitle:@"Skip track"];
+                
+                __block NSModalResponse response;
+                dispatch_sync(dispatch_get_main_queue(), ^(){
+                    response = [alert runModal];
+                });
+                
+                if (response == NSAlertFirstButtonReturn) {
+                    return NO;
+                } else if (response == NSAlertSecondButtonReturn) {
+                    ignoreMissingTracks = YES;
+                }
+                continue;
+            } else {
+                NSLog(@"Skipping> missing track location: %@ in %@",track.title,node.playlist.name);
+                continue;
             }
-            continue;
-            
         }
         
         @autoreleasepool {
