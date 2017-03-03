@@ -5,6 +5,27 @@
         <link>https://tattwamasi.github.io/TeslaTunes/app/appcast.xml</link>
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
+        
+        <item>
+            <title>Version 1.2.6</title>
+            <description><![CDATA[
+                <div class="markdown-body">
+                <p>
+                Make app offer to move itself to Applications<br>
+                Preserve cover art when converting from Apple Lossless to FLAC (fix <a href="https://github.com/tattwamasi/TeslaTunes/issues/10" class="issue-link js-issue-link" data-url="https://github.com/tattwamasi/TeslaTunes/issues/10" data-id="199653404" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#10</a>)<br>
+                Update to taglib2 and Sparkle 1.16.0<br>
+                Add option to "ignore missing tracks" (fix <a href="https://github.com/tattwamasi/TeslaTunes/issues/12" class="issue-link js-issue-link" data-url="https://github.com/tattwamasi/TeslaTunes/issues/12" data-id="210367037" data-error-text="Failed to load issue title" data-permission-text="Issue title is private">#12</a>)</p>
+                </div>
+            ]]>
+            </description>
+            <pubDate>Fri, 03 Mar 2017 14:12:09 -0800</pubDate>
+            <enclosure
+            url="https://github.com/tattwamasi/TeslaTunes/releases/download/1.2.6/TeslaTunes_1.2.6.zip"
+            sparkle:version="1.2.6"
+            type="application/octet-stream"
+            length="3146257"
+            />
+        </item>
         <item>
             <title>Version 1.2.3</title>
             <description><![CDATA[
