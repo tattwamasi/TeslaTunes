@@ -24,5 +24,4 @@ So I built this.  The app will scan a source and destination directory of your c
   My intent for this project, in addition to the obvious one of make life easier with the music library management, was to use it as a testbed for different implementations as well.  I wanted to do largely the same small program in Swift, Objective C, and (to the extent I could) standard and portable as possible C++ (C++14 / 17 to be more specific).  I also wanted to make Windows and Linux versions with as much common code as possible, as interest and time permits.  That said, I wanted to go ahead and put this out there on the off chance it may help a few other people with the same library management goals as me.
   
 
-![EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy](https://cloud.githubusercontent.com/assets/3465489/6682923/3ba0a67a-cc3c-11e4-991a-f6597cf2d42d.png "EXAMPLE: after re-scanning my libary to make sure there are no new songs to copy")
-*note this screenshot is from an old version of the app, prior to playlist addition.
+![EXAMPLE: after copying some selected playlists](https://cloud.githubusercontent.com/assets/3465489/23572351/690eff4a-0023-11e7-9dcc-085622c36b3b.jpg "EXAMPLE: after copying some selected playlists")
