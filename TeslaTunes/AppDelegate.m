@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 
+#import <LetsMove/PFMoveApplication.h>
+
+
 
 #import <IOKit/pwr_mgt/IOPMLib.h>
 
@@ -28,6 +31,8 @@
     // Insert code here to initialize your application
 
     
+    
+    PFMoveToApplicationsFolderIfNecessary();
     
     //[[NSUserDefaultsController sharedUserDefaultsController] setInitialValues:defaults];
     
