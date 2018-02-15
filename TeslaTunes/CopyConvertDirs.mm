@@ -170,7 +170,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
         // file types (types, not extensions) Tesla will play:  mp3, mp4/aac, flac, wma, wma lossless, aiff (16 bit), wav
         // Per an email from Tesla,  .MP3 .OGG .OGA .FLAC .MPC .WV .SPX .TTA .M4A .M4B .M4P .MP4 .3G2 .WMA .ASF .AIF .AIFF .WAV .APE .AAC
         
-        extensionsToCopy = [NSSet setWithObjects:@"mp3", @"aac", @"m4a", @"flac", @"wma", @"aiff", @"wav", nil];
+        extensionsToCopy = [NSSet setWithObjects:@"mp3", @"aac", @"m4a", @"flac", @"wma", @"aiff", @"aif", @"wav", nil];
         
     }
     return self;
