@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		PyhLL3/V/Y6G4Eo78dWBPemsIrc=
+		ahPHcQPhkpf8J8GPXyTLozW57ZE=
 		</data>
 		<key>Resources/ca.lproj/MoveApplication.strings</key>
 		<dict>
@@ -165,7 +165,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			nmHdjteZkE9nRgydZiZx/jmUQLU=
+			l/fEBCK/cJTeRNVG4QLlH8PmO9g=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -242,11 +242,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			jR921MMw0aAzD9X+xuFEpV4TQIw=
+			HAEEJw/vBtFGo8Y69k7Axyjw+lo=
 			</data>
 			<key>hash2</key>
 			<data>
-			H3Bk7bzU0/DAjROcJpR5EeNNAi8izynEmmjE06aBEIA=
+			WitL4GTgp6b79NkxaE/F1iyWKipZipJtawMaYNaGLOo=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -264,11 +264,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			PyhLL3/V/Y6G4Eo78dWBPemsIrc=
+			ahPHcQPhkpf8J8GPXyTLozW57ZE=
 			</data>
 			<key>hash2</key>
 			<data>
-			Mw/IfzqoXp/TmqdTbdJikbQr7GoKbsZydl7wnnpT1Bw=
+			2p+6BOSEFxQwYr3rKfoakWsoLLAStaqnaWZR1kjPAkU=
 			</data>
 		</dict>
 		<key>Resources/ca.lproj/MoveApplication.strings</key>
@@ -496,11 +496,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			nmHdjteZkE9nRgydZiZx/jmUQLU=
+			l/fEBCK/cJTeRNVG4QLlH8PmO9g=
 			</data>
 			<key>hash2</key>
 			<data>
-			r2aAtE9YPvYrqR8e1bGRGtQRn8NtJ9NFZzhwRlJLZck=
+			f35sTRF1rgZnBy7W2XwsIU8TRa9NdO0Ch78l4/8A1Q8=
 			</data>
 			<key>optional</key>
 			<true/>

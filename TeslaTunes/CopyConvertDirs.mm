@@ -72,6 +72,7 @@ NSURL* makeDestURL(const NSURL *dstBasePath, const NSURL *basePathToStrip, const
 
 //AVURLAsset *asset = [[[AVURLAsset alloc] initWithURL:sourceURL options:nil] autorelease];
 
+
 BOOL isAppleLosslessFile(const NSURL *fileURL){
     if ([[fileURL.pathExtension lowercaseString] isEqualToString:@"m4a"]) {
         NSError *e;
@@ -211,7 +212,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
                 self.isProcessing = YES;
                 [self processOpsWithPlaylistSelections: playlistSelections andSourceDirectoryURL:src
                              toDestinationDirectoryURL:dst performScanOnly:(opType==CCScan)];
-                [opSubQ waitUntilAllOperationsAreFinished];
+                [self->opSubQ waitUntilAllOperationsAreFinished];
                 self.isProcessing = NO;
             }];
         }
@@ -220,7 +221,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             [queue addOperationWithBlock:^(void){
                 self.isProcessing = YES;
                 [self processScannedItems];
-                [opSubQ waitUntilAllOperationsAreFinished];
+                [self->opSubQ waitUntilAllOperationsAreFinished];
                 self.isProcessing = NO;
             }];
         }
@@ -232,6 +233,27 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     
     
     
+}
+
+
+
+- (BOOL) isFormatToConvert: (const NSURL *) fileURL {
+
+    if ([[fileURL.pathExtension lowercaseString] isEqualToString:@"m4a"]) {
+        NSError *e;
+        AVAudioFile *aFile = [[AVAudioFile alloc] initForReading:[fileURL URLByStandardizingPath] error:&e];
+        AVAudioFormat *fileFormat = aFile.fileFormat;
+        const AudioStreamBasicDescription *absd = [fileFormat streamDescription];
+        if (absd) {
+            AudioFormatID format = absd->mFormatID;
+            // there's a bunch of other AAC formats listed too - not sure if they show up often enough
+            // to make sense to look for.
+            if ((format == kAudioFormatAppleLossless) || ( self.convertAACkludge && (format == kAudioFormatMPEG4AAC)) ) {
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 
@@ -253,10 +275,13 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
             // note: had originally planned to strip all tags.  Genre will be added back later if hackGenre is true
             // however, the S only has play groupings for album, artist, song, and genre, so instead of removing all tags,
             // let's try just removing these.
-            t->setAlbum(TagLib::String::String());
-            t->setArtist(TagLib::String::String());
-            t->setTitle(TagLib::String::String());
-            t->setGenre(TagLib::String::String());
+            // note with taglib2, String::null is gone, but the taglib comments still refer to it.
+            // todo: TagLib::String() vs. TagLib::String:String() - understand what the latter means - was working till
+            // new xcode updated warnings/config.   Bug that just happened to still make an empty string?
+            t->setAlbum(TagLib::String());
+            t->setArtist(TagLib::String());
+            t->setTitle(TagLib::String());
+            t->setGenre(TagLib::String());
             needsSaving = true;
         }
         if (self.hackGenre) {
@@ -324,7 +349,7 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
 - (void) storeScannedForConvertWithSource:(const NSURL*)s Destination:(const NSURL*)d withPlaylist: (const NSString *) playlist  {
     FileOp *newOp = [[FileOp alloc] initWithSourceURL:s DestinationURL: d withPlaylist: playlist];
     [convertOps addObject:newOp];
-    [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
+    [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless, AAC, etc. -> flac)"];
 }
 
 // We'll arbitrarily define reasonable as a small multiple of maxConcurrentOperationCount if
@@ -385,11 +410,11 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
     if (isCancelled) return;
     [opSubQ addOperationWithBlock:^(void){
         if (makeDirsAsNeeded(d)) {
-            //NSLog(@"\nConverting Apple Lossless file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
-            if (ConvertAlacToFlac([s URLByStandardizingPath], [d URLByStandardizingPath], &(isCancelled))) {
-                [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless -> flac)"];
+            //NSLog(@"\nConverting AAC/Apple Lossless, etc. file->flac, %s, %s", s.fileSystemRepresentation, d.fileSystemRepresentation);
+            if (ConvertM4AToFlac([s URLByStandardizingPath], [d URLByStandardizingPath], &(self->isCancelled))) {
+                [self.copiedExtensions addObject:@"m4a->flac (Apple Lossless, AAC, etc. -> flac)"];
                 [self willChangeValueForKey:@"filesCopyConverted"];
-                ++_filesCopyConverted;
+                ++self->_filesCopyConverted;
                 [self didChangeValueForKey:@"filesCopyConverted"];
                 [self twiddleTags:d withPlaylist:playlist];
             }
@@ -415,7 +440,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
             } else {
                 [self.copiedExtensions addObject:s.pathExtension];
                 [self willChangeValueForKey:@"filesCopyConverted"];
-                ++_filesCopyConverted;
+                ++self->_filesCopyConverted;
                 [self didChangeValueForKey:@"filesCopyConverted"];
                 [self twiddleTags:d withPlaylist:playlist];
             }
@@ -474,7 +499,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
         // figure out if we want to copy this item:  is it a type we want to copy?
         // Does it exist at dest?
         // use  – fileExistsAtPath:isDirectory: for the later
-        if (isAppleLosslessFile(file)) {
+        if ([self isFormatToConvert: file]) {
             // do the conversion iff dest file doesn't exist
             outURL = ReplaceExtensionURL(destinationFile, @"flac");
             if ([fileManager fileExistsAtPath:[outURL path] isDirectory:nil]) {

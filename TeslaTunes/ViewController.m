@@ -156,6 +156,7 @@
     }
     [defaults setInteger:defaultTag forKey:@"opTypeButtonSelection"];
     [defaults setBool:self.ccDirs.hackGenre forKey:@"setPlaylistItemGenreToPlaylistName"];
+    [defaults setBool:self.ccDirs.convertAACkludge forKey:@"convertAACkludge"];
     [defaults setBool:self.ccDirs.stripTagsForPlaylists forKey:@"stripTagsForPlaylists"];
     [defaults setBool:self.ccDirs.remapAlbumArtistToArtistAndTitle forKey:@"remapAlbumArtistToArtistAndTitle"];
     [defaults setBool:self.ccDirs.embedDiscNumberInTrackNumber forKey:@"embedDiscNumberInTrackNumber"];
@@ -174,6 +175,7 @@
     
     self.ccDirs = [[CopyConvertDirs alloc] init];
     self.ccDirs.hackGenre = [defaults boolForKey:@"setPlaylistItemGenreToPlaylistName"];
+    self.ccDirs.convertAACkludge = [defaults boolForKey:@"convertAACkludge"];
     self.ccDirs.stripTagsForPlaylists = [defaults boolForKey:@"stripTagsForPlaylists"];
     self.ccDirs.remapAlbumArtistToArtistAndTitle = [defaults boolForKey:@"remapAlbumArtistToArtistAndTitle"];
     self.ccDirs.embedDiscNumberInTrackNumber = [defaults boolForKey:@"embedDiscNumberInTrackNumber"];

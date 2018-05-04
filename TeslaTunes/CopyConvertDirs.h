@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, DirOperation) {
 @property BOOL remapAlbumArtistToArtistAndTitle;
 // Options for playlist manipulation
 @property BOOL hackGenre; // set genre tag to playlist name
+@property BOOL convertAACkludge; // if set will also convert AAC .m4a files to flac to work around a AAC bug in recent firmware (happening to some cars as of the X and 3 current releases early 2018)
 @property BOOL stripTagsForPlaylists; // strip all tags from playlist items (except genre, if hackGenre is set) in order
                                       // to not clutter the album/song/artist play modes with duplicates
 
