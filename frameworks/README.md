@@ -9,5 +9,6 @@ To get the whole project, including submodules, be sure to use
 Library notes:
 
 LetsMove:
+I let Xcode update to the recommended project settings, which unfortunately means the submodule is now different
 
 

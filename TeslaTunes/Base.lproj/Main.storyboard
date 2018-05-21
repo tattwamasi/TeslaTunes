@@ -167,7 +167,7 @@
                                                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="3HF-Eb-m8O" userLabel="Left Side Stack View">
                                                         <rect key="frame" x="0.0" y="8" width="170" height="99"/>
                                                         <subviews>
-                                                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7yR-YW-Gij" userLabel="Copy Folder Stack View">
+                                                            <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="7yR-YW-Gij" userLabel="Copy Folder Stack View">
                                                                 <rect key="frame" x="0.0" y="62" width="158" height="37"/>
                                                                 <subviews>
                                                                     <button horizontalHuggingPriority="950" verticalHuggingPriority="650" translatesAutoresizingMaskIntoConstraints="NO" id="Uui-lL-AZP">
@@ -434,7 +434,7 @@
                                                     <real value="3.4028234663852886e+38"/>
                                                 </customSpacing>
                                             </stackView>
-                                            <stackView distribution="fillProportionally" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="UMm-f0-zc1" userLabel="Operations Stack View">
+                                            <stackView distribution="fillProportionally" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" translatesAutoresizingMaskIntoConstraints="NO" id="UMm-f0-zc1" userLabel="Operations Stack View">
                                                 <rect key="frame" x="0.0" y="0.0" width="258" height="18"/>
                                                 <subviews>
                                                     <popUpButton autoresizesSubviews="NO" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GH1-1u-h2x" userLabel="Operation type popup">
@@ -462,7 +462,7 @@
                                                         </connections>
                                                     </button>
                                                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="650" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="GrP-Yi-E8S">
-                                                        <rect key="frame" x="242" y="2" width="16" height="16"/>
+                                                        <rect key="frame" x="242" y="1" width="16" height="16"/>
                                                     </progressIndicator>
                                                 </subviews>
                                                 <visibilityPriorities>
