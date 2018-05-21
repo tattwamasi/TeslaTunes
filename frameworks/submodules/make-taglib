@@ -1,0 +1,3 @@
+cd taglib
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_FRAMEWORK=ON \
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -G Xcode

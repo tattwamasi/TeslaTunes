@@ -6,6 +6,15 @@ To get the whole project, including submodules, be sure to use
 `git clone --recursive` not just git clone.
 Also remember to `git submodule update` after fetching new stuff.
 
+
+Build Targets:
+I made a couple of script targets to make packaging, etc. easier.  
+GenGitVersion gets used every build to create the version string that gets put into the about box, etc.
+GenSparkleInfo makes a zip file and creates the appcast xml that will need to be integrated with the update server
+The later target in particular won't be useful for someone else playing around with my code.
+
+
+
 Library notes:
 
 LetsMove:
