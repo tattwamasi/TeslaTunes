@@ -90,6 +90,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D460695B20B34661004DF123 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D47882731E692E4F00AB3980 /* LetsMove.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LetsMove.framework; sourceTree = "<group>"; };
 		D4C763B41E627FD600433AD6 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellViewCheckmark.h; sourceTree = "<group>"; };
@@ -201,6 +202,7 @@
 				E52E87961ADD9AA900B08A74 /* tag.framework */,
 				E58A24B81AC9282300E8DDE4 /* AppKit.framework */,
 				E5436D281AC3D44D0068E42E /* iTunesLibrary.framework */,
+				D460695B20B34661004DF123 /* README.md */,
 			);
 			name = Frameworks;
 			path = frameworks;

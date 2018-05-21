@@ -300,7 +300,7 @@
                                                         </customSpacing>
                                                     </stackView>
                                                     <box horizontalHuggingPriority="850" verticalHuggingPriority="850" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="FQv-nv-0rU">
-                                                        <rect key="frame" x="176" y="14" width="4" height="93"/>
+                                                        <rect key="frame" x="176" y="0.0" width="4" height="107"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" id="OzP-nA-jvr"/>
                                                         </constraints>

@@ -1,0 +1,9 @@
+[submodule "frameworks/submodules/LetsMove"]
+	path = frameworks/submodules/LetsMove
+	url = https://github.com/potionfactory/LetsMove.git
+[submodule "frameworks/submodules/Sparkle"]
+	path = frameworks/submodules/Sparkle
+	url = https://github.com/sparkle-project/Sparkle.git
+[submodule "frameworks/submodules/taglib"]
+	path = frameworks/submodules/taglib
+	url = https://github.com/taglib/taglib.git
