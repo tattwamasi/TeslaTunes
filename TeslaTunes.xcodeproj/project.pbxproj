@@ -33,8 +33,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		D47882741E692E4F00AB3980 /* LetsMove.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D47882731E692E4F00AB3980 /* LetsMove.framework */; };
-		D47882761E692E8F00AB3980 /* LetsMove.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D47882731E692E4F00AB3980 /* LetsMove.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D4C763B51E627FD600433AD6 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C763B41E627FD600433AD6 /* Sparkle.framework */; };
 		D4C763B61E627FDE00433AD6 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D4C763B41E627FD600433AD6 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D4DB8F9C1CCECB690069CD84 /* tag.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E52E87961ADD9AA900B08A74 /* tag.framework */; };
@@ -58,6 +56,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D460696120B34A37004DF123 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D460695C20B34A37004DF123 /* LetsMove.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = "LetsMove Test";
+		};
+		D460696320B34A37004DF123 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D460695C20B34A37004DF123 /* LetsMove.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F146F8271CE7094400233A9B;
+			remoteInfo = LetsMove;
+		};
 		E55A71AF1AE64A8F00AB75E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
@@ -83,7 +95,6 @@
 			files = (
 				D4C763B61E627FDE00433AD6 /* Sparkle.framework in CopyFiles */,
 				E5F876801ADE49D800F9A362 /* tag.framework in CopyFiles */,
-				D47882761E692E8F00AB3980 /* LetsMove.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,7 +102,7 @@
 
 /* Begin PBXFileReference section */
 		D460695B20B34661004DF123 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D47882731E692E4F00AB3980 /* LetsMove.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LetsMove.framework; sourceTree = "<group>"; };
+		D460695C20B34A37004DF123 /* LetsMove.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LetsMove.xcodeproj; path = submodules/LetsMove/LetsMove.xcodeproj; sourceTree = "<group>"; };
 		D4C763B41E627FD600433AD6 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellViewCheckmark.h; sourceTree = "<group>"; };
 		E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCellViewCheckmark.m; sourceTree = "<group>"; };
@@ -133,7 +144,6 @@
 				D4C763B51E627FD600433AD6 /* Sparkle.framework in Frameworks */,
 				E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */,
 				E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */,
-				D47882741E692E4F00AB3980 /* LetsMove.framework in Frameworks */,
 				E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */,
 				E5436D291AC3D44D0068E42E /* iTunesLibrary.framework in Frameworks */,
 			);
@@ -142,6 +152,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D460695D20B34A37004DF123 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D460696220B34A37004DF123 /* LetsMove Test.app */,
+				D460696420B34A37004DF123 /* LetsMove.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E502D0B31A739D1500BE86E2 = {
 			isa = PBXGroup;
 			children = (
@@ -195,7 +214,7 @@
 		E55A71A41AE6415700AB75E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D47882731E692E4F00AB3980 /* LetsMove.framework */,
+				D460695C20B34A37004DF123 /* LetsMove.xcodeproj */,
 				D4C763B41E627FD600433AD6 /* Sparkle.framework */,
 				E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */,
 				E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */,
@@ -277,6 +296,12 @@
 			mainGroup = E502D0B31A739D1500BE86E2;
 			productRefGroup = E502D0BD1A739D1500BE86E2 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = D460695D20B34A37004DF123 /* Products */;
+					ProjectRef = D460695C20B34A37004DF123 /* LetsMove.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E502D0BB1A739D1500BE86E2 /* TeslaTunes */,
@@ -285,6 +310,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		D460696220B34A37004DF123 /* LetsMove Test.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "LetsMove Test.app";
+			remoteRef = D460696120B34A37004DF123 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D460696420B34A37004DF123 /* LetsMove.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LetsMove.framework;
+			remoteRef = D460696320B34A37004DF123 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E502D0BA1A739D1500BE86E2 /* Resources */ = {
