@@ -21,6 +21,7 @@ LetsMove:
 I let Xcode update to the recommended project settings, which unfortunately means the submodule is now different.
 Had to set deploy target for proj/framework to 10.10 to avoid objc-weak warning
 
+Sparkle:  no changes required to submodule
 
 TagLib:
 Use taglib2 branch.  Need to run CMake to generate the right stuff.  I made a shell script for that, `make-taglib`
