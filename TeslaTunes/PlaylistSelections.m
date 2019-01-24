@@ -155,10 +155,10 @@ int sortOrderOfPlaylistKind(ITLibPlaylistKind kind) {
         library = [ITLibrary libraryWithAPIVersion:@"1.0" error:&error];
         if (!library) {
             NSLog(@"error getting iTunes library: %@", error);
-            NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = [NSString stringWithFormat:@"Unable to get iTunes library information"];
-            alert.informativeText = @"You can still use the utility to copy folders, but playlist functionality will be disabled.";
             dispatch_async(dispatch_get_main_queue(), ^(){
+                NSAlert *alert = [[NSAlert alloc] init];
+                alert.messageText = [NSString stringWithFormat:@"Unable to get iTunes library information"];
+                alert.informativeText = @"You can still use the utility to copy folders, but playlist functionality will be disabled.";
                 [alert runModal];
             });
             return nil;

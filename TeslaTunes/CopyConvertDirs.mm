@@ -652,19 +652,20 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
         // if it is not.
         if (!track.location) {
             if (ignoreMissingTracks == NO) {
-                NSAlert *alert = [[NSAlert alloc] init];
-                alert.messageText = [NSString stringWithFormat:
-                                     @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
-                                     "or stop processing altogether so you can try to fix the issue and start over?",
-                                     track.title, node.playlist.name];
-                alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
-                "drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
-                [alert addButtonWithTitle:@"Stop processing"];
-                [alert addButtonWithTitle:@"Ignore Missing Tracks"];
-                [alert addButtonWithTitle:@"Skip track"];
+
                 
                 __block NSModalResponse response;
                 dispatch_sync(dispatch_get_main_queue(), ^(){
+                    NSAlert *alert = [[NSAlert alloc] init];
+                    alert.messageText = [NSString stringWithFormat:
+                                         @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
+                                         "or stop processing altogether so you can try to fix the issue and start over?",
+                                         track.title, node.playlist.name];
+                    alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
+                    "drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
+                    [alert addButtonWithTitle:@"Stop processing"];
+                    [alert addButtonWithTitle:@"Ignore Missing Tracks"];
+                    [alert addButtonWithTitle:@"Skip track"];
                     response = [alert runModal];
                 });
                 
