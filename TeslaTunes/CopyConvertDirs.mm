@@ -18,7 +18,7 @@
 
 
 
-
+#include "m3u_playlist.h"
 #include "flac_utils.h"
 
 // NSString *disallowedCharsRegEx=@"[;:,/|!@#$%&*\()^]";
@@ -93,6 +93,24 @@ NSURL* ReplaceExtensionURL(const NSURL* u, NSString* ext){
     return [[u URLByDeletingPathExtension] URLByAppendingPathExtension:ext];
 }
 
+
+NSModalResponse alertMissingTrack(const NSString *trackName, const NSString *playlistName){
+    __block NSModalResponse response;
+    dispatch_sync(dispatch_get_main_queue(), ^(){
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = [NSString stringWithFormat:
+                             @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
+                             "or stop processing altogether so you can try to fix the issue and start over?",
+                             trackName, playlistName];
+        alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
+        "drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
+        [alert addButtonWithTitle:@"Stop processing"];
+        [alert addButtonWithTitle:@"Ignore Missing Tracks"];
+        [alert addButtonWithTitle:@"Skip track"];
+        response = [alert runModal];
+    });
+    return response;
+}
 
 @interface NSOperationQueue (BlockAdditions)
 - (void)addOperationWithClosure:(void (^)(NSBlockOperation *operation))block;
@@ -634,6 +652,8 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
              performScanOnly: (BOOL) scanOnly {
     //NSLog(@"playlist %@ was selected and will be copied to %s", node.playlist.name, destinationFolderForPlaylist.fileSystemRepresentation);
     NSMutableSet *playlistFilenames = [[NSMutableSet alloc] init];
+    M3uPlaylist m3u;
+
     
     int idx = 0;
     NSUInteger number = node.playlist.items.count;
@@ -652,23 +672,7 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
         // if it is not.
         if (!track.location) {
             if (ignoreMissingTracks == NO) {
-
-                
-                __block NSModalResponse response;
-                dispatch_sync(dispatch_get_main_queue(), ^(){
-                    NSAlert *alert = [[NSAlert alloc] init];
-                    alert.messageText = [NSString stringWithFormat:
-                                         @"The track \"%@\" in playlist \"%@\" has no location specified.  Do you want to skip this track, "
-                                         "or stop processing altogether so you can try to fix the issue and start over?",
-                                         track.title, node.playlist.name];
-                    alert.informativeText = @"This can happen, for example, when you have your library stored on a networked or external "
-                    "drive and the drive isn't currently available.  Make sure it is, and check that iTunes can play the track(s).";
-                    [alert addButtonWithTitle:@"Stop processing"];
-                    [alert addButtonWithTitle:@"Ignore Missing Tracks"];
-                    [alert addButtonWithTitle:@"Skip track"];
-                    response = [alert runModal];
-                });
-                
+                NSModalResponse response = alertMissingTrack(track.title, node.playlist.name);
                 if (response == NSAlertFirstButtonReturn) {
                     return NO;
                 } else if (response == NSAlertSecondButtonReturn) {
@@ -706,6 +710,8 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
                 if (result) {
                     [playlistFilenames addObject:[NSString stringWithUTF8String:result.fileSystemRepresentation]];
                     //NSLog(@"adding to playlistFilename %s", result.fileSystemRepresentation);
+                    // Add the file to the m3u playlist for this node.
+                    m3u.addEntry(track.totalTime/1000, track.artist.name, track.title, result.lastPathComponent);
                 }
             }
         }
@@ -713,6 +719,15 @@ BOOL makeDirsAsNeeded(const NSURL* d) {
     
     if (isCancelled)
         return NO;
+    // if we are here, we've processed the whole playlist node and have made .m3u playlist entries as needed for any
+    // files we are (or are going to) copy/convert.  Go ahead and save the playlist file now
+    // TODO NOTE : this will make the file right now, which isn't in fitting with the scan only feature... fix?
+    NSString *filename = sanitizeFilename(node.playlist.name);
+    NSURL *destFileURL = [[[destinationFolderForPlaylist URLByAppendingPathComponent: filename] URLByAppendingPathExtension:@"m3u"] URLByStandardizingPath];
+    m3u.save(destFileURL);
+    // now add the .m3u to the set of files to not erase
+    [playlistFilenames addObject:[NSString stringWithUTF8String:destFileURL.fileSystemRepresentation]];
+
     // now go through the destination playlist folder and delete any files not in the playlistFilenames set
     return [self pruneFilesNotInSet: playlistFilenames inDirectory: destinationFolderForPlaylist performScanOnly: scanOnly];
     

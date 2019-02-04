@@ -36,7 +36,12 @@
 		D42E905621127E65008086AC /* iTunesLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42E905521127E65008086AC /* iTunesLibrary.framework */; };
 		D46069AD20B35F30004DF123 /* LetsMove.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D460696420B34A37004DF123 /* LetsMove.framework */; };
 		D46069AE20B35F30004DF123 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D460697420B34FC5004DF123 /* Sparkle.framework */; };
-		D46069AF20B35F30004DF123 /* tag.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D46069AA20B354B4004DF123 /* tag.framework */; };
+		D46069AF20B35F30004DF123 /* tag.framework/tag in Frameworks */ = {isa = PBXBuildFile; fileRef = D46069AA20B354B4004DF123 /* tag.framework/tag */; };
+		D4FA36B721FF969600854FE2 /* m3u_playlist.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4FA36B521FF969600854FE2 /* m3u_playlist.mm */; };
+		D4FA36B821FF969600854FE2 /* m3u_playlist.h in Headers */ = {isa = PBXBuildFile; fileRef = D4FA36B621FF969600854FE2 /* m3u_playlist.h */; };
+		D4FA36B921FFD79700854FE2 /* LetsMove.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D460696420B34A37004DF123 /* LetsMove.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D4FA36BA21FFD79700854FE2 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D460697420B34FC5004DF123 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D4FA36BB21FFD79700854FE2 /* tag.framework/tag in CopyFiles */ = {isa = PBXBuildFile; fileRef = D46069AA20B354B4004DF123 /* tag.framework/tag */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E502814E1ACBA133006D996C /* TableCellViewCheckmark.m in Sources */ = {isa = PBXBuildFile; fileRef = E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */; };
 		E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C21A739D1500BE86E2 /* AppDelegate.m */; };
 		E502D0C51A739D1500BE86E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E502D0C41A739D1500BE86E2 /* main.m */; };
@@ -139,6 +144,20 @@
 			remoteGlobalIDString = A21D9488685545BEA5072218;
 			remoteInfo = tag_c;
 		};
+		D4FA36AA21FCE39900854FE2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D460696520B34FC5004DF123 /* Sparkle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5AB8F19F214DA72000A1187F;
+			remoteInfo = generate_keys;
+		};
+		D4FA36AC21FCE39900854FE2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D460696520B34FC5004DF123 /* Sparkle.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5A5ADED7214EDE4900DF0099;
+			remoteInfo = sign_update;
+		};
 		E55A71AF1AE64A8F00AB75E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E502D0B41A739D1500BE86E2 /* Project object */;
@@ -162,6 +181,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				D4FA36B921FFD79700854FE2 /* LetsMove.framework in CopyFiles */,
+				D4FA36BA21FFD79700854FE2 /* Sparkle.framework in CopyFiles */,
+				D4FA36BB21FFD79700854FE2 /* tag.framework/tag in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,10 +191,14 @@
 
 /* Begin PBXFileReference section */
 		D42E905521127E65008086AC /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = System/Library/Frameworks/iTunesLibrary.framework; sourceTree = SDKROOT; };
-		D460695B20B34661004DF123 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D460695C20B34A37004DF123 /* LetsMove.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LetsMove.xcodeproj; path = submodules/LetsMove/LetsMove.xcodeproj; sourceTree = "<group>"; };
 		D460696520B34FC5004DF123 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = submodules/Sparkle/Sparkle.xcodeproj; sourceTree = "<group>"; };
 		D460699F20B354B4004DF123 /* taglib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = taglib.xcodeproj; path = submodules/Sparkle/../taglib/taglib.xcodeproj; sourceTree = "<group>"; };
+		D4FA369A21FCE39900854FE2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D4FA36B521FF969600854FE2 /* m3u_playlist.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = m3u_playlist.mm; sourceTree = "<group>"; };
+		D4FA36B621FF969600854FE2 /* m3u_playlist.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3u_playlist.h; sourceTree = "<group>"; };
+		D4FA36BC2200EA8000854FE2 /* BUILDING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BUILDING.md; sourceTree = "<group>"; };
+		D4FA36BD2200EAA500854FE2 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		E502814C1ACBA133006D996C /* TableCellViewCheckmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellViewCheckmark.h; sourceTree = "<group>"; };
 		E502814D1ACBA133006D996C /* TableCellViewCheckmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCellViewCheckmark.m; sourceTree = "<group>"; };
 		E502D0BC1A739D1500BE86E2 /* TeslaTunes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TeslaTunes.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -210,7 +236,7 @@
 				D42E905621127E65008086AC /* iTunesLibrary.framework in Frameworks */,
 				D46069AD20B35F30004DF123 /* LetsMove.framework in Frameworks */,
 				D46069AE20B35F30004DF123 /* Sparkle.framework in Frameworks */,
-				D46069AF20B35F30004DF123 /* tag.framework in Frameworks */,
+				D46069AF20B35F30004DF123 /* tag.framework/tag in Frameworks */,
 				E52E879B1ADD9F8F00B08A74 /* AudioToolbox.framework in Frameworks */,
 				E52E87991ADD9F2E00B08A74 /* AVFoundation.framework in Frameworks */,
 				E58A24B91AC9282300E8DDE4 /* AppKit.framework in Frameworks */,
@@ -240,6 +266,8 @@
 				D460697E20B34FC5004DF123 /* UI Tests.xctest */,
 				D460698020B34FC5004DF123 /* fileop */,
 				D460698220B34FC5004DF123 /* generate_appcast */,
+				D4FA36AB21FCE39900854FE2 /* generate_keys */,
+				D4FA36AD21FCE39900854FE2 /* sign_update */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -247,8 +275,8 @@
 		D46069A020B354B4004DF123 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D46069AA20B354B4004DF123 /* tag.framework */,
-				D46069AC20B354B4004DF123 /* tag_c.framework */,
+				D46069AA20B354B4004DF123 /* tag.framework/tag */,
+				D46069AC20B354B4004DF123 /* tag_c.framework/tag_c */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -256,6 +284,9 @@
 		E502D0B31A739D1500BE86E2 = {
 			isa = PBXGroup;
 			children = (
+				D4FA369A21FCE39900854FE2 /* README.md */,
+				D4FA36BD2200EAA500854FE2 /* LICENSE.md */,
+				D4FA36BC2200EA8000854FE2 /* BUILDING.md */,
 				E55A71A41AE6415700AB75E2 /* Frameworks */,
 				E502D0BE1A739D1500BE86E2 /* TeslaTunes */,
 				E502D0BD1A739D1500BE86E2 /* Products */,
@@ -313,7 +344,6 @@
 				E52E879A1ADD9F8F00B08A74 /* AudioToolbox.framework */,
 				E52E87981ADD9F2E00B08A74 /* AVFoundation.framework */,
 				E58A24B81AC9282300E8DDE4 /* AppKit.framework */,
-				D460695B20B34661004DF123 /* README.md */,
 			);
 			name = Frameworks;
 			path = frameworks;
@@ -328,6 +358,8 @@
 				E59078A51AAC1AD7007A26D6 /* flac_utils.mm */,
 				E59078A81AAEC044007A26D6 /* Receptionist.h */,
 				E59078A91AAEC044007A26D6 /* Receptionist.m */,
+				D4FA36B521FF969600854FE2 /* m3u_playlist.mm */,
+				D4FA36B621FF969600854FE2 /* m3u_playlist.h */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -339,6 +371,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4FA36B821FF969600854FE2 /* m3u_playlist.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,18 +526,34 @@
 			remoteRef = D460698120B34FC5004DF123 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D46069AA20B354B4004DF123 /* tag.framework */ = {
+		D46069AA20B354B4004DF123 /* tag.framework/tag */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
+			name = tag.framework/tag;
 			path = tag.framework;
 			remoteRef = D46069A920B354B4004DF123 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D46069AC20B354B4004DF123 /* tag_c.framework */ = {
+		D46069AC20B354B4004DF123 /* tag_c.framework/tag_c */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
+			name = tag_c.framework/tag_c;
 			path = tag_c.framework;
 			remoteRef = D46069AB20B354B4004DF123 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D4FA36AB21FCE39900854FE2 /* generate_keys */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = generate_keys;
+			remoteRef = D4FA36AA21FCE39900854FE2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D4FA36AD21FCE39900854FE2 /* sign_update */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = sign_update;
+			remoteRef = D4FA36AC21FCE39900854FE2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -561,6 +610,7 @@
 				E58A24B71AC91A2A00E8DDE4 /* PlaylistSelections.m in Sources */,
 				E58A24B31AC8E04F00E8DDE4 /* PlaylistPickViewController.m in Sources */,
 				E59078A41AAAFE0E007A26D6 /* CopyConvertDirs.mm in Sources */,
+				D4FA36B721FF969600854FE2 /* m3u_playlist.mm in Sources */,
 				E502814E1ACBA133006D996C /* TableCellViewCheckmark.m in Sources */,
 				E502D0C31A739D1500BE86E2 /* AppDelegate.m in Sources */,
 				E59078AA1AAEC044007A26D6 /* Receptionist.m in Sources */,
@@ -778,6 +828,11 @@
 		E55A71AD1AE64A4400AB75E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_NAME = "GenGitVersioning copy";
 			};
 			name = Debug;
@@ -785,6 +840,11 @@
 		E55A71AE1AE64A4400AB75E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
 				PRODUCT_NAME = "GenGitVersioning copy";
 			};
 			name = Release;
