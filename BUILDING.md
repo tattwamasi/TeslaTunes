@@ -20,8 +20,8 @@ This app uses some external libraries, some of which are included as submodules.
 
 
 To get the whole project, including submodules, be sure to use
-`git clone --recursive` not just git clone.
-If you already cloned, I think it's a `git submodule update  --init --recursive` to get things set.
+`git clone --recursive` not just git clone, and 
+ `git submodule update  --init --recursive` to get things set.
 
 Also remember to `git submodule update --recursive` after fetching new stuff.
 
